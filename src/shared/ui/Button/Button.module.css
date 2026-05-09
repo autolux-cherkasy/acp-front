@@ -23,6 +23,12 @@
   letter-spacing: 0;
   text-align: center;
   box-shadow: none;
+  transition:
+    background-color 300ms ease-out,
+    box-shadow 300ms ease-out,
+    filter 300ms ease-out,
+    transform 300ms ease-out,
+    opacity 300ms ease-out;
 }
 
 .fullWidth {
@@ -35,10 +41,15 @@
   color: var(--color-text-strong);
 }
 
+.yellow {
+  background: var(--color-accent);
+  color: var(--color-text-strong);
+}
+
 .secondary {
   background: var(--color-white);
-  color: var(--color-text-strong);
-  border: 2px solid var(--color-accent);
+  color: var(--DarkSlateGray, #226078);
+  border: 1.5px solid var(--DarkSlateGray, #226078);
 }
 
 .success {
@@ -51,24 +62,95 @@
   color: var(--color-white);
 }
 
+.dangerOutlined {
+  background: var(--color-white);
+  color: var(--color-brand);
+  border: 1px solid var(--herry, #D51216);
+}
+
 .outlined {
   background: var(--color-white);
   color: var(--color-brand);
   border: 2px solid var(--color-border-muted);
 }
 
+.yellow,
+.success,
+.danger,
+.dangerOutlined,
+.outlined {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 144%;
+  vertical-align: middle;
+}
+
 .button:hover:not(:disabled) {
   filter: brightness(0.94);
 }
 
-.secondary:hover:not(:disabled) {
-  background: #fdf3d6;
+.primary:hover:not(:disabled):not(:active) {
+  background: var(--color-accent);
+  box-shadow: 0 0 6px 0 #c19429;
+  filter: none;
+}
+
+.secondary:hover:not(:disabled):not(:active) {
+  background: var(--color-white);
+  color: var(--DarkSlateGray, #226078);
+  border-color: var(--DarkSlateGray, #226078);
+  box-shadow: 0 0 6px 0 var(--DarkSlateGray);
+  filter: none;
+}
+
+.yellow:hover:not(:disabled):not(:active),
+.success:hover:not(:disabled):not(:active),
+.danger:hover:not(:disabled):not(:active) {
+  filter: brightness(1.06);
+}
+
+.outlined:hover:not(:disabled):not(:active),
+.dangerOutlined:hover:not(:disabled):not(:active) {
+  background: var(--color-surface-soft);
   filter: none;
 }
 
 .button:active {
   transform: translateY(1px);
   box-shadow: none;
+}
+
+.primary:active {
+  background: var(--color-accent-strong);
+  filter: none;
+  box-shadow: none;
+}
+
+.secondary:active {
+  background: var(--DarkSlateGray, #226078);
+  color: var(--bg, #FCFEFE);
+  border-color: transparent;
+  box-shadow: none;
+  filter: none;
+}
+
+.yellow:active {
+  background: var(--color-accent-strong);
+  box-shadow: none;
+  filter: none;
+}
+
+.success:active,
+.danger:active {
+  filter: brightness(0.92);
+  box-shadow: none;
+}
+
+.outlined:active,
+.dangerOutlined:active {
+  background: var(--color-surface-accent);
+  box-shadow: none;
+  filter: none;
 }
 
 .text {

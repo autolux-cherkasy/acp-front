@@ -14,9 +14,11 @@ export default function Button({
 }) {
   const variantMap = {
     primary: styles.primary,
+    yellow: styles.yellow,
     secondary: styles.secondary,
     success: styles.success,
     danger: styles.danger,
+    dangerOutlined: styles.dangerOutlined,
     outlined: styles.outlined,
   };
 
