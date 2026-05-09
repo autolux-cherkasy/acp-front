@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import styles from "../modal.module.css";
 import ForgotPasswordPage from "@/src/pages-layer/auth/forgot-password/ui/ForgotPasswordPage";
 import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
+import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
 
 export default function ForgotPasswordModalRoute() {
   const router = useRouter();
@@ -52,19 +52,8 @@ export default function ForgotPasswordModalRoute() {
   }
 
   return (
-    <div
-      className={styles.overlay}
-      onPointerDown={(event) => {
-        if (event.target === event.currentTarget) {
-          close();
-        }
-      }}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className={styles.wrap} onPointerDown={(event) => event.stopPropagation()}>
+    <ModalFrame onClose={close} variant="route">
         <ForgotPasswordPage onClose={close} />
-      </div>
-    </div>
+    </ModalFrame>
   );
 }

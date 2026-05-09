@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import styles from "./auth.module.css";
 import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
+import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
 
 export default function AuthModalLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -11,20 +11,8 @@ export default function AuthModalLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <div
-      className={styles.overlay}
-      role="dialog"
-      aria-modal="true"
-      onPointerDown={(e) => {
-        if (e.target === e.currentTarget) close();
-      }}
-    >
-      <div
-        className={styles.modalWrap}
-        onPointerDown={(e) => e.stopPropagation()}
-      >
+    <ModalFrame onClose={close} variant="route" surfaceOverflow="visible">
         {children}
-      </div>
-    </div>
+    </ModalFrame>
   );
 }

@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "../modal.module.css";
 import RegisterPage from "@/src/pages-layer/auth/register/ui/RegisterPage";
 import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
+import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
 
 export default function RegisterModalRoute() {
   const router = useRouter();
@@ -55,22 +55,8 @@ export default function RegisterModalRoute() {
   }
 
   return (
-    <div 
-      className={styles.overlay} 
-      onPointerDown={(e) => {
-        if (e.target === e.currentTarget) {
-          close();
-        }
-      }} 
-      role="dialog" 
-      aria-modal="true"
-    >
-      <div
-        className={styles.wrap}
-        onPointerDown={(e) => e.stopPropagation()}
-      >
+    <ModalFrame onClose={close} variant="route">
         <RegisterPage onClose={close} />
-      </div>
-    </div>
+    </ModalFrame>
   );
 }

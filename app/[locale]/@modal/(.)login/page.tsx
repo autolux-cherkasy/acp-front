@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "../modal.module.css";
 import LoginPage from "@/src/pages-layer/auth/login/ui/LoginPage";
 import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
+import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
 
 export default function LoginModalRoute() {
   const router = useRouter();
@@ -55,22 +55,8 @@ export default function LoginModalRoute() {
   }
 
   return (
-    <div 
-      className={styles.overlay} 
-      onPointerDown={(e) => {
-        if (e.target === e.currentTarget) {
-          close();
-        }
-      }} 
-      role="dialog" 
-      aria-modal="true"
-    >
-      <div
-        className={styles.wrap}
-        onPointerDown={(e) => e.stopPropagation()}
-      >
+    <ModalFrame onClose={close} variant="route">
         <LoginPage onClose={close} />
-      </div>
-    </div>
+    </ModalFrame>
   );
 }
