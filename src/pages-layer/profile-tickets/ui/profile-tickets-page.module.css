@@ -112,33 +112,12 @@
 }
 
 .searchButton {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 12px 24px;
-  gap: 10px;
+  composes: button from "../../../shared/ui/Button/Button.module.css";
+  composes: primary from "../../../shared/ui/Button/Button.module.css";
   width: 300px;
   min-width: 145px;
   height: 46px;
-  background: var(--color-accent);
-  border-radius: 12px;
-  border: none;
-  font-family: 'Roboto', sans-serif;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 144%;
-  letter-spacing: 0;
-  text-align: center;
-  color: var(--color-text-strong);
   text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.searchButton:hover {
-  opacity: 0.9;
 }
 
 /* --- АДАПТИВНІСТЬ --- */

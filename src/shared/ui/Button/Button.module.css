@@ -65,7 +65,7 @@
 .dangerOutlined {
   background: var(--color-white);
   color: var(--color-brand);
-  border: 1px solid var(--herry, #D51216);
+  border: 1px solid var(--herry, #d51216);
 }
 
 .outlined {
@@ -128,7 +128,7 @@
 
 .secondary:active {
   background: var(--DarkSlateGray, #226078);
-  color: var(--bg, #FCFEFE);
+  color: var(--bg, #fcfefe);
   border-color: transparent;
   box-shadow: none;
   filter: none;

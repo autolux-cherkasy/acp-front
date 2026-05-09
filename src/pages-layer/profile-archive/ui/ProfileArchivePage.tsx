@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+import Button from "@/src/shared/ui/Button/Button";
 import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import ProfileTabsBar from "@/src/widgets/profile-tabs-bar";
@@ -137,12 +138,8 @@ export default function ProfileArchivePage() {
                     <div className={styles.priceValue}>{ticket.price}</div>
 
                     <div className={styles.actions}>
-                      <button type="button" className={styles.primaryButton}>
-                        {t("profile.archive.pay")}
-                      </button>
-                      <button type="button" className={styles.secondaryButton}>
-                        {t("profile.archive.cancel")}
-                      </button>
+                      <Button text={t("profile.archive.pay")} variant="primary" />
+                      <Button text={t("profile.archive.cancel")} variant="secondary" />
                     </div>
                   </div>
                 </div>

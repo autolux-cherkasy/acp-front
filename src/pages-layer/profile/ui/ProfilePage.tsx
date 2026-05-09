@@ -5,6 +5,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 import { changePassword, getProfile, updateProfile } from "@/src/entities/user";
 import { hasAccessToken } from "@/src/shared/api/session";
+import Button from "@/src/shared/ui/Button/Button";
 import LocaleLink from "@/src/shared/i18n/Link";
 import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
@@ -413,17 +414,20 @@ export default function ProfilePage() {
               </label>
             </div>
 
-            <button
-              type="submit"
-              className={styles.submitButton}
-              disabled={isLoading || isSaving || requiresLogin}
-            >
-              {isLoading
-                ? t("profile.page.actions.loading")
-                : isSaving
-                  ? t("profile.page.actions.saving")
-                  : t("profile.page.actions.save")}
-            </button>
+            <div className={styles.submitButtonWrap}>
+              <Button
+                type="submit"
+                variant="primary"
+                text={
+                  isLoading
+                    ? t("profile.page.actions.loading")
+                    : isSaving
+                      ? t("profile.page.actions.saving")
+                      : t("profile.page.actions.save")
+                }
+                disabled={isLoading || isSaving || requiresLogin}
+              />
+            </div>
           </form>
         </section>
       </div>
