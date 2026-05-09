@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import type { TicketStatus } from "@/src/entities/ticket";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
+import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
 import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
-import Portal from "@/src/shared/ui/Portal/Portal";
 import TextField from "@/src/shared/ui/TextField/TextField";
 import styles from "./NewOrderModal.module.css";
 
@@ -77,15 +77,12 @@ export default function NewOrderModal({
   }
 
   return (
-    <Portal>
-      <div className={styles.overlay} onClick={onClose}>
-        <div
-          className={styles.modal}
-          onClick={(event) => event.stopPropagation()}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="new-order-title"
-        >
+    <ModalFrame
+      onClose={onClose}
+      ariaLabelledBy="new-order-title"
+      usePortal
+      surfaceClassName={styles.modalFrame}
+    >
           <div className={styles.header}>
             <h2 className={styles.title} id="new-order-title">
               {t("dispatcherArea.tickets.modal.newOrderTitle")} №{" "}
@@ -200,8 +197,6 @@ export default function NewOrderModal({
               onClick={onClose}
             />
           </div>
-        </div>
-      </div>
-    </Portal>
+    </ModalFrame>
   );
 }

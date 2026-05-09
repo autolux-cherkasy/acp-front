@@ -7,8 +7,8 @@ import { useCountdown } from "@/src/features/ticket-timer";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import Icon from "@/src/shared/ui/Icon/Icon";
+import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
 import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
-import Portal from "@/src/shared/ui/Portal/Portal";
 import styles from "./OrderDetailsModal.module.css";
 
 type Props = {
@@ -62,15 +62,12 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
       : t("dispatcherArea.tickets.statuses.paid");
 
   return (
-    <Portal>
-      <div className={styles.overlay} onClick={onClose}>
-        <div
-          className={styles.modal}
-          onClick={(event) => event.stopPropagation()}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="order-details-title"
-        >
+    <ModalFrame
+      onClose={onClose}
+      ariaLabelledBy="order-details-title"
+      usePortal
+      surfaceClassName={styles.modalFrame}
+    >
           <div className={styles.header}>
             <h2 className={styles.title} id="order-details-title">
               {t("dispatcherArea.tickets.modal.orderDetailsTitle")} №
@@ -150,8 +147,6 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
               />
             </div>
           </div>
-        </div>
-      </div>
-    </Portal>
+    </ModalFrame>
   );
 }
