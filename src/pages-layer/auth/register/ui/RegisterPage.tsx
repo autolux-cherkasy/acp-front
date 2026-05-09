@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -10,10 +9,9 @@ import { register, usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import TextField from "@/src/shared/ui/TextField/TextField";
-import AuthPromoList from "@/src/widgets/auth-promo-list/ui/AuthPromoList";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
-import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import Notification from "@/src/shared/ui/Notification/Notification";
+import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
 import {
   EMAIL_MAX_LENGTH,
   mapRegisterServerError,
@@ -205,36 +203,19 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
   ];
 
   return (
-    <div
-      className={`${styles.shellRegister} ${styles.bannerGlass}`}
-      style={{ backgroundImage: "url('/(auth)/register/register-bus.jpg')" }}
+    <AuthShell
+      logoAlt={t("header.logoAlt")}
+      closeLabel={t("common.close")}
+      brandDescription={t("auth.common.brandDesc")}
+      promoItems={promoItems}
+      backgroundImage="/(auth)/register/register-bus.jpg"
+      onClose={handleCloseAuthFlow}
+      variant="register"
+      brandDescriptionClassName={styles.registerBrandDesc}
+      promoClassName={styles.registerTextBlock}
+      promoItemClassName={styles.registerTextLine}
+      cardClassName={styles.registerCard}
     >
-      <ModalCloseButton
-        className={`${styles.close} ${styles.closeRegister}`}
-        ariaLabel={t("common.close")}
-        onClose={handleCloseAuthFlow}
-      />
-
-      <div className={styles.registerContent}>
-        <div className={styles.registerBrand}>
-          <Image
-            src="/logo-sprinter.svg"
-            alt={t("header.logoAlt")}
-            className={styles.brandLogo}
-            width={213}
-            height={50}
-            priority
-          />
-          <div className={styles.registerBrandDesc}>{t("auth.common.brandDesc")}</div>
-        </div>
-
-        <AuthPromoList
-          items={promoItems}
-          listClassName={styles.registerTextBlock}
-          itemClassName={styles.registerTextLine}
-        />
-
-        <div className={styles.registerCard}>
           <h1 className={styles.registerTitle}>{t("auth.register.title")}</h1>
 
           {error ? (
@@ -393,8 +374,6 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
               </div>
             </div>
           </form>
-        </div>
-      </div>
-    </div>
+    </AuthShell>
   );
 }

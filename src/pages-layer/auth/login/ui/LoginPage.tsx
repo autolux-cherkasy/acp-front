@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -13,8 +12,8 @@ import { setAccessToken } from "@/src/shared/api/session";
 import Button from "@/src/shared/ui/Button/Button";
 import TextField from "@/src/shared/ui/TextField/TextField";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
-import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import Notification from "@/src/shared/ui/Notification/Notification";
+import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
 
 type LoginFormData = {
   identifier: string;
@@ -82,30 +81,18 @@ export default function LoginPage({ onClose }: LoginPageProps) {
   ];
 
   return (
-    <div
-      className={`${styles.shellLogin} ${styles.bannerGlass}`}
-      style={{ backgroundImage: "url('/(auth)/login/login-bus.png')" }}
+    <AuthShell
+      logoAlt={t("header.logoAlt")}
+      closeLabel={t("common.close")}
+      brandDescription={t("auth.common.brandDesc")}
+      promoItems={benefitItems}
+      backgroundImage="/(auth)/login/login-bus.png"
+      onClose={handleCloseAuthFlow}
+      variant="login"
+      reverse
+      brandDescriptionClassName={styles.loginBrandDesc}
+      cardClassName={styles.loginCard}
     >
-      <ModalCloseButton
-        className={`${styles.close} ${styles.closeLogin}`}
-        ariaLabel={t("common.close")}
-        onClose={handleCloseAuthFlow}
-      />
-
-      <div className={styles.loginContent}>
-        <div className={styles.loginBrand}>
-          <Image
-            src="/logo-sprinter.svg"
-            alt={t("header.logoAlt")}
-            className={styles.brandLogo}
-            width={213}
-            height={50}
-            priority
-          />
-          <div className={styles.loginBrandDesc}>{t("auth.common.brandDesc")}</div>
-        </div>
-
-        <div className={styles.loginCard}>
           <h1 className={styles.loginTitle}>{t("auth.login.title")}</h1>
 
           <form className={styles.loginBlock} onSubmit={handleSubmit}>
@@ -192,16 +179,6 @@ export default function LoginPage({ onClose }: LoginPageProps) {
               />
             </div>
           </form>
-        </div>
-
-        <ul className={styles.loginTextBlock}>
-          {benefitItems.map((item) => (
-            <li key={item} className={styles.loginTextLine}>
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    </AuthShell>
   );
 }
