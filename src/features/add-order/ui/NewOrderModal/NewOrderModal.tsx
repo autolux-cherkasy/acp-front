@@ -174,20 +174,16 @@ export default function NewOrderModal({
             </div>
 
             <div className={styles.statusRow}>
-              <button
-                type="button"
-                className={`${styles.statusBtn} ${form.status === "booked" ? styles.statusBtnBooked : styles.statusBtnIdle}`}
+              <Button
+                text={t("dispatcherArea.tickets.statuses.bookedShort")}
+                variant={form.status === "booked" ? "yellow" : "outlined"}
                 onClick={() => setField("status", "booked")}
-              >
-                {t("dispatcherArea.tickets.statuses.bookedShort")}
-              </button>
-              <button
-                type="button"
-                className={`${styles.statusBtn} ${form.status === "paid" ? styles.statusBtnPaid : styles.statusBtnIdle}`}
+              />
+              <Button
+                text={t("dispatcherArea.tickets.statuses.paid")}
+                variant={form.status === "paid" ? "success" : "outlined"}
                 onClick={() => setField("status", "paid")}
-              >
-                {t("dispatcherArea.tickets.statuses.paid")}
-              </button>
+              />
             </div>
 
             <p className={styles.timer}>

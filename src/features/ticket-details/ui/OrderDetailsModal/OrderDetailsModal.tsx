@@ -132,7 +132,7 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
               />
               <Button
                 text={t("ticketBooking.form.reserve")}
-                variant="primary"
+                variant="yellow"
                 onClick={() => {}}
               />
               <Button

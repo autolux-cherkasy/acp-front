@@ -106,7 +106,7 @@
 .yellow:hover:not(:disabled):not(:active),
 .success:hover:not(:disabled):not(:active),
 .danger:hover:not(:disabled):not(:active) {
-  filter: brightness(1.06);
+  filter: brightness(1.1);
 }
 
 .outlined:hover:not(:disabled):not(:active),
