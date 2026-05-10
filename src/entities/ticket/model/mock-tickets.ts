@@ -46,4 +46,20 @@ export const mockTickets: Ticket[] = [
     status: "booked",
     timerSeconds: 300, // 05:00
   },
+
+  {
+    id: "4",
+    bookingNumber: "BR-003",
+    passengerName: "Скрипка Олена",
+    passengerPhone: "+380686451287",
+    routeFrom: "м.Кременчук",
+    routeTo: "м.Черкаси",
+    routeStop: null,
+    departureTime: "17:15",
+    departureDate: "07.03.2026",
+    ticketCount: 1,
+    totalPrice: 400,
+    status: "cancelled",
+    timerSeconds: null, // 05:00
+  },
 ];
