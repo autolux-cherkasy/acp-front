@@ -9,6 +9,7 @@ type FormFieldProps = {
   errorId?: string;
   children: ReactNode;
   className?: string;
+  labelClassName?: string;
 };
 
 function FormField({
@@ -18,10 +19,11 @@ function FormField({
   errorId,
   children,
   className,
+  labelClassName,
 }: FormFieldProps) {
   return (
     <div className={[styles.field, className].filter(Boolean).join(" ")}>
-      {label ? <span className={styles.label}>{label}</span> : null}
+      {label ? <span className={[styles.label, labelClassName].filter(Boolean).join(" ")}>{label}</span> : null}
       {children}
       {error ? (
         <span id={errorId} className={styles.fieldErrorText} role="alert">

@@ -114,6 +114,7 @@ export default function ForgotPasswordPage({
           <FormField
             className={styles.field}
             label={t("auth.forgotPassword.emailLabel")}
+            labelClassName={styles.label}
           >
             <TextField
               type="email"

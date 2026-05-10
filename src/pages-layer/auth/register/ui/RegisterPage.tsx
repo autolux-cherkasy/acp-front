@@ -41,7 +41,9 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
     confirmPassword: "",
   });
   const [fieldErrors, setFieldErrors] = useState<RegisterFieldErrors>({});
-  const [touchedFields, setTouchedFields] = useState<Partial<Record<RegisterField, boolean>>>({});
+  const [touchedFields, setTouchedFields] = useState<
+    Partial<Record<RegisterField, boolean>>
+  >({});
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -139,7 +141,8 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       router.replace(resolveHref("/login"));
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
-      const { fieldErrors: nextFieldErrors, formError } = mapRegisterServerError(message, t);
+      const { fieldErrors: nextFieldErrors, formError } =
+        mapRegisterServerError(message, t);
 
       setFieldErrors(nextFieldErrors);
       setTouchedFields({
@@ -175,156 +178,178 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       promoItemClassName={styles.registerTextLine}
       cardClassName={styles.registerCard}
     >
-          <h1 className={styles.registerTitle}>{t("auth.register.title")}</h1>
+      <h1 className={styles.registerTitle}>{t("auth.register.title")}</h1>
 
-          {error ? (
-            <Notification
-              variant="error"
-              size="small"
-              message={error}
-              onClose={() => setError("")}
-              closeLabel={t("common.close")}
-              className={styles.registerInlineToast}
+      {error ? (
+        <Notification
+          variant="error"
+          size="small"
+          message={error}
+          onClose={() => setError("")}
+          closeLabel={t("common.close")}
+          className={styles.registerInlineToast}
+        />
+      ) : null}
+
+      <form className={styles.registerBlock} onSubmit={handleSubmit} noValidate>
+        <FormField
+          className={styles.field}
+          label={t("auth.register.phoneLabel")}
+          error={fieldErrors.phone}
+          errorId="register-phone-error"
+        >
+          <TextField
+            type="text"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="+380991234567"
+            autoComplete="tel"
+            inputMode="tel"
+            maxLength={PHONE_MAX_LENGTH}
+            required
+            onBlur={handleBlur}
+            aria-invalid={fieldErrors.phone ? "true" : "false"}
+            aria-describedby={
+              fieldErrors.phone ? "register-phone-error" : undefined
+            }
+            className={
+              fieldErrors.phone ? styles.fieldControlInvalid : undefined
+            }
+          />
+        </FormField>
+
+        <FormField
+          className={styles.field}
+          label={t("auth.register.emailLabel")}
+          error={fieldErrors.email}
+          errorId="register-email-error"
+        >
+          <TextField
+            type="text"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="name@example.com"
+            autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            inputMode="email"
+            maxLength={EMAIL_MAX_LENGTH}
+            spellCheck={false}
+            required
+            onBlur={handleBlur}
+            aria-invalid={fieldErrors.email ? "true" : "false"}
+            aria-describedby={
+              fieldErrors.email ? "register-email-error" : undefined
+            }
+            className={
+              fieldErrors.email ? styles.fieldControlInvalid : undefined
+            }
+          />
+        </FormField>
+
+        <FormField
+          className={styles.field}
+          label={t("auth.register.passwordLabel")}
+          error={fieldErrors.password}
+          errorId="register-password-error"
+        >
+          <TextField
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            autoComplete="new-password"
+            maxLength={PASSWORD_MAX_LENGTH}
+            required
+            passwordToggle
+            showPasswordLabel={t("common.password.show")}
+            hidePasswordLabel={t("common.password.hide")}
+            onBlur={handleBlur}
+            aria-invalid={fieldErrors.password ? "true" : "false"}
+            aria-describedby={
+              fieldErrors.password ? "register-password-error" : undefined
+            }
+            className={
+              fieldErrors.password ? styles.fieldControlInvalid : undefined
+            }
+          />
+        </FormField>
+
+        <div className={styles.passwordBlock}>
+          <FormField
+            className={styles.field}
+            label={t("auth.register.confirmPasswordLabel")}
+            error={fieldErrors.confirmPassword}
+            errorId="register-confirm-password-error"
+          >
+            <TextField
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              autoComplete="new-password"
+              maxLength={PASSWORD_MAX_LENGTH}
+              required
+              passwordToggle
+              showPasswordLabel={t("common.password.show")}
+              hidePasswordLabel={t("common.password.hide")}
+              onBlur={handleBlur}
+              aria-invalid={fieldErrors.confirmPassword ? "true" : "false"}
+              aria-describedby={
+                fieldErrors.confirmPassword
+                  ? "register-confirm-password-error"
+                  : undefined
+              }
+              className={
+                fieldErrors.confirmPassword
+                  ? styles.fieldControlInvalid
+                  : undefined
+              }
             />
-          ) : null}
+          </FormField>
 
-          <form className={styles.registerBlock} onSubmit={handleSubmit} noValidate>
+          <div className={styles.hint}>{t("auth.register.passwordHint")}</div>
+        </div>
 
-            <FormField
-              className={styles.field}
-              label={t("auth.register.phoneLabel")}
-              error={fieldErrors.phone}
-              errorId="register-phone-error"
-            >
-              <TextField
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="+380991234567"
-                autoComplete="tel"
-                inputMode="tel"
-                maxLength={PHONE_MAX_LENGTH}
-                required
-                onBlur={handleBlur}
-                aria-invalid={fieldErrors.phone ? "true" : "false"}
-                aria-describedby={fieldErrors.phone ? "register-phone-error" : undefined}
-                className={fieldErrors.phone ? styles.fieldControlInvalid : undefined}
+        <div className={styles.registerActions}>
+          <div className={styles.buttonRegister}>
+            <Button
+              text={
+                isLoading
+                  ? t("auth.register.submitLoading")
+                  : t("auth.register.submit")
+              }
+              variant="primary"
+              type="submit"
+              disabled={isBusy}
+              onClick={() => {}}
+            />
+          </div>
+
+          <div className={styles.registerFooterRow}>
+            <div className={styles.socialRowRegister}>
+              <GoogleAuthButton
+                intent="register"
+                disabled={isLoading}
+                onBusyChange={setIsGoogleLoading}
+                onSuccess={() => {
+                  void handlePostAuthSuccess();
+                }}
               />
-            </FormField>
-
-            <FormField
-              className={styles.field}
-              label={t("auth.register.emailLabel")}
-              error={fieldErrors.email}
-              errorId="register-email-error"
-            >
-              <TextField
-                type="text"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                autoComplete="email"
-                autoCapitalize="none"
-                autoCorrect="off"
-                inputMode="email"
-                maxLength={EMAIL_MAX_LENGTH}
-                spellCheck={false}
-                required
-                onBlur={handleBlur}
-                aria-invalid={fieldErrors.email ? "true" : "false"}
-                aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
-                className={fieldErrors.email ? styles.fieldControlInvalid : undefined}
-              />
-            </FormField>
-
-            <FormField
-              className={styles.field}
-              label={t("auth.register.passwordLabel")}
-              error={fieldErrors.password}
-              errorId="register-password-error"
-            >
-              <TextField
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                autoComplete="new-password"
-                maxLength={PASSWORD_MAX_LENGTH}
-                required
-                passwordToggle
-                showPasswordLabel={t("common.password.show")}
-                hidePasswordLabel={t("common.password.hide")}
-                onBlur={handleBlur}
-                aria-invalid={fieldErrors.password ? "true" : "false"}
-                aria-describedby={fieldErrors.password ? "register-password-error" : undefined}
-                className={fieldErrors.password ? styles.fieldControlInvalid : undefined}
-              />
-            </FormField>
-
-            <div className={styles.passwordBlock}>
-              <FormField
-                className={styles.field}
-                label={t("auth.register.confirmPasswordLabel")}
-                error={fieldErrors.confirmPassword}
-                errorId="register-confirm-password-error"
-              >
-                <TextField
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  autoComplete="new-password"
-                  maxLength={PASSWORD_MAX_LENGTH}
-                  required
-                  passwordToggle
-                  showPasswordLabel={t("common.password.show")}
-                  hidePasswordLabel={t("common.password.hide")}
-                  onBlur={handleBlur}
-                  aria-invalid={fieldErrors.confirmPassword ? "true" : "false"}
-                  aria-describedby={fieldErrors.confirmPassword ? "register-confirm-password-error" : undefined}
-                  className={fieldErrors.confirmPassword ? styles.fieldControlInvalid : undefined}
-                />
-              </FormField>
-
-              <div className={styles.hint}>
-                {t("auth.register.passwordHint")}
-              </div>
             </div>
 
-            <div className={styles.registerActions}>
-              <div className={styles.buttonRegister}>
-                <Button
-                  text={isLoading ? t("auth.register.submitLoading") : t("auth.register.submit")}
-                  variant="primary"
-                  type="submit"
-                  disabled={isBusy}
-                  onClick={() => {}}
-                />
-              </div>
-
-              <div className={styles.registerFooterRow}>
-                <div className={styles.socialRowRegister}>
-                  <GoogleAuthButton
-                    intent="register"
-                    disabled={isLoading}
-                    onBusyChange={setIsGoogleLoading}
-                    onSuccess={() => {
-                      void handlePostAuthSuccess();
-                    }}
-                  />
-                </div>
-
-                <button
-                  className={styles.underLink}
-                  type="button"
-                  onClick={() => router.replace(resolveHref("/login"))}
-                >
-                  {t("auth.register.existingAccount")}
-                </button>
-              </div>
-            </div>
-          </form>
+            <button
+              className={styles.underLink}
+              type="button"
+              onClick={() => router.replace(resolveHref("/login"))}
+            >
+              {t("auth.register.existingAccount")}
+            </button>
+          </div>
+        </div>
+      </form>
     </AuthShell>
   );
 }
