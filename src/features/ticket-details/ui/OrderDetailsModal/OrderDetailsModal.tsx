@@ -52,14 +52,14 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
     };
   }, [onClose]);
 
-  const bookingNumberStr = ticket.bookingNumber
-    .replace("BR-", "")
-    .padStart(6, "0");
+  const bookingNumberStr = ticket.bookingNumber;
   const route = `${ticket.routeFrom} - ${ticket.routeTo}`;
   const statusLabel =
     ticket.status === "booked"
       ? t("dispatcherArea.tickets.statuses.booked")
-      : t("dispatcherArea.tickets.statuses.paid");
+      : ticket.status === "paid"
+        ? t("dispatcherArea.tickets.statuses.paid")
+        : t("dispatcherArea.tickets.statuses.cancelled");
 
   return (
     <ModalFrame
@@ -68,85 +68,81 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
       usePortal
       surfaceClassName={styles.modalFrame}
     >
-          <div className={styles.header}>
-            <h2 className={styles.title} id="order-details-title">
-              {t("dispatcherArea.tickets.modal.orderDetailsTitle")} №
-              {bookingNumberStr}
-            </h2>
-            <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
-          </div>
+      <div className={styles.header}>
+        <h2 className={styles.title} id="order-details-title">
+          {t("dispatcherArea.tickets.modal.orderDetailsTitle")} №
+          {bookingNumberStr}
+        </h2>
+        <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
+      </div>
 
-          <div className={styles.body}>
-            <Row
-              icon={
-                <Icon src="/icons/account/archive/clarity_avatar-line.svg" />
-              }
-            >
-              {ticket.passengerName}
-            </Row>
-            <Row icon={<Icon src="/icons/account/archive/phone.svg" />}>
-              {ticket.passengerPhone}
-            </Row>
-            <Row icon={<Icon src="/icons/Footer/map-point.svg" />}>{route}</Row>
-            <Row icon={<Icon src="/icons/calendar.svg" />}>
-              {ticket.departureDate}
-            </Row>
-            <Row icon={<Icon src="/icons/Footer/clock.svg" />}>
-              {ticket.departureTime}
-            </Row>
-            <Row
-              icon={<Icon src="/icons/account/archive/ticket-outline.svg" />}
-            >
-              {ticket.ticketCount}
-            </Row>
-            <Row icon={<Icon src="/icons/currency-hryvnia.svg" />}>
-              {ticket.totalPrice}
-            </Row>
+      <div className={styles.body}>
+        <Row
+          icon={<Icon src="/icons/account/archive/clarity_avatar-line.svg" />}
+        >
+          {ticket.passengerName}
+        </Row>
+        <Row icon={<Icon src="/icons/account/archive/phone.svg" />}>
+          {ticket.passengerPhone}
+        </Row>
+        <Row icon={<Icon src="/icons/Footer/map-point.svg" />}>{route}</Row>
+        <Row icon={<Icon src="/icons/calendar.svg" />}>
+          {ticket.departureDate}
+        </Row>
+        <Row icon={<Icon src="/icons/Footer/clock.svg" />}>
+          {ticket.departureTime}
+        </Row>
+        <Row icon={<Icon src="/icons/account/archive/ticket-outline.svg" />}>
+          {ticket.ticketCount}
+        </Row>
+        <Row icon={<Icon src="/icons/currency-hryvnia.svg" />}>
+          {ticket.totalPrice}
+        </Row>
 
-            <div className={styles.metaRow}>
-              <span className={styles.metaLabel}>
-                {t("dispatcherArea.routes.table.columns.status")}:
-              </span>
-              <span className={styles.metaValue}>{statusLabel}</span>
-            </div>
+        <div className={styles.metaRow}>
+          <span className={styles.metaLabel}>
+            {t("dispatcherArea.routes.table.columns.status")}:
+          </span>
+          <span className={styles.metaValue}>{statusLabel}</span>
+        </div>
 
-            <div className={styles.metaRow}>
-              <span className={styles.metaLabel}>
-                {t("dispatcherArea.tickets.timer.untilBookingEnd")}:
-              </span>
-              <span className={styles.metaValue}>
-                {remainingSeconds !== null
-                  ? `${formatSeconds(remainingSeconds)} ${t("dispatcherArea.tickets.timer.minutes")}`
-                  : "—"}
-              </span>
-            </div>
+        <div className={styles.metaRow}>
+          <span className={styles.metaLabel}>
+            {t("dispatcherArea.tickets.timer.untilBookingEnd")}:
+          </span>
+          <span className={styles.metaValue}>
+            {remainingSeconds !== null
+              ? `${formatSeconds(remainingSeconds)} ${t("dispatcherArea.tickets.timer.minutes")}`
+              : "—"}
+          </span>
+        </div>
 
-            <div className={styles.actions}>
-              <Button
-                text={t("dispatcherArea.tickets.actions.buy")}
-                variant="success"
-                onClick={() => {}}
-              />
-              <Button
-                text={t("ticketBooking.form.reserve")}
-                variant="yellow"
-                onClick={() => {}}
-              />
-              <Button
-                text={t("dispatcherArea.routes.table.statuses.edit")}
-                variant="outlined"
-                onClick={() => {
-                  onEdit?.();
-                  onClose();
-                }}
-              />
-              <Button
-                text={t("dispatcherArea.tickets.actions.cancel")}
-                variant="danger"
-                onClick={onClose}
-              />
-            </div>
-          </div>
+        <div className={styles.actions}>
+          <Button
+            text={t("dispatcherArea.tickets.actions.buy")}
+            variant="success"
+            onClick={() => {}}
+          />
+          <Button
+            text={t("ticketBooking.form.reserve")}
+            variant="yellow"
+            onClick={() => {}}
+          />
+          <Button
+            text={t("dispatcherArea.routes.table.statuses.edit")}
+            variant="outlined"
+            onClick={() => {
+              onEdit?.();
+              onClose();
+            }}
+          />
+          <Button
+            text={t("dispatcherArea.tickets.actions.cancel")}
+            variant="danger"
+            onClick={onClose}
+          />
+        </div>
+      </div>
     </ModalFrame>
   );
 }

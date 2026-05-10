@@ -47,6 +47,7 @@ export default function TicketsPage() {
           routeInfo={
             ticketToEdit
               ? {
+                  bookingNumber: ticketToEdit.bookingNumber,
                   passengerName: ticketToEdit.passengerName,
                   passengerPhone: ticketToEdit.passengerPhone,
                   route: `${ticketToEdit.routeFrom} - ${ticketToEdit.routeTo}`,

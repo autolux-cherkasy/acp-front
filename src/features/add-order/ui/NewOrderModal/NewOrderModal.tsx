@@ -25,6 +25,7 @@ type FormState = {
   ticketCount: string;
   totalPrice: string;
   status: TicketStatus;
+  bookingNumber?: string;
 };
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
@@ -70,7 +71,7 @@ export default function NewOrderModal({
     status: routeInfo?.status ?? "booked",
   });
 
-  const bookingNumberStr = String(nextBookingNumber).padStart(6, "0");
+  const bookingNumberStr = routeInfo?.bookingNumber ?? String(nextBookingNumber).padStart(6, "0");
 
   function setField(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));

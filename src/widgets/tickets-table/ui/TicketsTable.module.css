@@ -47,7 +47,7 @@
 }
 
 .td {
-  padding: 14px 16px;
+  padding: 10px 14px;
   color: var(--color-text-strong);
   vertical-align: middle;
   border-bottom: 1px solid var(--color-surface-accent);
