@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { resetPassword } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
+import FormField from "@/src/shared/ui/FormField/FormField";
 import Notification from "@/src/shared/ui/Notification/Notification";
 import PasswordRecoveryShell from "@/src/widgets/password-recovery-shell/ui/PasswordRecoveryShell";
 import styles from "@/src/widgets/password-recovery-shell/ui/password-recovery-shell.module.css";
@@ -121,8 +122,10 @@ export default function ResetPasswordPage({
         </div>
       ) : (
         <form className={styles.form} onSubmit={handleSubmit}>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("auth.resetPassword.newPasswordLabel")}</span>
+          <FormField
+            className={styles.field}
+            label={t("auth.resetPassword.newPasswordLabel")}
+          >
             <TextField
               type="password"
               name="newPassword"
@@ -140,10 +143,12 @@ export default function ResetPasswordPage({
               showPasswordLabel={t("common.password.show")}
               hidePasswordLabel={t("common.password.hide")}
             />
-          </label>
+          </FormField>
 
-          <label className={styles.field}>
-            <span className={styles.label}>{t("auth.resetPassword.confirmPasswordLabel")}</span>
+          <FormField
+            className={styles.field}
+            label={t("auth.resetPassword.confirmPasswordLabel")}
+          >
             <TextField
               type="password"
               name="confirmPassword"
@@ -161,7 +166,7 @@ export default function ResetPasswordPage({
               showPasswordLabel={t("common.password.show")}
               hidePasswordLabel={t("common.password.hide")}
             />
-          </label>
+          </FormField>
 
           <p className={styles.helperText}>{t("auth.resetPassword.passwordHint")}</p>
 

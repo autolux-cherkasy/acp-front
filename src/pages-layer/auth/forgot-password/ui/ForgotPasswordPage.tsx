@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
@@ -9,6 +8,7 @@ import { forgotPassword, usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
 import Button from "@/src/shared/ui/Button/Button";
+import FormField from "@/src/shared/ui/FormField/FormField";
 import TextField from "@/src/shared/ui/TextField/TextField";
 import Notification from "@/src/shared/ui/Notification/Notification";
 import PasswordRecoveryShell from "@/src/widgets/password-recovery-shell/ui/PasswordRecoveryShell";
@@ -37,7 +37,8 @@ export default function ForgotPasswordPage({
 
   const rememberedPassword = raw("auth.forgotPassword.rememberedPassword");
   const loginAction =
-    raw("auth.forgotPassword.loginAction") ?? raw("auth.resetPassword.loginAction");
+    raw("auth.forgotPassword.loginAction") ??
+    raw("auth.resetPassword.loginAction");
   const loginButtonText =
     typeof rememberedPassword === "string" && typeof loginAction === "string"
       ? `${rememberedPassword} ${loginAction}`
@@ -73,7 +74,10 @@ export default function ForgotPasswordPage({
     } catch (error) {
       setFeedback({
         variant: "error",
-        message: error instanceof Error ? error.message : t("auth.forgotPassword.errors.generic"),
+        message:
+          error instanceof Error
+            ? error.message
+            : t("auth.forgotPassword.errors.generic"),
       });
     } finally {
       setIsLoading(false);
@@ -91,7 +95,10 @@ export default function ForgotPasswordPage({
       asideClassName={styles.compactAside}
       cardClassName={styles.compactCard}
     >
-      <form className={`${styles.form} ${styles.compactForm}`} onSubmit={handleSubmit}>
+      <form
+        className={`${styles.form} ${styles.compactForm}`}
+        onSubmit={handleSubmit}
+      >
         <div className={styles.formSection}>
           {feedback ? (
             <Notification
@@ -104,8 +111,10 @@ export default function ForgotPasswordPage({
             />
           ) : null}
 
-          <label className={styles.field}>
-            <span className={styles.label}>{t("auth.forgotPassword.emailLabel")}</span>
+          <FormField
+            className={styles.field}
+            label={t("auth.forgotPassword.emailLabel")}
+          >
             <TextField
               type="email"
               name="email"
@@ -120,17 +129,9 @@ export default function ForgotPasswordPage({
               placeholder="name@example.com"
               required
               disabled={isLoading}
-              leadingAdornment={
-                <Image
-                  src="/icons/Footer/email.svg"
-                  alt=""
-                  width={18}
-                  height={18}
-                  aria-hidden="true"
-                />
-              }
+              leadingAdornment={"/icons/Footer/email.svg"}
             />
-          </label>
+          </FormField>
         </div>
 
         <div className={`${styles.actions} ${styles.compactActions}`}>

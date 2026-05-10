@@ -8,6 +8,7 @@ import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
 import { register, usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
+import FormField from "@/src/shared/ui/FormField/FormField";
 import TextField from "@/src/shared/ui/TextField/TextField";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
 import Notification from "@/src/shared/ui/Notification/Notification";
@@ -231,8 +232,12 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
 
           <form className={styles.registerBlock} onSubmit={handleSubmit} noValidate>
 
-            <label className={styles.field}>
-              <span className={styles.label}>{t("auth.register.phoneLabel")}</span>
+            <FormField
+              className={styles.field}
+              label={t("auth.register.phoneLabel")}
+              error={fieldErrors.phone}
+              errorId="register-phone-error"
+            >
               <TextField
                 type="text"
                 name="phone"
@@ -248,15 +253,14 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
                 aria-describedby={fieldErrors.phone ? "register-phone-error" : undefined}
                 className={fieldErrors.phone ? styles.fieldControlInvalid : undefined}
               />
-              {fieldErrors.phone ? (
-                <span id="register-phone-error" className={styles.fieldErrorText} role="alert">
-                  {fieldErrors.phone}
-                </span>
-              ) : null}
-            </label>
+            </FormField>
 
-            <label className={styles.field}>
-              <span className={styles.label}>{t("auth.register.emailLabel")}</span>
+            <FormField
+              className={styles.field}
+              label={t("auth.register.emailLabel")}
+              error={fieldErrors.email}
+              errorId="register-email-error"
+            >
               <TextField
                 type="text"
                 name="email"
@@ -274,15 +278,14 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
                 aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
                 className={fieldErrors.email ? styles.fieldControlInvalid : undefined}
               />
-              {fieldErrors.email ? (
-                <span id="register-email-error" className={styles.fieldErrorText} role="alert">
-                  {fieldErrors.email}
-                </span>
-              ) : null}
-            </label>
+            </FormField>
 
-            <div className={styles.field}>
-              <span className={styles.label}>{t("auth.register.passwordLabel")}</span>
+            <FormField
+              className={styles.field}
+              label={t("auth.register.passwordLabel")}
+              error={fieldErrors.password}
+              errorId="register-password-error"
+            >
               <TextField
                 type="password"
                 name="password"
@@ -299,16 +302,15 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
                 aria-describedby={fieldErrors.password ? "register-password-error" : undefined}
                 className={fieldErrors.password ? styles.fieldControlInvalid : undefined}
               />
-              {fieldErrors.password ? (
-                <span id="register-password-error" className={styles.fieldErrorText} role="alert">
-                  {fieldErrors.password}
-                </span>
-              ) : null}
-            </div>
+            </FormField>
 
             <div className={styles.passwordBlock}>
-              <div className={styles.field}>
-                <span className={styles.label}>{t("auth.register.confirmPasswordLabel")}</span>
+              <FormField
+                className={styles.field}
+                label={t("auth.register.confirmPasswordLabel")}
+                error={fieldErrors.confirmPassword}
+                errorId="register-confirm-password-error"
+              >
                 <TextField
                   type="password"
                   name="confirmPassword"
@@ -325,16 +327,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
                   aria-describedby={fieldErrors.confirmPassword ? "register-confirm-password-error" : undefined}
                   className={fieldErrors.confirmPassword ? styles.fieldControlInvalid : undefined}
                 />
-                {fieldErrors.confirmPassword ? (
-                  <span
-                    id="register-confirm-password-error"
-                    className={styles.fieldErrorText}
-                    role="alert"
-                  >
-                    {fieldErrors.confirmPassword}
-                  </span>
-                ) : null}
-              </div>
+              </FormField>
 
               <div className={styles.hint}>
                 {t("auth.register.passwordHint")}
