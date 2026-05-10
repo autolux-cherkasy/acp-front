@@ -30,10 +30,8 @@
 }
 
 .dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  z-index: 10;
+  position: fixed;
+  z-index: 1000;
   width: 172px;
   background: var(--color-white);
   border: 2px solid var(--color-brand);
@@ -43,11 +41,6 @@
   padding: 0;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(17, 49, 61, 0.3);
-}
-
-.dropdownAbove {
-  top: auto;
-  bottom: calc(100% + 4px);
 }
 
 .dropdownItem {
