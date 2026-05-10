@@ -1,25 +1,46 @@
 .root {
   position: relative;
   width: 100%;
-  min-height: 44px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .host {
-  width: auto;
-  min-width: fit-content;
-  min-height: 44px;
+  width: 100%;
+  min-width: 100%;
+  min-height: 40px;
   display: flex;
   gap: 5px;
   align-items: center;
   justify-content: center;
   padding: 10px 8px;
-  background-color: transparent;
+  background-color: #7b98a326;
   border: none;
+  border-radius: 12px;
   margin-inline: auto;
   color: var(--color-text-strong);
+  cursor: pointer;
+  box-shadow: none;
+  transition:
+    background-color 300ms ease-out,
+    box-shadow 300ms ease-out,
+    filter 300ms ease-out,
+    transform 300ms ease-out,
+    opacity 300ms ease-out;
+}
+
+.host:hover:not(:disabled):not(:active) {
+  box-shadow: 0 0 6px 0 rgba(123, 152, 163, 0.7);
+  filter: none;
+}
+
+.host:active:not(:disabled) {
+  background-color: rgba(123, 152, 163, 0.24);
+  transform: translateY(1px);
+  box-shadow: none;
+  filter: none;
 }
 
 .googleIcon {
@@ -48,8 +69,13 @@
 }
 
 .disabled {
-  pointer-events: none;
-  opacity: 0.7;
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.host:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
 }
 
 .overlay {

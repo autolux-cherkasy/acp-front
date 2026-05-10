@@ -109,14 +109,15 @@ export default function GoogleAuthButton({
     };
   }, [intent, t]);
 
-  const rootClassName = `${styles.root} ${disabled || isSubmitting ? styles.disabled : ""}`.trim();
+  const isButtonDisabled = disabled || isSubmitting || !isReady;
+  const buttonClassName = `${styles.host} ${isButtonDisabled ? styles.disabled : ""}`.trim();
 
   return (
-    <div className={rootClassName} aria-busy={isSubmitting}>
+    <div className={styles.root} aria-busy={isSubmitting}>
       <button
-        className={styles.host}
+        className={buttonClassName}
         onClick={() => window.google?.accounts?.id?.prompt()}
-        disabled={disabled || isSubmitting || !isReady}
+        disabled={isButtonDisabled}
       >
         {getGoogleButtonText(intent)}
         <Image
