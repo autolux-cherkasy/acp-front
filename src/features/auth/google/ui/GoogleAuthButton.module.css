@@ -1,7 +1,7 @@
 .root {
   position: relative;
   width: 100%;
-  min-height: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,12 +10,12 @@
 .host {
   width: 100%;
   min-width: 100%;
-  min-height: 40px;
+  height: 40px;
   display: flex;
   gap: 5px;
   align-items: center;
   justify-content: center;
-  padding: 10px 8px;
+  padding: 8px;
   background-color: #7b98a326;
   border: none;
   border-radius: 12px;

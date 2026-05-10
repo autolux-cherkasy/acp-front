@@ -291,12 +291,7 @@
 }
 
 .cardOverlay::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 96px;
-  background: linear-gradient(180deg, rgba(201, 228, 231, 0.74) 0%, rgba(201, 228, 231, 0) 100%);
-  pointer-events: none;
+  content: none;
 }
 
 @media (max-width: 1239px) {
