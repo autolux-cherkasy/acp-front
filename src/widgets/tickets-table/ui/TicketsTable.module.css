@@ -59,6 +59,11 @@
 
 /* Passenger cell */
 
+.bookingNumber {
+  font-weight: 600;
+  margin-bottom: 1px;
+}
+
 .passengerName {
   font-weight: 400;
   margin-bottom: 3px;

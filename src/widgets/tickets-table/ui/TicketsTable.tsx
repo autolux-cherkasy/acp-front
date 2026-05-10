@@ -83,6 +83,7 @@ function TicketRow({ ticket, rowNumber, locale, onDetails }: TicketRowProps) {
       </td>
 
       <td className={styles.td}>
+        <div className={styles.bookingNumber}>№ {ticket.bookingNumber}</div>
         <div className={styles.passengerName}>{ticket.passengerName}</div>
         <div className={styles.passengerPhone}>{ticket.passengerPhone}</div>
       </td>
