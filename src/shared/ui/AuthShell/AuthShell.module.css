@@ -1,6 +1,6 @@
 .shell {
   --auth-shell-width: 904px;
-  --auth-shell-height: 602px;
+  --auth-shell-min-height: 602px;
   --auth-banner-width: 998.04px;
   --auth-banner-height: 200px;
   --auth-banner-top: -84.66px;
@@ -46,7 +46,8 @@
   --auth-card-border: 1px solid rgba(201, 228, 231, 0.9);
   position: relative;
   width: var(--auth-shell-width);
-  height: var(--auth-shell-height);
+  min-height: var(--auth-shell-min-height);
+  height: auto;
   max-width: 100%;
   margin: 0 auto;
   border-radius: 12px;
@@ -117,7 +118,7 @@
 }
 
 .login {
-  --auth-shell-height: 540px;
+  --auth-shell-min-height: 540px;
   --auth-banner-height: 210px;
   --auth-banner-top: -64.66px;
   --auth-overlay-bg: rgba(34, 96, 120, 0.7);
@@ -140,24 +141,32 @@
 }
 
 .register {
-  --auth-shell-height: 612px;
+  --auth-shell-min-height: 0;
   --auth-banner-height: 170px;
   --auth-banner-top: -40.76px;
   --auth-banner-left: -55.27px;
-  --auth-content-min-height: 532px;
-  --auth-aside-min-height: 532px;
-  --auth-card-min-height: 532px;
+  --auth-content-min-height: 0;
+  --auth-aside-min-height: 0;
+  --auth-card-min-height: 0;
+}
+
+.register .content {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  margin: 40px auto;
 }
 
 .recovery {
-  --auth-shell-height: 602px;
+  --auth-shell-min-height: 602px;
   --auth-banner-height: 200px;
   --auth-banner-top: -84.66px;
   --auth-banner-left: -60.26px;
 }
 
 .compact {
-  --auth-shell-height: 544px;
+  --auth-shell-min-height: 544px;
   --auth-content-top: 30px;
   --auth-content-min-height: 472px;
   --auth-aside-min-height: 472px;
@@ -292,7 +301,7 @@
 
 @media (max-width: 1239px) {
   .compact {
-    --auth-shell-height: 560px;
+    --auth-shell-min-height: 560px;
     --auth-content-min-height: 480px;
     --auth-aside-min-height: 480px;
     --auth-card-min-height: 480px;
@@ -346,7 +355,7 @@
 
 @media (max-width: 767px) {
   .compact {
-    --auth-shell-height: auto;
+    --auth-shell-min-height: 0;
     --auth-content-min-height: 0;
     --auth-aside-min-height: 0;
     --auth-card-min-height: 0;

@@ -37,7 +37,12 @@ const COMMON_EMAIL_DOMAIN_TYPOS = new Set([
   "icloud.con",
 ]);
 
-const REGISTER_FIELDS: RegisterField[] = ["phone", "email", "password", "confirmPassword"];
+const REGISTER_FIELDS: RegisterField[] = [
+  "phone",
+  "email",
+  "password",
+  "confirmPassword",
+];
 
 function includesAny(value: string, variants: readonly string[]) {
   return variants.some((variant) => value.includes(variant));
@@ -52,12 +57,18 @@ function hasKnownEmailDomainTypo(email: string) {
   return COMMON_EMAIL_DOMAIN_TYPOS.has(domain);
 }
 
-export function sanitizeRegisterFieldInput(field: RegisterField, value: string) {
+export function sanitizeRegisterFieldInput(
+  field: RegisterField,
+  value: string,
+) {
   switch (field) {
     case "phone": {
       const hasLeadingPlus = value.startsWith("+");
       const digitsOnly = value.replace(/\D/g, "");
-      return `${hasLeadingPlus ? "+" : ""}${digitsOnly}`.slice(0, PHONE_MAX_LENGTH);
+      return `${hasLeadingPlus ? "+" : ""}${digitsOnly}`.slice(
+        0,
+        PHONE_MAX_LENGTH,
+      );
     }
     case "email": {
       let hasAtSymbol = false;
@@ -146,8 +157,15 @@ export function validateRegisterField(
   }
 }
 
-export function validateRegisterForm(formData: RegisterFormData, t: Translate): RegisterFieldErrors {
+export function validateRegisterForm(
+  formData: RegisterFormData,
+  t: Translate,
+): RegisterFieldErrors {
   return REGISTER_FIELDS.reduce<RegisterFieldErrors>((errors, field) => {
+    if (Object.keys(errors).length > 0) {
+      return errors;
+    }
+
     const error = validateRegisterField(field, formData, t);
 
     if (error) {
@@ -156,6 +174,20 @@ export function validateRegisterForm(formData: RegisterFormData, t: Translate): 
 
     return errors;
   }, {});
+}
+
+function pickHighestPriorityFieldError(
+  fieldErrors: RegisterFieldErrors,
+): RegisterFieldErrors {
+  for (const field of REGISTER_FIELDS) {
+    const message = fieldErrors[field];
+
+    if (message) {
+      return { [field]: message };
+    }
+  }
+
+  return {};
 }
 
 type FieldMatch = {
@@ -170,60 +202,137 @@ function splitServerValidationMessage(message: string) {
     .filter(Boolean);
 }
 
-function mapSingleServerError(message: string, t: Translate): FieldMatch | null {
+function mapSingleServerError(
+  message: string,
+  t: Translate,
+): FieldMatch | null {
   const normalized = message.trim().toLowerCase();
 
   if (!normalized) {
     return null;
   }
 
-  const mentionsEmail = includesAny(normalized, ["email", "e-mail", "імейл", "имейл", "почт"]);
+  const mentionsEmail = includesAny(normalized, [
+    "email",
+    "e-mail",
+    "імейл",
+    "имейл",
+    "почт",
+  ]);
   const mentionsPhone = includesAny(normalized, ["phone", "телефон", "номер"]);
   const mentionsPassword = includesAny(normalized, ["password", "парол"]);
 
   if (
-    mentionsEmail
-    && includesAny(normalized, ["already", "exists", "taken", "зареєстр", "зарегистр", "существ", "використ", "использ", "unique"])
+    mentionsEmail &&
+    includesAny(normalized, [
+      "already",
+      "exists",
+      "taken",
+      "зареєстр",
+      "зарегистр",
+      "существ",
+      "використ",
+      "использ",
+      "unique",
+    ])
   ) {
     return { field: "email", message: t("auth.register.errors.emailExists") };
   }
 
   if (
-    mentionsPhone
-    && includesAny(normalized, ["already", "exists", "taken", "зареєстр", "зарегистр", "существ", "використ", "использ", "unique"])
+    mentionsPhone &&
+    includesAny(normalized, [
+      "already",
+      "exists",
+      "taken",
+      "зареєстр",
+      "зарегистр",
+      "существ",
+      "використ",
+      "использ",
+      "unique",
+    ])
   ) {
     return { field: "phone", message: t("auth.register.errors.phoneExists") };
   }
 
-  if (mentionsEmail && includesAny(normalized, ["required", "empty", "обов", "обяз", "should not be empty"])) {
+  if (
+    mentionsEmail &&
+    includesAny(normalized, [
+      "required",
+      "empty",
+      "обов",
+      "обяз",
+      "should not be empty",
+    ])
+  ) {
     return { field: "email", message: t("auth.register.errors.emailRequired") };
   }
 
-  if (mentionsPhone && includesAny(normalized, ["required", "empty", "обов", "обяз", "should not be empty"])) {
+  if (
+    mentionsPhone &&
+    includesAny(normalized, [
+      "required",
+      "empty",
+      "обов",
+      "обяз",
+      "should not be empty",
+    ])
+  ) {
     return { field: "phone", message: t("auth.register.errors.phoneRequired") };
   }
 
-  if (mentionsPassword && includesAny(normalized, ["required", "empty", "обов", "обяз", "should not be empty"])) {
-    return { field: "password", message: t("auth.register.errors.passwordRequired") };
+  if (
+    mentionsPassword &&
+    includesAny(normalized, [
+      "required",
+      "empty",
+      "обов",
+      "обяз",
+      "should not be empty",
+    ])
+  ) {
+    return {
+      field: "password",
+      message: t("auth.register.errors.passwordRequired"),
+    };
   }
 
   if (
-    mentionsEmail
-    && includesAny(normalized, ["invalid", "must be an email", "некор", "невер", "валид", "format", "email"])
+    mentionsEmail &&
+    includesAny(normalized, [
+      "invalid",
+      "must be an email",
+      "некор",
+      "невер",
+      "валид",
+      "format",
+      "email",
+    ])
   ) {
     return { field: "email", message: t("auth.register.errors.emailInvalid") };
   }
 
   if (
-    mentionsPhone
-    && includesAny(normalized, ["invalid", "format", "pattern", "regexp", "regular expression", "match", "некор", "невер", "валид"])
+    mentionsPhone &&
+    includesAny(normalized, [
+      "invalid",
+      "format",
+      "pattern",
+      "regexp",
+      "regular expression",
+      "match",
+      "некор",
+      "невер",
+      "валид",
+    ])
   ) {
     return { field: "phone", message: t("auth.register.errors.phoneFormat") };
   }
 
   if (
-    mentionsPassword
-    && includesAny(normalized, [
+    mentionsPassword &&
+    includesAny(normalized, [
       "at least 8",
       "uppercase",
       "digit",
@@ -239,14 +348,20 @@ function mapSingleServerError(message: string, t: Translate): FieldMatch | null 
       "strong enough",
     ])
   ) {
-    return { field: "password", message: t("auth.register.errors.passwordFormat") };
+    return {
+      field: "password",
+      message: t("auth.register.errors.passwordFormat"),
+    };
   }
 
   if (
-    mentionsPassword
-    && includesAny(normalized, ["match", "совпад", "співпад", "same"])
+    mentionsPassword &&
+    includesAny(normalized, ["match", "совпад", "співпад", "same"])
   ) {
-    return { field: "confirmPassword", message: t("auth.register.errors.passwordMismatch") };
+    return {
+      field: "confirmPassword",
+      message: t("auth.register.errors.passwordMismatch"),
+    };
   }
 
   return null;
@@ -261,19 +376,22 @@ export function mapRegisterServerError(
 } {
   const segments = splitServerValidationMessage(message);
 
-  const fieldErrors = segments.reduce<RegisterFieldErrors>((errors, segment) => {
-    const mapped = mapSingleServerError(segment, t);
+  const fieldErrors = segments.reduce<RegisterFieldErrors>(
+    (errors, segment) => {
+      const mapped = mapSingleServerError(segment, t);
 
-    if (mapped) {
-      errors[mapped.field] = mapped.message;
-    }
+      if (mapped) {
+        errors[mapped.field] = mapped.message;
+      }
 
-    return errors;
-  }, {});
+      return errors;
+    },
+    {},
+  );
 
   if (Object.keys(fieldErrors).length > 0) {
     return {
-      fieldErrors,
+      fieldErrors: pickHighestPriorityFieldError(fieldErrors),
       formError: "",
     };
   }

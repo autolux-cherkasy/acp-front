@@ -11,7 +11,7 @@ export default function AuthModalLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <ModalFrame onClose={close} variant="route" surfaceOverflow="visible">
+    <ModalFrame onClose={close} variant="route">
         {children}
     </ModalFrame>
   );

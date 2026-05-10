@@ -22,7 +22,6 @@ import {
   type RegisterField,
   type RegisterFieldErrors,
   type RegisterFormData,
-  validateRegisterField,
   validateRegisterForm,
 } from "../model/validation";
 
@@ -68,36 +67,13 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
 
     setFormData((prev) => {
       const nextFormData = { ...prev, [field]: sanitizedValue };
+      const hasTouchedFields = Object.keys(touchedFields).length > 0;
 
-      setFieldErrors((currentErrors) => {
-        const nextErrors = { ...currentErrors };
-
-        if (touchedFields[field]) {
-          const nextFieldError = validateRegisterField(field, nextFormData, t);
-
-          if (nextFieldError) {
-            nextErrors[field] = nextFieldError;
-          } else {
-            delete nextErrors[field];
-          }
-        } else if (currentErrors[field]) {
-          delete nextErrors[field];
-        }
-
-        if (field === "password" || field === "confirmPassword") {
-          const confirmPasswordError = touchedFields.confirmPassword
-            ? validateRegisterField("confirmPassword", nextFormData, t)
-            : "";
-
-          if (confirmPasswordError) {
-            nextErrors.confirmPassword = confirmPasswordError;
-          } else {
-            delete nextErrors.confirmPassword;
-          }
-        }
-
-        return nextErrors;
-      });
+      if (hasTouchedFields) {
+        setFieldErrors(validateRegisterForm(nextFormData, t));
+      } else {
+        setFieldErrors({});
+      }
 
       return nextFormData;
     });
@@ -114,31 +90,13 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       return;
     }
 
+    const nextFormData = {
+      ...formData,
+      [field]: sanitizeRegisterFieldInput(field, event.target.value),
+    };
+
     setTouchedFields((prev) => ({ ...prev, [field]: true }));
-    setFieldErrors((prev) => {
-      const nextErrors = { ...prev };
-      const nextError = validateRegisterField(field, formData, t);
-
-      if (nextError) {
-        nextErrors[field] = nextError;
-      } else {
-        delete nextErrors[field];
-      }
-
-      if (field === "password" || field === "confirmPassword") {
-        const confirmPasswordError = validateRegisterField("confirmPassword", formData, t);
-
-        if (formData.confirmPassword.trim() || touchedFields.confirmPassword || field === "confirmPassword") {
-          if (confirmPasswordError) {
-            nextErrors.confirmPassword = confirmPasswordError;
-          } else {
-            delete nextErrors.confirmPassword;
-          }
-        }
-      }
-
-      return nextErrors;
-    });
+    setFieldErrors(validateRegisterForm(nextFormData, t));
   };
 
   const handlePostAuthSuccess = usePostAuthNavigation(handleCloseAuthFlow);
