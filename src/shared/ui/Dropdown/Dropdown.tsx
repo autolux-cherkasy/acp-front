@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./dropdown.module.css";
 
 export type DropdownItem = {
@@ -18,13 +18,29 @@ type DropdownProps = {
 
 export function Dropdown({ id, openId, onToggle, items, hideTrigger }: DropdownProps) {
   const isOpen = openId === id;
-  const ref = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const [dropUp, setDropUp] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!isOpen) {
+      setDropUp(false);
+      return;
+    }
+    if (!wrapperRef.current || !listRef.current) return;
+
+    const wrapperRect = wrapperRef.current.getBoundingClientRect();
+    const listHeight = listRef.current.getBoundingClientRect().height;
+    const spaceBelow = window.innerHeight - wrapperRect.bottom;
+
+    setDropUp(spaceBelow < listHeight + 4);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
 
     function handleClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         onToggle(null);
       }
     }
@@ -34,7 +50,7 @@ export function Dropdown({ id, openId, onToggle, items, hideTrigger }: DropdownP
   }, [isOpen, onToggle]);
 
   return (
-    <div ref={ref} className={styles.dropdownWrapper}>
+    <div ref={wrapperRef} className={styles.dropdownWrapper}>
       {!hideTrigger && (
         <button
           type="button"
@@ -48,7 +64,10 @@ export function Dropdown({ id, openId, onToggle, items, hideTrigger }: DropdownP
       )}
 
       {isOpen && (
-        <ul className={styles.dropdown}>
+        <ul
+          ref={listRef}
+          className={`${styles.dropdown} ${dropUp ? styles.dropdownAbove : ""}`}
+        >
           {items.map((item) => (
             <li key={item.label}>
               <button

@@ -8,6 +8,7 @@
   background: var(--color-surface-soft, var(--color-surface-soft));
   border-radius: 12px;
   box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(17, 49, 61, 0.3);
 }
 
 .top {
@@ -130,6 +131,10 @@
 
 .cell:disabled {
   cursor: not-allowed;
+}
+
+.cell:hover:not(:disabled):not(:active) {
+  background: #d3dee2;
 }
 
 .cellMuted {

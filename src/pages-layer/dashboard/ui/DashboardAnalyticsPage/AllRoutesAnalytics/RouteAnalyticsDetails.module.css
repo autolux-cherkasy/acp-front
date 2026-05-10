@@ -1,6 +1,5 @@
 .detailCard {
   height: 100%;
-  min-height: 0;
   overflow: hidden;
 }
 
@@ -11,6 +10,7 @@
 .chartWrapper {
   flex: 1;
   min-height: 220px;
+  height: 100%;
   width: 100%;
 }
 
@@ -19,7 +19,6 @@
   grid-template-rows: auto minmax(132px, 1fr) auto;
   gap: 12px;
   flex: 1;
-  min-height: 0;
   overflow: visible;
 }
 
