@@ -37,9 +37,9 @@ function shouldRequireLogin(message: string) {
   const normalizedMessage = message.trim().toLowerCase();
 
   if (
-    normalizedMessage.includes("failed to fetch")
-    || normalizedMessage.includes("network")
-    || normalizedMessage.includes("next_public_api_url")
+    normalizedMessage.includes("failed to fetch") ||
+    normalizedMessage.includes("network") ||
+    normalizedMessage.includes("next_public_api_url")
   ) {
     return false;
   }
@@ -94,7 +94,8 @@ export default function ProfilePage() {
       } catch (err) {
         if (isCancelled) return;
 
-        const message = err instanceof Error ? err.message : t("profile.page.errors.load");
+        const message =
+          err instanceof Error ? err.message : t("profile.page.errors.load");
         setError(message);
         setRequiresLogin(shouldRequireLogin(message));
       } finally {
@@ -128,7 +129,9 @@ export default function ProfilePage() {
     const trimmedName = formData.name.trim();
     const trimmedPhone = formData.phone.trim();
     const trimmedEmail = formData.email.trim();
-    const wantsPasswordChange = Boolean(formData.currentPassword || formData.newPassword);
+    const wantsPasswordChange = Boolean(
+      formData.currentPassword || formData.newPassword,
+    );
 
     if (!trimmedName || trimmedName.length < 2) {
       setError(t("profile.page.errors.nameMin"));
@@ -209,7 +212,9 @@ export default function ProfilePage() {
         successMessages.push(response.message);
       } catch (err) {
         failureMessages.push(
-          err instanceof Error ? err.message : t("profile.page.errors.updateProfile"),
+          err instanceof Error
+            ? err.message
+            : t("profile.page.errors.updateProfile"),
         );
       }
     }
@@ -229,7 +234,9 @@ export default function ProfilePage() {
         successMessages.push(response.message);
       } catch (err) {
         failureMessages.push(
-          err instanceof Error ? err.message : t("profile.page.errors.changePassword"),
+          err instanceof Error
+            ? err.message
+            : t("profile.page.errors.changePassword"),
         );
       }
     }
@@ -279,11 +286,18 @@ export default function ProfilePage() {
           </h1>
 
           {error ? (
-            <div className={`${styles.notice} ${styles.noticeError}`} role="alert">
+            <div
+              className={`${styles.notice} ${styles.noticeError}`}
+              role="alert"
+            >
               <span>{error}</span>
 
               {!isLoading ? (
-                <button type="button" className={styles.noticeAction} onClick={retryLoad}>
+                <button
+                  type="button"
+                  className={styles.noticeAction}
+                  onClick={retryLoad}
+                >
                   {t("profile.page.actions.retry")}
                 </button>
               ) : null}
@@ -291,7 +305,10 @@ export default function ProfilePage() {
           ) : null}
 
           {success ? (
-            <div className={`${styles.notice} ${styles.noticeSuccess}`} role="status">
+            <div
+              className={`${styles.notice} ${styles.noticeSuccess}`}
+              role="status"
+            >
               {success}
             </div>
           ) : null}
@@ -310,7 +327,9 @@ export default function ProfilePage() {
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.formGrid}>
               <label className={styles.field}>
-                <span className={styles.label}>{t("profile.page.labels.name")}</span>
+                <span className={styles.label}>
+                  {t("profile.page.labels.name")}
+                </span>
                 <input
                   className={styles.input}
                   name="name"
@@ -324,7 +343,9 @@ export default function ProfilePage() {
               </label>
 
               <label className={styles.field}>
-                <span className={styles.label}>{t("profile.page.labels.phone")}</span>
+                <span className={styles.label}>
+                  {t("profile.page.labels.phone")}
+                </span>
                 <input
                   className={styles.input}
                   name="phone"
@@ -338,7 +359,9 @@ export default function ProfilePage() {
               </label>
 
               <label className={styles.field}>
-                <span className={styles.label}>{t("profile.page.labels.emailConfirm")}</span>
+                <span className={styles.label}>
+                  {t("profile.page.labels.emailConfirm")}
+                </span>
                 <input
                   className={styles.input}
                   name="email"
@@ -352,7 +375,9 @@ export default function ProfilePage() {
               </label>
 
               <label className={styles.field}>
-                <span className={styles.label}>{t("profile.page.labels.currentPassword")}</span>
+                <span className={styles.label}>
+                  {t("profile.page.labels.currentPassword")}
+                </span>
                 <span className={styles.inputWrap}>
                   <input
                     className={`${styles.input} ${styles.inputWithIcon}`}
@@ -367,12 +392,20 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     className={styles.passwordToggle}
-                    aria-label={showCurrentPassword ? t("common.password.hide") : t("common.password.show")}
+                    aria-label={
+                      showCurrentPassword
+                        ? t("common.password.hide")
+                        : t("common.password.show")
+                    }
                     onClick={() => setShowCurrentPassword((prev) => !prev)}
                     disabled={isLoading || isSaving || requiresLogin}
                   >
                     <Image
-                      src={showCurrentPassword ? "/icons/eye-open.svg" : "/icons/eye-off-light.svg"}
+                      src={
+                        showCurrentPassword
+                          ? "/icons/eye-open.svg"
+                          : "/icons/eye-off-light.svg"
+                      }
                       alt=""
                       width={24}
                       height={24}
@@ -383,7 +416,9 @@ export default function ProfilePage() {
               </label>
 
               <label className={styles.field}>
-                <span className={styles.label}>{t("profile.page.labels.newPassword")}</span>
+                <span className={styles.label}>
+                  {t("profile.page.labels.newPassword")}
+                </span>
                 <span className={styles.inputWrap}>
                   <input
                     className={`${styles.input} ${styles.inputWithIcon}`}
@@ -398,12 +433,20 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     className={styles.passwordToggle}
-                    aria-label={showNewPassword ? t("common.password.hide") : t("common.password.show")}
+                    aria-label={
+                      showNewPassword
+                        ? t("common.password.hide")
+                        : t("common.password.show")
+                    }
                     onClick={() => setShowNewPassword((prev) => !prev)}
                     disabled={isLoading || isSaving || requiresLogin}
                   >
                     <Image
-                      src={showNewPassword ? "/icons/eye-open.svg" : "/icons/eye-off-light.svg"}
+                      src={
+                        showNewPassword
+                          ? "/icons/eye-open.svg"
+                          : "/icons/eye-off-light.svg"
+                      }
                       alt=""
                       width={24}
                       height={24}
@@ -426,6 +469,7 @@ export default function ProfilePage() {
                       : t("profile.page.actions.save")
                 }
                 disabled={isLoading || isSaving || requiresLogin}
+                onClick={() => {}}
               />
             </div>
           </form>

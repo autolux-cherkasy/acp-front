@@ -50,7 +50,11 @@ export default function ProfileArchivePage() {
 
           <div className={styles.blocks}>
             {tickets.map((ticket) => (
-              <section key={ticket.code} className={styles.archiveBlock} aria-label={ticket.code}>
+              <section
+                key={ticket.code}
+                className={styles.archiveBlock}
+                aria-label={ticket.code}
+              >
                 <div className={styles.dateRow}>
                   <span className={styles.dateLabel}>{ticket.date}</span>
                 </div>
@@ -63,12 +67,16 @@ export default function ProfileArchivePage() {
                       </h2>
                       <span
                         className={`${styles.ticketBadge} ${
-                          ticket.statusTone === "success" ? styles.ticketBadgeSuccess : styles.ticketBadgeMuted
+                          ticket.statusTone === "success"
+                            ? styles.ticketBadgeSuccess
+                            : styles.ticketBadgeMuted
                         }`.trim()}
                       >
                         {ticket.status}
                       </span>
-                      <span className={styles.ticketMetaDate}>{ticket.metaDate}</span>
+                      <span className={styles.ticketMetaDate}>
+                        {ticket.metaDate}
+                      </span>
                     </div>
 
                     <div className={styles.routeBody}>
@@ -85,12 +93,20 @@ export default function ProfileArchivePage() {
 
                       <div className={styles.routeStations}>
                         <div className={styles.stationBlock}>
-                          <div className={styles.stationCity}>{ticket.routeFrom.city}</div>
-                          <div className={styles.stationName}>{ticket.routeFrom.station}</div>
+                          <div className={styles.stationCity}>
+                            {ticket.routeFrom.city}
+                          </div>
+                          <div className={styles.stationName}>
+                            {ticket.routeFrom.station}
+                          </div>
                         </div>
                         <div className={styles.stationBlock}>
-                          <div className={styles.stationCity}>{ticket.routeTo.city}</div>
-                          <div className={styles.stationName}>{ticket.routeTo.station}</div>
+                          <div className={styles.stationCity}>
+                            {ticket.routeTo.city}
+                          </div>
+                          <div className={styles.stationName}>
+                            {ticket.routeTo.station}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -107,7 +123,9 @@ export default function ProfileArchivePage() {
                           className={styles.passengerIcon}
                           aria-hidden="true"
                         />
-                        <span className={styles.passengerName}>{ticket.passengerName}</span>
+                        <span className={styles.passengerName}>
+                          {ticket.passengerName}
+                        </span>
                       </div>
 
                       <div className={styles.passengerItem}>
@@ -119,7 +137,9 @@ export default function ProfileArchivePage() {
                           className={styles.passengerIcon}
                           aria-hidden="true"
                         />
-                        <span className={styles.passengerPhone}>{ticket.passengerPhone}</span>
+                        <span className={styles.passengerPhone}>
+                          {ticket.passengerPhone}
+                        </span>
                       </div>
 
                       <div className={styles.passengerItem}>
@@ -131,15 +151,25 @@ export default function ProfileArchivePage() {
                           className={styles.passengerIcon}
                           aria-hidden="true"
                         />
-                        <span className={styles.passengerSeat}>{ticket.seatCount}</span>
+                        <span className={styles.passengerSeat}>
+                          {ticket.seatCount}
+                        </span>
                       </div>
                     </div>
 
                     <div className={styles.priceValue}>{ticket.price}</div>
 
                     <div className={styles.actions}>
-                      <Button text={t("profile.archive.pay")} variant="primary" />
-                      <Button text={t("profile.archive.cancel")} variant="secondary" />
+                      <Button
+                        text={t("profile.archive.pay")}
+                        variant="primary"
+                        onClick={() => {}}
+                      />
+                      <Button
+                        text={t("profile.archive.cancel")}
+                        variant="secondary"
+                        onClick={() => {}}
+                      />
                     </div>
                   </div>
                 </div>
