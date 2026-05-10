@@ -54,7 +54,7 @@
 }
 
 .withTrailing {
-  padding-right: 48px;
+  padding-right: 44px;
 }
 
 .leadingAdornment {
@@ -76,8 +76,8 @@
   top: 50%;
   right: 12px;
   transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -86,8 +86,8 @@
 }
 
 .toggleButton {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   padding: 0;
   border: none;
   background: transparent;
@@ -95,6 +95,8 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: var(--LightSlateGray, #7b98a3);
+  pointer-events: auto;
 }
 
 .toggleButton:focus-visible {
@@ -108,12 +110,6 @@
   opacity: 0.55;
 }
 
-.icon {
-  width: 24px;
-  height: 24px;
-  display: block;
-}
-
 .adornmentImage {
   width: 18px;
   height: 18px;
@@ -123,6 +119,21 @@
   mask-position: center;
   mask-size: contain;
   -webkit-mask-image: var(--adornment-icon);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.toggleIcon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  background-color: currentColor;
+  mask-image: var(--toggle-icon);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: var(--toggle-icon);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;

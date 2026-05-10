@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import type { ComponentPropsWithoutRef, CSSProperties } from "react";
 import { useState } from "react";
 
@@ -22,6 +20,20 @@ function renderAdornment(adornment: string) {
       style={
         {
           "--adornment-icon": `url("${adornment}")`,
+        } as CSSProperties
+      }
+      aria-hidden="true"
+    />
+  );
+}
+
+function renderToggleIcon(icon: string) {
+  return (
+    <span
+      className={styles.toggleIcon}
+      style={
+        {
+          "--toggle-icon": `url("${icon}")`,
         } as CSSProperties
       }
       aria-hidden="true"
@@ -51,16 +63,9 @@ export default function TextField({
       aria-label={isPasswordVisible ? hidePasswordLabel : showPasswordLabel}
       disabled={disabled}
     >
-      <Image
-        className={styles.icon}
-        src={
-          isPasswordVisible ? "/icons/eye-open.svg" : "/icons/eye-off-light.svg"
-        }
-        alt=""
-        aria-hidden="true"
-        width={24}
-        height={24}
-      />
+      {renderToggleIcon(
+        isPasswordVisible ? "/icons/eye-open.svg" : "/icons/eye-off-light.svg",
+      )}
     </button>
   ) : trailingAdornment ? (
     renderAdornment(trailingAdornment)
