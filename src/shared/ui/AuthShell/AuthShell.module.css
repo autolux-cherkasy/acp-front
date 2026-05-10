@@ -150,6 +150,14 @@
   --auth-card-min-height: 0;
 }
 
+.login .content {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  margin: 40px auto;
+}
+
 .register .content {
   position: relative;
   top: auto;
