@@ -13,7 +13,7 @@ export default function ForgotPasswordModalRoute() {
 
   const close = useCallback(() => {
     setIsDismissed(true);
-    closeAuthRoute(router, { preferBack: true });
+    closeAuthRoute(router);
   }, [router]);
 
   useEffect(() => {

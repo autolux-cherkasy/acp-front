@@ -36,18 +36,20 @@ export function consumeAuthBackground() {
 
 export function closeAuthRoute(
   router: RouterLike,
-  options: { fallback?: string; preferBack?: boolean } = {},
+  options: { fallback?: string } = {},
 ) {
-  const { fallback = "/", preferBack = false } = options;
+  const { fallback = "/" } = options;
   const background = getAuthBackground();
   clearAuthBackground();
 
-  const locale = isBrowser() ? getLocaleFromPathnameOrDefault(window.location.pathname) : "uk";
-  router.replace(background || localizeHref(fallback, locale));
-
-  if (preferBack && typeof router.refresh === "function") {
-    requestAnimationFrame(() => {
-      router.refresh?.();
-    });
+  // background is set iff the modal was opened via router.push() from openLoginModal.
+  // router.back() correctly restores the Next.js router tree so that subsequent
+  // router.push("/login") re-triggers the intercepted route. router.replace() does not.
+  if (background) {
+    router.back();
+    return;
   }
+
+  const locale = isBrowser() ? getLocaleFromPathnameOrDefault(window.location.pathname) : "uk";
+  router.replace(localizeHref(fallback, locale));
 }
