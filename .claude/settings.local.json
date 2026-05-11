@@ -9,7 +9,15 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\afnes\\\\busStation\\\\acp-front\" -Directory)",
       "Bash(Select-Object Name)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\afnes\\\\busStation\\\\acp-front\" -Recurse -Filter \"*TicketSortDropdown*\")",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(cat render.yaml)",
+      "Bash(ls *.yaml *.yml)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('client deps:', p.dependencies?.['@prisma/client']\\); console.log\\('client devDeps:', p.devDependencies?.['@prisma/client']\\)\")",
+      "Bash(grep -i \"scripts\\\\|\\\\.js$\\\\|\\\\.map\")",
+      "Bash(node -e \"const { PrismaClient } = require\\('@prisma/client'\\); const p = new PrismaClient\\(\\); console.log\\('busNumber' in p.trip.fields ? 'busNumber EXISTS in client' : 'busNumber MISSING from client'\\)\")",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\afnes\\\\busStation\\\\acp-front\\\\app\")",
+      "Bash(Select-Object FullName)",
+      "Bash(git push *)"
     ]
   }
 }

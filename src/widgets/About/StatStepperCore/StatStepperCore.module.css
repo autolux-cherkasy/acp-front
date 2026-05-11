@@ -53,10 +53,12 @@
   align-items: center;
   gap: 24px;
   box-sizing: border-box;
+  flex-wrap: nowrap;
 }
 
 .statCard {
   width: 397px;
+  min-width: 0;
   height: 149px;
 
   display: flex;
@@ -79,12 +81,12 @@
   justify-content: center;
   font-weight: 500;
   font-style: normal;
-  font-size: 16px;
+  font-size: clamp(12px, 1.25vw, 16px);
   line-height: 144%;
   letter-spacing: 0;
   text-align: center;
+  white-space: nowrap;
   vertical-align: middle;
-  leading-trim: none;
 
   color: var(--color-white, var(--color-white));
 }
@@ -197,8 +199,19 @@
     width: 100%;
     max-width: 1239px;
     padding: 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
+  }
+
+  .statCard {
+    width: auto;
+    flex: 1 1 0;
+    gap: 18px;
+    padding: 20px 16px;
+  }
+
+  .statLabel {
+    font-size: clamp(11px, 1.3vw, 15px);
   }
 
   .textGrid {
@@ -303,15 +316,15 @@
 }
 
 .stepperViewportYears {
-  width: 156px;
+  width: clamp(88px, 11vw, 156px);
 }
 
 .stepperViewportPassengers {
-  width: 220px;
+  width: clamp(140px, 16vw, 220px);
 }
 
 .stepperViewportKm {
-  width: 220px;
+  width: clamp(140px, 16vw, 220px);
 }
 
 .stepperTrack {
@@ -327,7 +340,7 @@
   white-space: nowrap;
 
   font-weight: 800;
-  font-size: 40px;
+  font-size: clamp(24px, 2.4vw, 40px);
   line-height: 47px;
   color: var(--color-accent);
 }
