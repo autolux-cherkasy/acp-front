@@ -1,4 +1,7 @@
 .section {
+  --booking-hero-form-max-width: 608px;
+  --booking-hero-image-max-width: 608px;
+  --booking-hero-gap: 24px;
   width: 100%;
   background: var(--bg, var(--color-page-bg));
   padding-top: 20px; /* Figma: padding-top 20 */
@@ -20,13 +23,15 @@
 /* Form block: 1240 x 532, gap 24 */
 .formBlock {
   width: 100%;
-  max-width: 1240px; /* Figma: 1240 */
+  max-width: calc(
+    var(--booking-hero-form-max-width) + var(--booking-hero-image-max-width) + var(--booking-hero-gap)
+  );
   height: 532px; /* Figma: 532 */
   margin: 0 auto;
 
   display: flex;
   align-items: center;
-  gap: 24px; /* Figma: gap 24 */
+  gap: var(--booking-hero-gap); /* Figma: gap 24 */
   min-width: 0;
   box-sizing: border-box;
 }
@@ -38,9 +43,9 @@
 
 .formFallback {
   width: 100%;
-  max-width: 608px;
-  height: 532px;
+  max-width: var(--booking-hero-form-max-width);
   min-width: 0;
+  height: 532px;
   border: 1px solid var(--color-brand);
   border-radius: 12px;
   background: var(--color-surface-soft);
@@ -49,12 +54,12 @@
 /* права колонка (картинка) */
 .imageWrap {
   width: 100%;
-  max-width: none;
+  max-width: var(--booking-hero-image-max-width);
+  min-width: 0;
   height: 532px;
   border-radius: 12px;
   overflow: hidden;
   flex: 1 1 0;
-  min-width: 0;
   align-self: stretch;
 }
 
@@ -66,19 +71,23 @@
 }
 
 @media (min-width: 1920px) {
+  .section {
+    --booking-hero-form-max-width: 688px;
+    --booking-hero-image-max-width: 688px;
+    --booking-hero-gap: 32px;
+  }
+
   .formBlock {
-    width: 1408px;
-    max-width: 1408px;
+    width: 100%;
     height: 604px;
-    gap: 32px;
     align-items: center;
   }
 
   .imageWrap {
     width: 100%;
-    max-width: none;
+    max-width: var(--booking-hero-image-max-width);
     height: 604px;
-    flex: 0 0 688px;
+    flex: 1 1 0;
   }
 }
 
