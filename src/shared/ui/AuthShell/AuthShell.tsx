@@ -1,5 +1,3 @@
-"use client";
-
 import type { ReactNode } from "react";
 import Image from "next/image";
 import AuthPromoList from "@/src/widgets/auth-promo-list/ui/AuthPromoList";
@@ -73,7 +71,11 @@ export default function AuthShell({
       style={{ backgroundImage: `url('${backgroundImage}')` }}
     >
       <ModalCloseButton
-        className={joinClassNames(styles.close, styles.desktopClose, closeClassName)}
+        className={joinClassNames(
+          styles.close,
+          styles.desktopClose,
+          closeClassName,
+        )}
         ariaLabel={closeLabel}
         onClose={onClose}
       />
@@ -98,12 +100,21 @@ export default function AuthShell({
                 priority
               />
               <ModalCloseButton
-                className={joinClassNames(styles.close, styles.mobileClose, closeClassName)}
+                className={joinClassNames(
+                  styles.close,
+                  styles.mobileClose,
+                  closeClassName,
+                )}
                 ariaLabel={closeLabel}
                 onClose={onClose}
               />
             </div>
-            <p className={joinClassNames(styles.brandDesc, brandDescriptionClassName)}>
+            <p
+              className={joinClassNames(
+                styles.brandDesc,
+                brandDescriptionClassName,
+              )}
+            >
               {brandDescription}
             </p>
           </div>

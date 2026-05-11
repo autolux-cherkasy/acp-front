@@ -1,5 +1,3 @@
-"use client";
-
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { publicOfferContent } from "../model/public-offer-content";
@@ -33,14 +31,21 @@ export default function PublicOfferPage() {
         </div>
 
         {content.sections.map((section) => (
-          <section key={section.id} className={styles.section} aria-labelledby={section.id}>
+          <section
+            key={section.id}
+            className={styles.section}
+            aria-labelledby={section.id}
+          >
             <h2 id={section.id} className={styles.sectionTitle}>
               {section.title}
             </h2>
 
             <div className={styles.sectionText}>
               {section.paragraphs.map((paragraph) => (
-                <p key={`${section.id}-${paragraph}`} className={styles.paragraph}>
+                <p
+                  key={`${section.id}-${paragraph}`}
+                  className={styles.paragraph}
+                >
                   {paragraph}
                 </p>
               ))}

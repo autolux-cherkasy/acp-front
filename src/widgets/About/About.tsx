@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 
 import styles from "./About.module.css";
@@ -14,7 +12,10 @@ type Card = {
 const cards: Card[] = [
   { key: "passenger", icon: "/icons/Services/Ticket.svg" },
   { key: "groupTransfer", icon: "/icons/Services/Mobile Check.svg" },
-  { key: "excursions", icon: "/icons/Services/bus rental for excursions icon.svg" },
+  {
+    key: "excursions",
+    icon: "/icons/Services/bus rental for excursions icon.svg",
+  },
   { key: "seaTours", icon: "/icons/Services/coffee.svg" },
   { key: "schoolBus", icon: "/icons/Services/Laptop.svg" },
   { key: "corporate", icon: "/icons/Services/Map.svg" },

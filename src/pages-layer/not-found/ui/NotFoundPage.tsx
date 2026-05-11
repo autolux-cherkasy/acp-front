@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 
 import LocaleLink from "@/src/shared/i18n/Link";

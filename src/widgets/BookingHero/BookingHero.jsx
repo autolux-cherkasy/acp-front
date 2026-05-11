@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { Suspense } from "react";
 
@@ -14,7 +12,11 @@ export default function BookingHero() {
     <section id="booking" className={styles.section}>
       <div className={styles.mainBlock}>
         <div className={styles.formBlock}>
-          <Suspense fallback={<div className={styles.formFallback} aria-hidden="true" />}>
+          <Suspense
+            fallback={
+              <div className={styles.formFallback} aria-hidden="true" />
+            }
+          >
             <BookingForm />
           </Suspense>
 
