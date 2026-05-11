@@ -64,7 +64,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;     /* макет */
+  gap: 20px; /* макет */
   flex: 1;
   min-width: 0;
 }
@@ -195,8 +195,12 @@
   color: var(--color-text-strong, var(--color-text-strong));
 }
 
-.mobileMenuBtn { display: none; }
-.mobileMenuPanel { display: none; }
+.mobileMenuBtn {
+  display: none;
+}
+.mobileMenuPanel {
+  display: none;
+}
 
 .mobileMenuBtnOpen {
   background: transparent;
@@ -281,6 +285,21 @@
   }
 }
 
+/* 1440px–1919px: bridge between the clamp block and the 1920px fixed block */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .container {
+    padding-inline: clamp(104px, 9vw, 256px);
+  }
+
+  .menu {
+    gap: 20px;
+  }
+
+  .right {
+    gap: 40px;
+  }
+}
+
 /* 1920 desktop state (pixel-perfect to design spec) */
 @media (min-width: 1920px) {
   .header {
@@ -298,7 +317,6 @@
     max-width: 1920px;
     height: 100px;
     padding: 16px 256px;
-    gap: 244px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -343,11 +361,21 @@
     flex-grow: 0;
   }
 
-  .menuItem:nth-child(1) { width: 78px; }
-  .menuItem:nth-child(2) { width: 93px; }
-  .menuItem:nth-child(3) { width: 124px; }
-  .menuItem:nth-child(4) { width: 56px; }
-  .menuItem:nth-child(5) { width: 87px; }
+  .menuItem:nth-child(1) {
+    width: 78px;
+  }
+  .menuItem:nth-child(2) {
+    width: 93px;
+  }
+  .menuItem:nth-child(3) {
+    width: 124px;
+  }
+  .menuItem:nth-child(4) {
+    width: 56px;
+  }
+  .menuItem:nth-child(5) {
+    width: 87px;
+  }
 
   .right {
     margin: 0 auto;
@@ -409,7 +437,9 @@
 
 /* TABLET + MOBILE COLLAPSED HEADER */
 @media (max-width: 1024px) {
-  .menu { display: none; }
+  .menu {
+    display: none;
+  }
 
   .headerNoShadow {
     box-shadow: 0px 2px 4px 0px var(--LightSlateGray, var(--color-border-muted));
@@ -442,9 +472,13 @@
     height: 28px;
   }
 
-  .mobileLang { display: none; }
+  .mobileLang {
+    display: none;
+  }
 
-  .right { gap: 16px; }
+  .right {
+    gap: 16px;
+  }
 
   .mobileMenuBtn {
     order: 0;
@@ -558,7 +592,9 @@
     border-radius: 0 0 0 12px;
   }
 
-  .mobileMenuPanelOpen { display: flex; }
+  .mobileMenuPanelOpen {
+    display: flex;
+  }
 
   .mobileMenuItem {
     width: 100%;
