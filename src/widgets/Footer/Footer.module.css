@@ -1,6 +1,6 @@
 .footer {
   width: 100%;
-  padding: 16px 260px;
+  padding: 16px 24px;
   box-sizing: border-box;
   background: var(--color-brand, var(--color-brand));
   display: flex;
@@ -8,11 +8,10 @@
   align-items: center;
   flex-direction: column;
   gap: 16px;
-  min-height: 657px;
 }
 
 .container {
-  width: 1400px;
+  width: min(100%, 1400px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -22,11 +21,11 @@
 .contacts {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
-  border-bottom: 1px solid var(--color-surface-accent, var(--color-surface-accent));
+  border-bottom: 1px solid
+    var(--color-surface-accent, var(--color-surface-accent));
   padding: 0 0 8px 0;
-  min-height: 125px;
 }
 
 .contactColumn {
@@ -36,6 +35,7 @@
   padding: 20px;
   gap: 24px;
   background: transparent;
+  min-width: 0;
 }
 
 .contactItem {
@@ -108,7 +108,7 @@
 
 .mapWrap {
   width: 100%;
-  height: 442px;
+  height: clamp(220px, 32vw, 442px);
   overflow: hidden;
   border-radius: 12px;
 }
@@ -128,7 +128,7 @@
 }
 
 .copy {
-  width: 302px;
+  max-width: 302px;
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -150,25 +150,13 @@
   display: block;
 }
 
-@media (min-width: 1920px) {
-  .footer {
-    padding-inline: 260px;
-  }
-
-  .container {
-    width: 1400px;
-  }
-}
-
 @media (max-width: 1024px) {
   .footer {
-    min-height: 680px;
     padding: 16px 28px;
   }
 
   .container {
     width: 100%;
-    min-height: 614px;
   }
 
   .contacts {
@@ -181,21 +169,18 @@
   }
 
   .mapWrap {
-    height: 356px;
+    height: clamp(240px, 40vw, 356px);
   }
 }
 
 @media (max-width: 430px) {
   .footer {
-    min-height: 689px;
     padding: 16px 24px;
     align-items: center;
   }
 
   .container {
     width: 100%;
-    height: auto;
-    min-height: 582px;
     gap: 24px;
   }
 
@@ -216,7 +201,7 @@
 
   .mapWrap {
     width: 100%;
-    height: 197px;
+    height: clamp(180px, 52vw, 220px);
   }
 
   .footerBottom {
@@ -226,7 +211,6 @@
   }
 
   .copy {
-    width: auto;
     max-width: 100%;
     align-self: flex-start;
   }
