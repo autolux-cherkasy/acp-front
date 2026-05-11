@@ -40,12 +40,14 @@ export default function Header() {
 
   const isAuthorized = isAuthenticated;
   const isAvatarActive =
-    pathnameWithoutLocale === workspaceHref || pathnameWithoutLocale.startsWith(`${workspaceHref}/`);
+    pathnameWithoutLocale === workspaceHref ||
+    pathnameWithoutLocale.startsWith(`${workspaceHref}/`);
 
   const [activeMenuHref, setActiveMenuHref] = useState("#home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isPhoneMenuOpen, setIsPhoneMenuOpen] = useState(false);
-  const currentMenuHref = pathnameWithoutLocale === "/cafe" ? "/cafe" : activeMenuHref;
+  const currentMenuHref =
+    pathnameWithoutLocale === "/cafe" ? "/cafe" : activeMenuHref;
   const phoneMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -149,7 +151,9 @@ export default function Header() {
   };
 
   return (
-    <header className={`${styles.header} ${isMobileMenuOpen ? styles.headerNoShadow : ""}`}>
+    <header
+      className={`${styles.header} ${isMobileMenuOpen ? styles.headerNoShadow : ""}`}
+    >
       <div className={styles.container}>
         <a
           className={styles.logoWrap}
@@ -187,11 +191,9 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className={styles.mobileLang}>
-          <LanguageSwitcher />
-        </div>
-
-        <div className={`${styles.right} ${isAuthorized ? styles.rightAuthorized : styles.rightUnauthorized}`}>
+        <div
+          className={`${styles.right} ${isAuthorized ? styles.rightAuthorized : styles.rightUnauthorized}`}
+        >
           <HeaderAuthControl
             className={styles.authControl}
             isAuthorized={isAuthorized}
@@ -273,7 +275,11 @@ export default function Header() {
             }}
           >
             {isMobileMenuOpen ? (
-              <span key="icon-close" className={styles.mobileCloseIcon} aria-hidden="true" />
+              <span
+                key="icon-close"
+                className={styles.mobileCloseIcon}
+                aria-hidden="true"
+              />
             ) : (
               <Image
                 key="icon-menu"

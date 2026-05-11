@@ -24,7 +24,7 @@
 
 .cardTitle {
   width: min(var(--booking-card-content-max-width), 100%);
-  font-size: 18px;
+  font-size: 24px;
   letter-spacing: 0;
   text-align: center;
   color: var(--color-text-strong, var(--color-text-strong));
@@ -834,7 +834,7 @@
     width: min(361px, 100%);
     min-height: 342px;
     height: auto;
-    padding: 12px 16px 16px;
+    padding: 24px 20px;
     gap: 32px;
     justify-content: flex-start;
     align-items: stretch;
