@@ -73,7 +73,7 @@ export default function AuthShell({
       style={{ backgroundImage: `url('${backgroundImage}')` }}
     >
       <ModalCloseButton
-        className={joinClassNames(styles.close, closeClassName)}
+        className={joinClassNames(styles.close, styles.desktopClose, closeClassName)}
         ariaLabel={closeLabel}
         onClose={onClose}
       />
@@ -87,14 +87,22 @@ export default function AuthShell({
       >
         <aside className={joinClassNames(styles.aside, asideClassName)}>
           <div className={joinClassNames(styles.brand, brandClassName)}>
-            <Image
-              src="/logo-sprinter.svg"
-              alt={logoAlt}
-              className={styles.brandLogo}
-              width={213}
-              height={50}
-              priority
-            />
+            <div className={styles.brandTop}>
+              <span className={styles.brandTopSpacer} aria-hidden="true" />
+              <Image
+                src="/logo-sprinter.svg"
+                alt={logoAlt}
+                className={styles.brandLogo}
+                width={213}
+                height={50}
+                priority
+              />
+              <ModalCloseButton
+                className={joinClassNames(styles.close, styles.mobileClose, closeClassName)}
+                ariaLabel={closeLabel}
+                onClose={onClose}
+              />
+            </div>
             <p className={joinClassNames(styles.brandDesc, brandDescriptionClassName)}>
               {brandDescription}
             </p>
