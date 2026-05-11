@@ -21,12 +21,12 @@
 .formBlock {
   width: 100%;
   max-width: 1240px; /* Figma: 1240 */
-  height: 532px;     /* Figma: 532 */
+  height: 532px; /* Figma: 532 */
   margin: 0 auto;
 
   display: flex;
   align-items: center;
-  gap: 24px;         /* Figma: gap 24 */
+  gap: 24px; /* Figma: gap 24 */
   min-width: 0;
   box-sizing: border-box;
 }
@@ -48,13 +48,14 @@
 
 /* права колонка (картинка) */
 .imageWrap {
-  width: auto;     /* 1240 = 608 + 608 + 24 */
-  max-width: 608px;
+  width: 100%;
+  max-width: none;
   height: 532px;
   border-radius: 12px;
   overflow: hidden;
   flex: 1 1 0;
   min-width: 0;
+  align-self: stretch;
 }
 
 .image {
@@ -74,11 +75,10 @@
   }
 
   .imageWrap {
-    width: 688px;
-    max-width: 688px;
+    width: 100%;
+    max-width: none;
     height: 604px;
     flex: 0 0 688px;
-    border-radius: 12px;
   }
 }
 
@@ -94,6 +94,7 @@
     width: 100%;
     max-width: 100%;
     height: 380px;
+    border-radius: 0;
   }
 
   .formFallback {
@@ -111,18 +112,20 @@
 /* мобільний макет з накладанням */
 @media (max-width: 768px) {
   .section {
+    width: 100vw;
     padding-top: 0;
     background: transparent;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
   }
 
   .formBlock {
     position: relative;
     width: 100%;
-    max-width: 393px;
+    max-width: none;
     height: 492px;
     display: block;
     overflow: hidden;
-    border-radius: 12px;
   }
 
   .imageWrap {
@@ -130,17 +133,16 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    border-radius: 12px;
   }
 
   /* перший елемент у formBlock — BookingForm */
   .formBlock > :first-child {
     position: absolute;
-    top: 12px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     z-index: 2;
-    width: min(361px, calc(100% - 32px));
+    width: min(420px, calc(100% - 40px));
     min-width: 0;
   }
 
@@ -155,8 +157,8 @@
   }
 
   .formBlock > :first-child {
-    top: 10px;
-    width: calc(100% - 24px);
+    top: 50%;
+    width: calc(100% - 40px);
   }
 
   .formFallback {

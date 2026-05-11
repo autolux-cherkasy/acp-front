@@ -83,7 +83,12 @@ export default function TripTimeSelect({
         <span className={styles.timeDropdownValue}>
           {selectedOption ? formatTripTime(selectedOption, locale) : placeholder}
         </span>
-        <span className={styles.timeDropdownChevron} aria-hidden="true">
+        <span
+          className={`${styles.timeDropdownChevron} ${
+            isOpen ? styles.timeDropdownChevronOpen : ""
+          }`}
+          aria-hidden="true"
+        >
           <Image
             src={isOpen ? "/icons/arrow-up.svg" : "/icons/down-arrow.svg"}
             alt=""
