@@ -1,10 +1,19 @@
-import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import type { Locale } from "@/src/shared/i18n";
 import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { publicOfferContent } from "../model/public-offer-content";
 import styles from "./public-offer-page.module.css";
 
-export default function PublicOfferPage() {
-  const { locale, t } = useI18n();
+type PublicOfferPageProps = {
+  locale: Locale;
+  homeLabel: string;
+  publicOfferLabel: string;
+};
+
+export default function PublicOfferPage({
+  locale,
+  homeLabel,
+  publicOfferLabel,
+}: PublicOfferPageProps) {
   const content = publicOfferContent[locale];
 
   return (
@@ -13,8 +22,8 @@ export default function PublicOfferPage() {
         <BreadcrumbChips
           ariaLabel={content.breadcrumbsAria}
           items={[
-            { label: t("menu.home"), href: "/home" },
-            { label: t("publicOffer.title"), current: true },
+            { label: homeLabel, href: "/home" },
+            { label: publicOfferLabel, current: true },
           ]}
         />
       </div>
