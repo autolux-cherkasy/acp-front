@@ -781,8 +781,8 @@
   }
 
   .phoneIcon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 
   .mobileMenuBtn {
@@ -792,8 +792,8 @@
 
   .mobileMenuIcon,
   .mobileCloseIcon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 
   .mobileCloseIcon::before,
@@ -867,12 +867,6 @@
 
   .right {
     gap: 4px;
-  }
-
-  .phoneWrap,
-  .mobileMenuBtn {
-    width: 32px;
-    height: 32px;
   }
 
   .phoneToggle {
