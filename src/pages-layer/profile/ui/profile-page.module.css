@@ -13,6 +13,11 @@
   box-sizing: border-box;
 }
 
+.tabsBar {
+  margin-top: 8px;
+  padding: 0 var(--layout-padding-x);
+}
+
 .card {
   margin: 24px auto 0;
   width: min(100%, 1224px);
@@ -43,14 +48,14 @@
 }
 
 .noticeError {
-  color: #8A1C1C;
-  background: #FDECEC;
+  color: #8a1c1c;
+  background: #fdecec;
   border: 1px solid rgba(138, 28, 28, 0.18);
 }
 
 .noticeSuccess {
-  color: #1D5C3A;
-  background: #ECF8F1;
+  color: #1d5c3a;
+  background: #ecf8f1;
   border: 1px solid rgba(29, 92, 58, 0.18);
 }
 
@@ -144,8 +149,8 @@
 
 .input:disabled {
   cursor: not-allowed;
-  background: #EFF4F5;
-  color: #6C8790;
+  background: #eff4f5;
+  color: #6c8790;
 }
 
 .inputWithIcon {
@@ -180,6 +185,10 @@
     padding: 8px 0 40px;
   }
 
+  .tabsBar {
+    margin-top: 6px;
+  }
+
   .container {
     padding: 0 24px;
   }
@@ -200,6 +209,10 @@
 @media (max-width: 430px) {
   .container {
     padding: 0 16px;
+  }
+
+  .tabsBar {
+    margin-top: 4px;
   }
 
   .card {
