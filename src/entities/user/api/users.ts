@@ -1,5 +1,9 @@
 import { apiFetch } from "@/src/shared/api/http";
-import { changeDevPassword, getDevProfile, updateDevProfile } from "@/src/shared/api/dev-auth";
+import {
+  changeDevPassword,
+  getDevProfile,
+  updateDevProfile,
+} from "@/src/shared/api/dev-auth";
 
 export const USER_ROLES = ["USER", "ADMIN", "DISPETCHER"] as const;
 
@@ -30,8 +34,8 @@ export type UpdateProfileResponse = {
 };
 
 export type ChangePasswordPayload = {
-  oldPassword: string;
   newPassword: string;
+  confirmPassword: string;
 };
 
 type MessageResponse = {
@@ -70,7 +74,7 @@ export function updateProfile(payload: UpdateProfilePayload) {
 }
 
 export function changePassword(payload: ChangePasswordPayload) {
-  const devMessage = changeDevPassword(payload.newPassword);
+  const devMessage = changeDevPassword(payload.confirmPassword);
 
   if (devMessage) {
     return Promise.resolve<MessageResponse>({

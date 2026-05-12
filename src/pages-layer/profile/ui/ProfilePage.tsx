@@ -1,106 +1,107 @@
 "use client";
 
-import {
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 import { changePassword, getProfile, updateProfile } from "@/src/entities/user";
-import { hasAccessToken } from "@/src/shared/api/session";
+import { ApiError } from "@/src/shared/api/http";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import LocaleLink from "@/src/shared/i18n/Link";
 import Button from "@/src/shared/ui/Button/Button";
+import {
+  buildProfilePayload,
+  createProfileValidationRules,
+  EMPTY_PROFILE_FORM,
+  hasPasswordChange,
+  normalizeProfileFormData,
+  type ProfileFormData,
+} from "../model/validation";
 import styles from "./profile-page.module.css";
 import ProfileWrapper from "./ProfileWrapper";
 
-const PHONE_PATTERN = /^\+380\d{9}$/;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-type ProfileFormData = {
-  name: string;
-  phone: string;
-  email: string;
-  currentPassword: string;
-  newPassword: string;
-};
-
-type PersistedProfileFields = Pick<ProfileFormData, "name" | "phone" | "email">;
-
-const EMPTY_FORM: ProfileFormData = {
-  name: "",
-  phone: "",
-  email: "",
-  currentPassword: "",
-  newPassword: "",
-};
-
-function shouldRequireLogin(message: string) {
-  const normalizedMessage = message.trim().toLowerCase();
-
-  if (
-    normalizedMessage.includes("failed to fetch") ||
-    normalizedMessage.includes("network") ||
-    normalizedMessage.includes("next_public_api_url")
-  ) {
-    return false;
+function shouldRequireLogin(error: unknown) {
+  if (error instanceof ApiError) {
+    return error.status === 401;
   }
 
-  return !hasAccessToken();
+  const message = error instanceof Error ? error.message : "";
+  const normalizedMessage = message.trim().toLowerCase();
+
+  return (
+    normalizedMessage.includes("unauthorized") ||
+    normalizedMessage.includes("forbidden") ||
+    normalizedMessage.includes("token") ||
+    normalizedMessage.includes("session")
+  );
 }
 
 export default function ProfilePage() {
   const { t } = useI18n();
-  const [formData, setFormData] = useState<ProfileFormData>(EMPTY_FORM);
-  const [initialValues, setInitialValues] = useState<PersistedProfileFields>({
-    name: "",
-    phone: "",
-    email: "",
-  });
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [requiresLogin, setRequiresLogin] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    clearErrors,
+    getValues,
+    formState: { errors: fieldErrors, isDirty, dirtyFields, isSubmitting },
+  } = useForm<ProfileFormData>({
+    defaultValues: EMPTY_PROFILE_FORM,
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
+  });
+  const validationRules = createProfileValidationRules(t, getValues);
+
+  const isFormDisabled = isLoading || isSubmitting || requiresLogin;
+
+  const clearNotices = () => {
+    if (serverError) {
+      setServerError("");
+    }
+
+    if (successMessage) {
+      setSuccessMessage("");
+    }
+  };
 
   useEffect(() => {
     let isCancelled = false;
 
     const loadProfile = async () => {
       setIsLoading(true);
-      setError("");
-      setSuccess("");
+      setServerError("");
+      setSuccessMessage("");
       setRequiresLogin(false);
 
       try {
         const profile = await getProfile();
 
-        if (isCancelled) return;
+        if (isCancelled) {
+          return;
+        }
 
-        const nextValues = {
+        reset({
           name: profile.name ?? "",
           phone: profile.phone ?? "",
           email: profile.email ?? "",
-        };
-
-        setInitialValues(nextValues);
-        setFormData((prev) => ({
-          ...prev,
-          ...nextValues,
-          currentPassword: "",
           newPassword: "",
-        }));
+          confirmPassword: "",
+        });
       } catch (err) {
-        if (isCancelled) return;
+        if (isCancelled) {
+          return;
+        }
 
         const message =
           err instanceof Error ? err.message : t("profile.page.errors.load");
-        setError(message);
-        setRequiresLogin(shouldRequireLogin(message));
+        setServerError(message);
+        setRequiresLogin(shouldRequireLogin(err));
       } finally {
         if (!isCancelled) {
           setIsLoading(false);
@@ -113,105 +114,63 @@ export default function ProfilePage() {
     return () => {
       isCancelled = true;
     };
-  }, [reloadKey, t]);
+  }, [reloadKey, reset, t]);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+  const registerInput = (
+    field: keyof ProfileFormData,
+    options?: Parameters<typeof register>[1],
+  ) =>
+    register(field, {
+      ...options,
+      onChange: () => {
+        clearNotices();
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+        if (field === "newPassword" || field === "confirmPassword") {
+          clearErrors(["newPassword", "confirmPassword"]);
+          return;
+        }
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
+        clearErrors(field);
+      },
+    });
 
-    const trimmedName = formData.name.trim();
-    const trimmedPhone = formData.phone.trim();
-    const trimmedEmail = formData.email.trim();
-    const wantsPasswordChange = Boolean(
-      formData.currentPassword || formData.newPassword,
+  const onSubmit: SubmitHandler<ProfileFormData> = async (submittedData) => {
+    setServerError("");
+    setSuccessMessage("");
+
+    const normalizedData = normalizeProfileFormData(submittedData);
+    const wantsPasswordChange = hasPasswordChange(
+      normalizedData.newPassword,
+      normalizedData.confirmPassword,
     );
-
-    if (!trimmedName || trimmedName.length < 2) {
-      setError(t("profile.page.errors.nameMin"));
-      return;
-    }
-
-    if (!PHONE_PATTERN.test(trimmedPhone)) {
-      setError(t("profile.page.errors.phoneFormat"));
-      return;
-    }
-
-    if (!EMAIL_PATTERN.test(trimmedEmail)) {
-      setError(t("profile.page.errors.emailInvalid"));
-      return;
-    }
-
-    if (wantsPasswordChange) {
-      if (!formData.currentPassword || !formData.newPassword) {
-        setError(t("profile.page.errors.passwordBothRequired"));
-        return;
-      }
-
-      if (formData.newPassword.length < 6) {
-        setError(t("profile.page.errors.passwordMin"));
-        return;
-      }
-
-      if (formData.currentPassword === formData.newPassword) {
-        setError(t("profile.page.errors.passwordSame"));
-        return;
-      }
-    }
-
-    const profilePayload: {
-      email?: string;
-      name?: string;
-      phone?: string;
-    } = {};
-
-    if (trimmedName !== initialValues.name) {
-      profilePayload.name = trimmedName;
-    }
-
-    if (trimmedPhone !== initialValues.phone) {
-      profilePayload.phone = trimmedPhone;
-    }
-
-    if (trimmedEmail !== initialValues.email) {
-      profilePayload.email = trimmedEmail;
-    }
+    const profilePayload = buildProfilePayload(normalizedData, dirtyFields);
 
     const hasProfileChanges = Object.keys(profilePayload).length > 0;
 
     if (!hasProfileChanges && !wantsPasswordChange) {
-      setSuccess(t("profile.page.messages.noChanges"));
+      setSuccessMessage(t("profile.page.messages.noChanges"));
       return;
     }
 
-    setIsSaving(true);
-
     const successMessages: string[] = [];
     const failureMessages: string[] = [];
+    let nextProfileDefaults: Pick<
+      ProfileFormData,
+      "name" | "phone" | "email"
+    > | null = null;
+    let didUpdateProfile = false;
+    let didChangePassword = false;
 
     if (hasProfileChanges) {
       try {
         const response = await updateProfile(profilePayload);
-        const nextValues = {
+
+        nextProfileDefaults = {
           name: response.user.name ?? "",
           phone: response.user.phone ?? "",
           email: response.user.email ?? "",
         };
-
-        setInitialValues(nextValues);
-        setFormData((prev) => ({
-          ...prev,
-          ...nextValues,
-        }));
+        didUpdateProfile = true;
         successMessages.push(response.message);
       } catch (err) {
         failureMessages.push(
@@ -225,15 +184,11 @@ export default function ProfilePage() {
     if (wantsPasswordChange) {
       try {
         const response = await changePassword({
-          oldPassword: formData.currentPassword,
-          newPassword: formData.newPassword,
+          newPassword: normalizedData.newPassword,
+          confirmPassword: normalizedData.confirmPassword,
         });
 
-        setFormData((prev) => ({
-          ...prev,
-          currentPassword: "",
-          newPassword: "",
-        }));
+        didChangePassword = true;
         successMessages.push(response.message);
       } catch (err) {
         failureMessages.push(
@@ -244,16 +199,43 @@ export default function ProfilePage() {
       }
     }
 
-    setIsSaving(false);
+    if (didUpdateProfile && nextProfileDefaults) {
+      reset({
+        ...nextProfileDefaults,
+        newPassword:
+          wantsPasswordChange && !didChangePassword
+            ? normalizedData.newPassword
+            : "",
+        confirmPassword:
+          wantsPasswordChange && !didChangePassword
+            ? normalizedData.confirmPassword
+            : "",
+      });
+    } else if (didChangePassword) {
+      reset(
+        {
+          ...normalizedData,
+          newPassword: "",
+          confirmPassword: "",
+        },
+        {
+          keepDirty: true,
+          keepDirtyValues: true,
+        },
+      );
+    }
 
     if (successMessages.length > 0) {
-      setSuccess(successMessages.join(" "));
+      setSuccessMessage(successMessages.join(" "));
     }
 
     if (failureMessages.length > 0) {
-      const combinedMessage = failureMessages.join(" ");
-      setError(combinedMessage);
-      setRequiresLogin(shouldRequireLogin(combinedMessage));
+      setServerError(failureMessages.join(" "));
+      setRequiresLogin(
+        failureMessages.some((message) =>
+          shouldRequireLogin(new Error(message)),
+        ),
+      );
     }
   };
 
@@ -267,12 +249,12 @@ export default function ProfilePage() {
         <h1 id="profile-title" className={styles.title}>
           {t("profile.page.title")}
         </h1>
-        {error ? (
+        {serverError ? (
           <div
             className={`${styles.notice} ${styles.noticeError}`}
             role="alert"
           >
-            <span>{error}</span>
+            <span>{serverError}</span>
 
             {!isLoading ? (
               <button
@@ -286,12 +268,12 @@ export default function ProfilePage() {
           </div>
         ) : null}
 
-        {success ? (
+        {successMessage ? (
           <div
             className={`${styles.notice} ${styles.noticeSuccess}`}
             role="status"
           >
-            {success}
+            {successMessage}
           </div>
         ) : null}
 
@@ -306,22 +288,39 @@ export default function ProfilePage() {
           </div>
         ) : null}
 
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+        >
           <div className={styles.formGrid}>
             <label className={styles.field}>
               <span className={styles.label}>
                 {t("profile.page.labels.name")}
               </span>
               <input
-                className={styles.input}
-                name="name"
                 type="text"
-                value={formData.name}
-                onChange={handleChange}
                 placeholder={t("profile.page.placeholders.name")}
                 autoComplete="name"
-                disabled={isLoading || isSaving || requiresLogin}
+                aria-invalid={fieldErrors.name ? "true" : "false"}
+                aria-describedby={
+                  fieldErrors.name ? "profile-name-error" : undefined
+                }
+                className={`${styles.input} ${
+                  fieldErrors.name ? styles.inputInvalid : ""
+                }`}
+                disabled={isFormDisabled}
+                {...registerInput("name", validationRules.name)}
               />
+              {fieldErrors.name?.message ? (
+                <span
+                  id="profile-name-error"
+                  className={styles.fieldError}
+                  role="alert"
+                >
+                  {fieldErrors.name.message}
+                </span>
+              ) : null}
             </label>
 
             <label className={styles.field}>
@@ -329,15 +328,28 @@ export default function ProfilePage() {
                 {t("profile.page.labels.phone")}
               </span>
               <input
-                className={styles.input}
-                name="phone"
                 type="tel"
-                value={formData.phone}
-                onChange={handleChange}
                 placeholder="+380XXXXXXXXX"
                 autoComplete="tel"
-                disabled={isLoading || isSaving || requiresLogin}
+                aria-invalid={fieldErrors.phone ? "true" : "false"}
+                aria-describedby={
+                  fieldErrors.phone ? "profile-phone-error" : undefined
+                }
+                className={`${styles.input} ${
+                  fieldErrors.phone ? styles.inputInvalid : ""
+                }`}
+                disabled={isFormDisabled}
+                {...registerInput("phone", validationRules.phone)}
               />
+              {fieldErrors.phone?.message ? (
+                <span
+                  id="profile-phone-error"
+                  className={styles.fieldError}
+                  role="alert"
+                >
+                  {fieldErrors.phone.message}
+                </span>
+              ) : null}
             </label>
 
             <label className={styles.field}>
@@ -345,53 +357,28 @@ export default function ProfilePage() {
                 {t("profile.page.labels.emailConfirm")}
               </span>
               <input
-                className={styles.input}
-                name="email"
                 type="email"
-                value={formData.email}
-                onChange={handleChange}
                 placeholder="example@email.com"
                 autoComplete="email"
-                disabled={isLoading || isSaving || requiresLogin}
+                aria-invalid={fieldErrors.email ? "true" : "false"}
+                aria-describedby={
+                  fieldErrors.email ? "profile-email-error" : undefined
+                }
+                className={`${styles.input} ${
+                  fieldErrors.email ? styles.inputInvalid : ""
+                }`}
+                disabled={isFormDisabled}
+                {...registerInput("email", validationRules.email)}
               />
-            </label>
-
-            <label className={styles.field}>
-              <span className={styles.label}>
-                {t("profile.page.labels.currentPassword")}
-              </span>
-              <span className={styles.inputWrap}>
-                <input
-                  className={`${styles.input} ${styles.inputWithIcon}`}
-                  name="currentPassword"
-                  type={showCurrentPassword ? "text" : "password"}
-                  value={formData.currentPassword}
-                  onChange={handleChange}
-                  placeholder={t("profile.page.placeholders.currentPassword")}
-                  autoComplete="current-password"
-                  disabled={isLoading || isSaving || requiresLogin}
-                />
-                <button
-                  type="button"
-                  className={styles.passwordToggle}
-                  aria-label={
-                    showCurrentPassword
-                      ? t("common.password.hide")
-                      : t("common.password.show")
-                  }
-                  onClick={() => setShowCurrentPassword((prev) => !prev)}
-                  disabled={isLoading || isSaving || requiresLogin}
+              {fieldErrors.email?.message ? (
+                <span
+                  id="profile-email-error"
+                  className={styles.fieldError}
+                  role="alert"
                 >
-                  <span
-                    className={`${styles.passwordToggleIcon} ${
-                      showCurrentPassword
-                        ? styles.passwordToggleIconOpen
-                        : styles.passwordToggleIconClosed
-                    }`}
-                    aria-hidden="true"
-                  />
-                </button>
-              </span>
+                  {fieldErrors.email.message}
+                </span>
+              ) : null}
             </label>
 
             <label className={styles.field}>
@@ -400,14 +387,20 @@ export default function ProfilePage() {
               </span>
               <span className={styles.inputWrap}>
                 <input
-                  className={`${styles.input} ${styles.inputWithIcon}`}
-                  name="newPassword"
                   type={showNewPassword ? "text" : "password"}
-                  value={formData.newPassword}
-                  onChange={handleChange}
                   placeholder={t("profile.page.placeholders.newPassword")}
                   autoComplete="new-password"
-                  disabled={isLoading || isSaving || requiresLogin}
+                  aria-invalid={fieldErrors.newPassword ? "true" : "false"}
+                  aria-describedby={
+                    fieldErrors.newPassword
+                      ? "profile-new-password-error"
+                      : undefined
+                  }
+                  className={`${styles.input} ${styles.inputWithIcon} ${
+                    fieldErrors.newPassword ? styles.inputInvalid : ""
+                  }`}
+                  disabled={isFormDisabled}
+                  {...registerInput("newPassword", validationRules.newPassword)}
                 />
                 <button
                   type="button"
@@ -418,7 +411,7 @@ export default function ProfilePage() {
                       : t("common.password.show")
                   }
                   onClick={() => setShowNewPassword((prev) => !prev)}
-                  disabled={isLoading || isSaving || requiresLogin}
+                  disabled={isFormDisabled}
                 >
                   <span
                     className={`${styles.passwordToggleIcon} ${
@@ -430,6 +423,71 @@ export default function ProfilePage() {
                   />
                 </button>
               </span>
+              {fieldErrors.newPassword?.message ? (
+                <span
+                  id="profile-new-password-error"
+                  className={styles.fieldError}
+                  role="alert"
+                >
+                  {fieldErrors.newPassword.message}
+                </span>
+              ) : null}
+            </label>
+
+            <label className={styles.field}>
+              <span className={styles.label}>
+                {t("profile.page.labels.confirmPassword")}
+              </span>
+              <span className={styles.inputWrap}>
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder={t("profile.page.placeholders.confirmPassword")}
+                  autoComplete="new-password"
+                  aria-invalid={fieldErrors.confirmPassword ? "true" : "false"}
+                  aria-describedby={
+                    fieldErrors.confirmPassword
+                      ? "profile-confirm-password-error"
+                      : undefined
+                  }
+                  className={`${styles.input} ${styles.inputWithIcon} ${
+                    fieldErrors.confirmPassword ? styles.inputInvalid : ""
+                  }`}
+                  disabled={isFormDisabled}
+                  {...registerInput(
+                    "confirmPassword",
+                    validationRules.confirmPassword,
+                  )}
+                />
+                <button
+                  type="button"
+                  className={styles.passwordToggle}
+                  aria-label={
+                    showConfirmPassword
+                      ? t("common.password.hide")
+                      : t("common.password.show")
+                  }
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  disabled={isFormDisabled}
+                >
+                  <span
+                    className={`${styles.passwordToggleIcon} ${
+                      showConfirmPassword
+                        ? styles.passwordToggleIconOpen
+                        : styles.passwordToggleIconClosed
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              </span>
+              {fieldErrors.confirmPassword?.message ? (
+                <span
+                  id="profile-confirm-password-error"
+                  className={styles.fieldError}
+                  role="alert"
+                >
+                  {fieldErrors.confirmPassword.message}
+                </span>
+              ) : null}
             </label>
           </div>
 
@@ -440,11 +498,11 @@ export default function ProfilePage() {
               text={
                 isLoading
                   ? t("profile.page.actions.loading")
-                  : isSaving
+                  : isSubmitting
                     ? t("profile.page.actions.saving")
                     : t("profile.page.actions.save")
               }
-              disabled={isLoading || isSaving || requiresLogin}
+              disabled={isFormDisabled || !isDirty}
               onClick={() => {}}
             />
           </div>
