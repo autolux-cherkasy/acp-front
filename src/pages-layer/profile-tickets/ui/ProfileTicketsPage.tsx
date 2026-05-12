@@ -2,78 +2,54 @@
 
 import Image from "next/image";
 
-import LocaleLink from "@/src/shared/i18n/Link";
-import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
-import SurfacePanel from "@/src/shared/ui/SurfacePanel/SurfacePanel";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import ProfileTabsBar from "@/src/widgets/profile-tabs-bar";
+import LocaleLink from "@/src/shared/i18n/Link";
+import SurfacePanel from "@/src/shared/ui/SurfacePanel/SurfacePanel";
+import ProfileWrapper from "../../profile/ui/ProfileWrapper";
 import styles from "./profile-tickets-page.module.css";
 
 export default function ProfileTicketsPage() {
   const { t } = useI18n();
 
   return (
-    <main className={styles.page}>
-      <div className={styles.container}>
-        <BreadcrumbChips
-          ariaLabel={t("profile.breadcrumbsAria")}
-          items={[
-            { label: t("menu.home"), href: "/#home" },
-            { label: t("profile.title"), href: "/profile" },
-            { label: t("profile.tickets.title"), current: true },
-          ]}
-        />
+    <ProfileWrapper mode="tickets">
+      <section className={styles.emptyState} aria-labelledby="tickets-title">
+        <h1 id="tickets-title" className={styles.srOnly}>
+          {t("profile.tickets.title")}
+        </h1>
 
-        <ProfileTabsBar
-          ariaLabel={t("profile.tabsAria")}
-          showExitButton
-          items={[
-            { label: t("profile.tabs.tickets"), active: true },
-            { label: t("profile.tabs.archive"), href: "/profile/archive" },
-            { label: t("profile.tabs.profile"), href: "/profile" },
-          ]}
-        />
-
-        <section className={styles.emptyState} aria-labelledby="tickets-title">
-          <h1 id="tickets-title" className={styles.srOnly}>
-            {t("profile.tickets.title")}
-          </h1>
-
-          <SurfacePanel className={styles.emptyCard}>
-            <div className={styles.emptyContentWrapper}>
-              
-              {/* Блок з ілюстрацією */}
-              <div className={styles.illustrationBox}>
-                <Image
-                  src="/icons/account/tickets/fontisto_bus-ticket.svg"
-                  alt=""
-                  width={301}
-                  height={301}
-                  className={styles.ticketBack}
-                />
-                <Image
-                  src="/icons/account/tickets/fontisto_bus-ticket.svg"
-                  alt=""
-                  width={301}
-                  height={301}
-                  className={styles.ticketFront}
-                />
-              </div>
-
-              {/* Блок з текстом та кнопкою */}
-              <div className={styles.textAndActionBlock}>
-                <h2 className={styles.emptyStateText}>
-                  {t("profile.tickets.empty.title")}
-                </h2>
-                <LocaleLink href="/#routes" className={styles.searchButton}>
-                  {t("profile.tickets.empty.action")}
-                </LocaleLink>
-              </div>
-
+        <SurfacePanel className={styles.emptyCard}>
+          <div className={styles.emptyContentWrapper}>
+            {/* Блок з ілюстрацією */}
+            <div className={styles.illustrationBox}>
+              <Image
+                src="/icons/account/tickets/fontisto_bus-ticket.svg"
+                alt=""
+                width={301}
+                height={301}
+                className={styles.ticketBack}
+              />
+              <Image
+                src="/icons/account/tickets/fontisto_bus-ticket.svg"
+                alt=""
+                width={301}
+                height={301}
+                className={styles.ticketFront}
+              />
             </div>
-          </SurfacePanel>
-        </section>
-      </div>
-    </main>
+
+            {/* Блок з текстом та кнопкою */}
+            <div className={styles.textAndActionBlock}>
+              <h2 className={styles.emptyStateText}>
+                {t("profile.tickets.empty.title")}
+              </h2>
+              <LocaleLink href="/#routes" className={styles.searchButton}>
+                {t("profile.tickets.empty.action")}
+              </LocaleLink>
+            </div>
+          </div>
+        </SurfacePanel>
+      </section>
+    </ProfileWrapper>
   );
 }

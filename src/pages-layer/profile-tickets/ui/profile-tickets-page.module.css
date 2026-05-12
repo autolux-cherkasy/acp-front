@@ -60,7 +60,7 @@
   position: relative;
 }
 
-.ticketBack, 
+.ticketBack,
 .ticketFront {
   position: absolute;
   width: 300.51px;
@@ -107,7 +107,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #697C95 !important;
+  color: #697c95 !important;
   margin: 0;
 }
 
@@ -123,7 +123,6 @@
 /* --- АДАПТИВНІСТЬ --- */
 @media (max-width: 1919px) {
   .emptyCard {
-    width: min(100%, 644px);
     height: 572px;
   }
 }
@@ -147,13 +146,19 @@
     width: 320px;
     height: 250px;
   }
-  .ticketBack, 
+  .ticketBack,
   .ticketFront {
     width: 220px;
     height: 220px;
   }
-  .ticketBack { left: 45px; top: -20px; }
-  .ticketFront { left: 45px; top: 30px; }
+  .ticketBack {
+    left: 45px;
+    top: -20px;
+  }
+  .ticketFront {
+    left: 45px;
+    top: 30px;
+  }
 
   .emptyStateText {
     font-size: 24px;
@@ -191,13 +196,19 @@
     width: 260px;
     height: 200px;
   }
-  .ticketBack, 
+  .ticketBack,
   .ticketFront {
     width: 180px;
     height: 180px;
   }
-  .ticketBack { left: 30px; top: -15px; }
-  .ticketFront { left: 35px; top: 20px; }
+  .ticketBack {
+    left: 30px;
+    top: -15px;
+  }
+  .ticketFront {
+    left: 35px;
+    top: 20px;
+  }
 
   .emptyStateText {
     font-size: 20px;

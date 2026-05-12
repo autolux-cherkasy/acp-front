@@ -20,6 +20,10 @@
   background: transparent;
 }
 
+.wrapperContent {
+  margin-top: 24px;
+}
+
 .srOnly {
   position: absolute;
   width: 1px;

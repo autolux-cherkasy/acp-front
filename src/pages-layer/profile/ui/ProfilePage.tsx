@@ -5,12 +5,11 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 import { changePassword, getProfile, updateProfile } from "@/src/entities/user";
 import { hasAccessToken } from "@/src/shared/api/session";
-import Button from "@/src/shared/ui/Button/Button";
-import LocaleLink from "@/src/shared/i18n/Link";
-import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import ProfileTabsBar from "@/src/widgets/profile-tabs-bar";
+import LocaleLink from "@/src/shared/i18n/Link";
+import Button from "@/src/shared/ui/Button/Button";
 import styles from "./profile-page.module.css";
+import ProfileWrapper from "./ProfileWrapper";
 
 const PHONE_PATTERN = /^\+380\d{9}$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -259,222 +258,200 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className={styles.page}>
-      <div className={styles.container}>
-        <BreadcrumbChips
-          ariaLabel={t("profile.breadcrumbsAria")}
-          items={[
-            { label: t("menu.home"), href: "/#home" },
-            { label: t("profile.cabinet"), current: true },
-            { label: t("profile.title"), current: true },
-          ]}
-        />
+    <ProfileWrapper mode="profile">
+      <section className={styles.card} aria-labelledby="profile-title">
+        <h1 id="profile-title" className={styles.title}>
+          {t("profile.page.title")}
+        </h1>
+        {error ? (
+          <div
+            className={`${styles.notice} ${styles.noticeError}`}
+            role="alert"
+          >
+            <span>{error}</span>
 
-        <ProfileTabsBar
-          ariaLabel={t("profile.tabsAria")}
-          showExitButton
-          items={[
-            { label: t("profile.tabs.tickets"), href: "/profile/tickets" },
-            { label: t("profile.tabs.archive"), href: "/profile/archive" },
-            { label: t("profile.tabs.profile"), active: true },
-          ]}
-        />
+            {!isLoading ? (
+              <button
+                type="button"
+                className={styles.noticeAction}
+                onClick={retryLoad}
+              >
+                {t("profile.page.actions.retry")}
+              </button>
+            ) : null}
+          </div>
+        ) : null}
 
-        <section className={styles.card} aria-labelledby="profile-title">
-          <h1 id="profile-title" className={styles.title}>
-            {t("profile.page.title")}
-          </h1>
+        {success ? (
+          <div
+            className={`${styles.notice} ${styles.noticeSuccess}`}
+            role="status"
+          >
+            {success}
+          </div>
+        ) : null}
 
-          {error ? (
-            <div
-              className={`${styles.notice} ${styles.noticeError}`}
-              role="alert"
-            >
-              <span>{error}</span>
+        {requiresLogin && !isLoading ? (
+          <div className={styles.loginState}>
+            <p className={styles.loginStateText}>
+              {t("profile.page.messages.sessionInactive")}
+            </p>
+            <LocaleLink href="/login" className={styles.loginStateButton}>
+              {t("profile.page.actions.login")}
+            </LocaleLink>
+          </div>
+        ) : null}
 
-              {!isLoading ? (
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.formGrid}>
+            <label className={styles.field}>
+              <span className={styles.label}>
+                {t("profile.page.labels.name")}
+              </span>
+              <input
+                className={styles.input}
+                name="name"
+                type="text"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder={t("profile.page.placeholders.name")}
+                autoComplete="name"
+                disabled={isLoading || isSaving || requiresLogin}
+              />
+            </label>
+
+            <label className={styles.field}>
+              <span className={styles.label}>
+                {t("profile.page.labels.phone")}
+              </span>
+              <input
+                className={styles.input}
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+380XXXXXXXXX"
+                autoComplete="tel"
+                disabled={isLoading || isSaving || requiresLogin}
+              />
+            </label>
+
+            <label className={styles.field}>
+              <span className={styles.label}>
+                {t("profile.page.labels.emailConfirm")}
+              </span>
+              <input
+                className={styles.input}
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="example@email.com"
+                autoComplete="email"
+                disabled={isLoading || isSaving || requiresLogin}
+              />
+            </label>
+
+            <label className={styles.field}>
+              <span className={styles.label}>
+                {t("profile.page.labels.currentPassword")}
+              </span>
+              <span className={styles.inputWrap}>
+                <input
+                  className={`${styles.input} ${styles.inputWithIcon}`}
+                  name="currentPassword"
+                  type={showCurrentPassword ? "text" : "password"}
+                  value={formData.currentPassword}
+                  onChange={handleChange}
+                  placeholder={t("profile.page.placeholders.currentPassword")}
+                  autoComplete="current-password"
+                  disabled={isLoading || isSaving || requiresLogin}
+                />
                 <button
                   type="button"
-                  className={styles.noticeAction}
-                  onClick={retryLoad}
+                  className={styles.passwordToggle}
+                  aria-label={
+                    showCurrentPassword
+                      ? t("common.password.hide")
+                      : t("common.password.show")
+                  }
+                  onClick={() => setShowCurrentPassword((prev) => !prev)}
+                  disabled={isLoading || isSaving || requiresLogin}
                 >
-                  {t("profile.page.actions.retry")}
-                </button>
-              ) : null}
-            </div>
-          ) : null}
-
-          {success ? (
-            <div
-              className={`${styles.notice} ${styles.noticeSuccess}`}
-              role="status"
-            >
-              {success}
-            </div>
-          ) : null}
-
-          {requiresLogin && !isLoading ? (
-            <div className={styles.loginState}>
-              <p className={styles.loginStateText}>
-                {t("profile.page.messages.sessionInactive")}
-              </p>
-              <LocaleLink href="/login" className={styles.loginStateButton}>
-                {t("profile.page.actions.login")}
-              </LocaleLink>
-            </div>
-          ) : null}
-
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={styles.formGrid}>
-              <label className={styles.field}>
-                <span className={styles.label}>
-                  {t("profile.page.labels.name")}
-                </span>
-                <input
-                  className={styles.input}
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder={t("profile.page.placeholders.name")}
-                  autoComplete="name"
-                  disabled={isLoading || isSaving || requiresLogin}
-                />
-              </label>
-
-              <label className={styles.field}>
-                <span className={styles.label}>
-                  {t("profile.page.labels.phone")}
-                </span>
-                <input
-                  className={styles.input}
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+380XXXXXXXXX"
-                  autoComplete="tel"
-                  disabled={isLoading || isSaving || requiresLogin}
-                />
-              </label>
-
-              <label className={styles.field}>
-                <span className={styles.label}>
-                  {t("profile.page.labels.emailConfirm")}
-                </span>
-                <input
-                  className={styles.input}
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="example@email.com"
-                  autoComplete="email"
-                  disabled={isLoading || isSaving || requiresLogin}
-                />
-              </label>
-
-              <label className={styles.field}>
-                <span className={styles.label}>
-                  {t("profile.page.labels.currentPassword")}
-                </span>
-                <span className={styles.inputWrap}>
-                  <input
-                    className={`${styles.input} ${styles.inputWithIcon}`}
-                    name="currentPassword"
-                    type={showCurrentPassword ? "text" : "password"}
-                    value={formData.currentPassword}
-                    onChange={handleChange}
-                    placeholder={t("profile.page.placeholders.currentPassword")}
-                    autoComplete="current-password"
-                    disabled={isLoading || isSaving || requiresLogin}
-                  />
-                  <button
-                    type="button"
-                    className={styles.passwordToggle}
-                    aria-label={
+                  <Image
+                    src={
                       showCurrentPassword
-                        ? t("common.password.hide")
-                        : t("common.password.show")
+                        ? "/icons/eye-open.svg"
+                        : "/icons/eye-off-light.svg"
                     }
-                    onClick={() => setShowCurrentPassword((prev) => !prev)}
-                    disabled={isLoading || isSaving || requiresLogin}
-                  >
-                    <Image
-                      src={
-                        showCurrentPassword
-                          ? "/icons/eye-open.svg"
-                          : "/icons/eye-off-light.svg"
-                      }
-                      alt=""
-                      width={24}
-                      height={24}
-                      unoptimized
-                    />
-                  </button>
-                </span>
-              </label>
-
-              <label className={styles.field}>
-                <span className={styles.label}>
-                  {t("profile.page.labels.newPassword")}
-                </span>
-                <span className={styles.inputWrap}>
-                  <input
-                    className={`${styles.input} ${styles.inputWithIcon}`}
-                    name="newPassword"
-                    type={showNewPassword ? "text" : "password"}
-                    value={formData.newPassword}
-                    onChange={handleChange}
-                    placeholder={t("profile.page.placeholders.newPassword")}
-                    autoComplete="new-password"
-                    disabled={isLoading || isSaving || requiresLogin}
+                    alt=""
+                    width={24}
+                    height={24}
+                    unoptimized
                   />
-                  <button
-                    type="button"
-                    className={styles.passwordToggle}
-                    aria-label={
-                      showNewPassword
-                        ? t("common.password.hide")
-                        : t("common.password.show")
-                    }
-                    onClick={() => setShowNewPassword((prev) => !prev)}
-                    disabled={isLoading || isSaving || requiresLogin}
-                  >
-                    <Image
-                      src={
-                        showNewPassword
-                          ? "/icons/eye-open.svg"
-                          : "/icons/eye-off-light.svg"
-                      }
-                      alt=""
-                      width={24}
-                      height={24}
-                      unoptimized
-                    />
-                  </button>
-                </span>
-              </label>
-            </div>
+                </button>
+              </span>
+            </label>
 
-            <div className={styles.submitButtonWrap}>
-              <Button
-                type="submit"
-                variant="primary"
-                text={
-                  isLoading
-                    ? t("profile.page.actions.loading")
-                    : isSaving
-                      ? t("profile.page.actions.saving")
-                      : t("profile.page.actions.save")
-                }
-                disabled={isLoading || isSaving || requiresLogin}
-                onClick={() => {}}
-              />
-            </div>
-          </form>
-        </section>
-      </div>
-    </main>
+            <label className={styles.field}>
+              <span className={styles.label}>
+                {t("profile.page.labels.newPassword")}
+              </span>
+              <span className={styles.inputWrap}>
+                <input
+                  className={`${styles.input} ${styles.inputWithIcon}`}
+                  name="newPassword"
+                  type={showNewPassword ? "text" : "password"}
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                  placeholder={t("profile.page.placeholders.newPassword")}
+                  autoComplete="new-password"
+                  disabled={isLoading || isSaving || requiresLogin}
+                />
+                <button
+                  type="button"
+                  className={styles.passwordToggle}
+                  aria-label={
+                    showNewPassword
+                      ? t("common.password.hide")
+                      : t("common.password.show")
+                  }
+                  onClick={() => setShowNewPassword((prev) => !prev)}
+                  disabled={isLoading || isSaving || requiresLogin}
+                >
+                  <Image
+                    src={
+                      showNewPassword
+                        ? "/icons/eye-open.svg"
+                        : "/icons/eye-off-light.svg"
+                    }
+                    alt=""
+                    width={24}
+                    height={24}
+                    unoptimized
+                  />
+                </button>
+              </span>
+            </label>
+          </div>
+
+          <div className={styles.submitButtonWrap}>
+            <Button
+              type="submit"
+              variant="primary"
+              text={
+                isLoading
+                  ? t("profile.page.actions.loading")
+                  : isSaving
+                    ? t("profile.page.actions.saving")
+                    : t("profile.page.actions.save")
+              }
+              disabled={isLoading || isSaving || requiresLogin}
+              onClick={() => {}}
+            />
+          </div>
+        </form>
+      </section>
+    </ProfileWrapper>
   );
 }
