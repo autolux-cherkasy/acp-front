@@ -10,6 +10,13 @@ type PageProps = {
   params: Promise<{ locale: string }>;
 };
 
+function getMessageString(
+  value: MessageValue | undefined,
+  fallback: string,
+): string {
+  return typeof value === "string" ? value : fallback;
+}
+
 function isMessageRecord(
   value: MessageValue | undefined,
 ): value is Record<string, MessageValue> {
@@ -59,7 +66,7 @@ export default async function PublicOfferRoutePage({ params }: PageProps) {
   return (
     <PublicOfferPage
       locale={locale}
-      homeLabel={getNestedString(dictionary.menu, "home", "Home")}
+      homeLabel={getMessageString(dictionary["menu.home"], "Home")}
       publicOfferLabel={getNestedString(
         dictionary.publicOffer,
         "title",

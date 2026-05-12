@@ -18,49 +18,50 @@ export default function PublicOfferPage({
 
   return (
     <section className={styles.page}>
-      <div className={styles.breadcrumbsBlock}>
+      <div className={styles.container}>
         <BreadcrumbChips
+          className={styles.breadcrumbs}
           ariaLabel={content.breadcrumbsAria}
           items={[
             { label: homeLabel, href: "/home" },
             { label: publicOfferLabel, current: true },
           ]}
         />
-      </div>
 
-      <div className={styles.content}>
-        <h1 className={styles.title}>{content.title}</h1>
+        <div className={styles.content}>
+          <h1 className={styles.title}>{content.title}</h1>
 
-        <div className={styles.intro}>
-          {content.introduction.map((paragraph) => (
-            <p key={paragraph} className={styles.paragraph}>
-              {paragraph}
-            </p>
+          <div className={styles.intro}>
+            {content.introduction.map((paragraph) => (
+              <p key={paragraph} className={styles.paragraph}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
+
+          {content.sections.map((section) => (
+            <section
+              key={section.id}
+              className={styles.section}
+              aria-labelledby={section.id}
+            >
+              <h2 id={section.id} className={styles.sectionTitle}>
+                {section.title}
+              </h2>
+
+              <div className={styles.sectionText}>
+                {section.paragraphs.map((paragraph) => (
+                  <p
+                    key={`${section.id}-${paragraph}`}
+                    className={styles.paragraph}
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
-
-        {content.sections.map((section) => (
-          <section
-            key={section.id}
-            className={styles.section}
-            aria-labelledby={section.id}
-          >
-            <h2 id={section.id} className={styles.sectionTitle}>
-              {section.title}
-            </h2>
-
-            <div className={styles.sectionText}>
-              {section.paragraphs.map((paragraph) => (
-                <p
-                  key={`${section.id}-${paragraph}`}
-                  className={styles.paragraph}
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </section>
-        ))}
       </div>
     </section>
   );
