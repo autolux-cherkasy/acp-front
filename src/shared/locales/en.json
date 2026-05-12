@@ -429,13 +429,13 @@
         "name": "Full name",
         "phone": "Phone number +380...",
         "emailConfirm": "Email (for confirmation)",
-        "currentPassword": "Current password",
-        "newPassword": "New password"
+        "newPassword": "Password",
+        "confirmPassword": "Confirm password"
       },
       "placeholders": {
         "name": "Enter your full name",
-        "currentPassword": "Enter current password",
-        "newPassword": "Enter new password"
+        "newPassword": "Enter new password",
+        "confirmPassword": "Repeat password"
       },
       "actions": {
         "retry": "Retry",
@@ -453,9 +453,9 @@
         "nameMin": "Enter a name with at least 2 characters.",
         "phoneFormat": "Phone number must be in the format +380XXXXXXXXX.",
         "emailInvalid": "Enter a valid email address.",
-        "passwordBothRequired": "To change the password, fill in both the current and the new password.",
+        "passwordBothRequired": "To change the password, enter new password and confirm it.",
         "passwordMin": "The new password must contain at least 6 characters.",
-        "passwordSame": "The new password cannot match the current password.",
+        "passwordSame": "Passwords do not match.",
         "updateProfile": "Failed to update profile details.",
         "changePassword": "Failed to change password."
       }

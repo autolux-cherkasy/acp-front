@@ -147,6 +147,11 @@
   box-shadow: 0 0 0 3px rgba(34, 96, 120, 0.12);
 }
 
+.inputInvalid {
+  border-color: #c03b3b;
+  box-shadow: 0 0 0 3px rgba(192, 59, 59, 0.12);
+}
+
 .input:disabled {
   cursor: not-allowed;
   background: #eff4f5;
@@ -200,6 +205,12 @@
 .passwordToggleIconClosed {
   mask-image: url("/icons/eye-off-light.svg");
   -webkit-mask-image: url("/icons/eye-off-light.svg");
+}
+
+.fieldError {
+  font-size: 13px;
+  line-height: 140%;
+  color: #c03b3b;
 }
 
 .submitButtonWrap {

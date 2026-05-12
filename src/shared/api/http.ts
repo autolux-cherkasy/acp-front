@@ -1,5 +1,15 @@
 import { clearAccessToken, getAccessToken, setAccessToken } from "./session";
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 function normalizeApiUrl(rawApiUrl: string) {
   const trimmedApiUrl = rawApiUrl.replace(/\/$/, "");
 
@@ -143,7 +153,7 @@ export async function apiFetch<T>(
       clearAccessToken();
     }
 
-    throw new Error(await getErrorMessage(response));
+    throw new ApiError(await getErrorMessage(response), response.status);
   }
 
   return parseResponse<T>(response);
