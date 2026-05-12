@@ -332,7 +332,7 @@
     },
     "register": {
       "title": "Реєстрація",
-      "phoneLabel": "Номер телефону",
+      "phoneLabel": "Введіть номер телефону +380...",
       "emailLabel": "Введіть email",
       "passwordLabel": "Пароль",
       "confirmPasswordLabel": "Підтвердіть пароль",
