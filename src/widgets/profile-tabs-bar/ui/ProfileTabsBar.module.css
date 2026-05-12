@@ -44,6 +44,7 @@
 
 .tabLink {
   display: flex;
+  align-items: stretch;
   text-decoration: none;
 }
 
@@ -61,6 +62,7 @@
   white-space: nowrap;
   --chip-backdrop-filter: none;
   box-shadow: none;
+  align-self: stretch;
 }
 
 .tabChipMuted {
@@ -73,6 +75,11 @@
   color: var(--color-text-strong);
   position: relative;
   z-index: 1;
+  margin-block: -1px;
+  min-height: 64px;
+  height: 64px;
+  --slanted-chip-padding-inline: 18px;
+  --slanted-chip-slant: 10px;
 }
 
 .exitButton {
@@ -100,8 +107,8 @@
 
 .exitIcon {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 19px;
+  height: 18px;
 }
 
 /* tablet */
@@ -125,6 +132,14 @@
     min-height: 56px;
     padding: 8px 14px;
     font-size: 16px;
+  }
+
+  .tabChipActive {
+    margin-block: -1px;
+    min-height: 58px;
+    height: 58px;
+    --slanted-chip-padding-inline: 16px;
+    --slanted-chip-slant: 8px;
   }
 }
 
@@ -150,5 +165,13 @@
     min-height: 48px;
     padding: 8px 12px;
     font-size: 15px;
+  }
+
+  .tabChipActive {
+    margin-block: -1px;
+    min-height: 50px;
+    height: 50px;
+    --slanted-chip-padding-inline: 14px;
+    --slanted-chip-slant: 6px;
   }
 }
