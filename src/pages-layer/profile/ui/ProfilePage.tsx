@@ -2,7 +2,6 @@
 
 import {
   ChangeEvent,
-  CSSProperties,
   FormEvent,
   useEffect,
   useState,
@@ -384,16 +383,11 @@ export default function ProfilePage() {
                   disabled={isLoading || isSaving || requiresLogin}
                 >
                   <span
-                    className={styles.passwordToggleIcon}
-                    style={
-                      {
-                        "--toggle-icon": `url("${
-                          showCurrentPassword
-                            ? "/icons/eye-open.svg"
-                            : "/icons/eye-off-light.svg"
-                        }")`,
-                      } as CSSProperties
-                    }
+                    className={`${styles.passwordToggleIcon} ${
+                      showCurrentPassword
+                        ? styles.passwordToggleIconOpen
+                        : styles.passwordToggleIconClosed
+                    }`}
                     aria-hidden="true"
                   />
                 </button>
@@ -427,16 +421,11 @@ export default function ProfilePage() {
                   disabled={isLoading || isSaving || requiresLogin}
                 >
                   <span
-                    className={styles.passwordToggleIcon}
-                    style={
-                      {
-                        "--toggle-icon": `url("${
-                          showNewPassword
-                            ? "/icons/eye-open.svg"
-                            : "/icons/eye-off-light.svg"
-                        }")`,
-                      } as CSSProperties
-                    }
+                    className={`${styles.passwordToggleIcon} ${
+                      showNewPassword
+                        ? styles.passwordToggleIconOpen
+                        : styles.passwordToggleIconClosed
+                    }`}
                     aria-hidden="true"
                   />
                 </button>

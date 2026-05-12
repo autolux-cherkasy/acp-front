@@ -48,7 +48,7 @@
 
 .loginBtn:active {
   background: var(--DarkSlateGray, #226078);
-  color: var(--bg, #FCFEFE);
+  color: var(--bg, #fcfefe);
   border-color: transparent;
   box-shadow: none;
   transform: translateY(1px);
@@ -76,24 +76,11 @@
   transition: background-color 0.2s ease;
 }
 
-.avatarBtn:hover,
-.avatarBtn:focus-visible,
-.avatarBtnActive {
-  background: var(--Blue-500, var(--color-brand));
-}
-
 .avatarIcon {
   width: 32px;
   height: 32px;
   display: block;
   transition: filter 0.2s ease;
-}
-
-.avatarBtn:hover .avatarIcon,
-.avatarBtn:focus-visible .avatarIcon,
-.avatarBtnActive .avatarIcon {
-  filter: brightness(0) saturate(100%) invert(90%) sepia(18%) saturate(388%)
-    hue-rotate(176deg) brightness(101%) contrast(94%);
 }
 
 @media (max-width: 1024px) {

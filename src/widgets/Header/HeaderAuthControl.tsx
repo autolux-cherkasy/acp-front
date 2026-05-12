@@ -5,7 +5,6 @@ import styles from "./HeaderAuthControl.module.css";
 type HeaderAuthControlProps = {
   className?: string;
   isAuthorized: boolean;
-  isAvatarActive: boolean;
   loginLabel: string;
   profileAriaLabel: string;
   onLoginClick: () => void;
@@ -15,19 +14,20 @@ type HeaderAuthControlProps = {
 export default function HeaderAuthControl({
   className,
   isAuthorized,
-  isAvatarActive,
   loginLabel,
   profileAriaLabel,
   onLoginClick,
   onAvatarClick,
 }: HeaderAuthControlProps) {
-  const rootClassName = className ? `${styles.authControl} ${className}` : styles.authControl;
+  const rootClassName = className
+    ? `${styles.authControl} ${className}`
+    : styles.authControl;
 
   return (
     <div className={rootClassName}>
       {isAuthorized ? (
         <button
-          className={`${styles.avatarBtn} ${isAvatarActive ? styles.avatarBtnActive : ""}`}
+          className={`${styles.avatarBtn}`}
           aria-label={profileAriaLabel}
           type="button"
           onClick={onAvatarClick}

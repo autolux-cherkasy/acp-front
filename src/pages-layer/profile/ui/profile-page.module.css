@@ -184,14 +184,22 @@
   height: 20px;
   display: block;
   background-color: currentColor;
-  mask-image: var(--toggle-icon);
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
-  -webkit-mask-image: var(--toggle-icon);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
+}
+
+.passwordToggleIconOpen {
+  mask-image: url("/icons/eye-open.svg");
+  -webkit-mask-image: url("/icons/eye-open.svg");
+}
+
+.passwordToggleIconClosed {
+  mask-image: url("/icons/eye-off-light.svg");
+  -webkit-mask-image: url("/icons/eye-off-light.svg");
 }
 
 .submitButtonWrap {

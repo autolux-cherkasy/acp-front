@@ -39,9 +39,6 @@ export default function Header() {
   const workspaceHref = getRoleLandingPath(role);
 
   const isAuthorized = isAuthenticated;
-  const isAvatarActive =
-    pathnameWithoutLocale === workspaceHref ||
-    pathnameWithoutLocale.startsWith(`${workspaceHref}/`);
 
   const [activeMenuHref, setActiveMenuHref] = useState("#home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -197,7 +194,6 @@ export default function Header() {
           <HeaderAuthControl
             className={styles.authControl}
             isAuthorized={isAuthorized}
-            isAvatarActive={isAvatarActive}
             loginLabel={t("header.login")}
             profileAriaLabel={t("header.profileAria")}
             onLoginClick={openLoginModal}
