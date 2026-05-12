@@ -74,7 +74,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
   };
 
   const isBusy = isLoading || isGoogleLoading;
-  const benefitItems = [
+  const promoItems = [
     t("auth.login.benefits.reserve"),
     t("auth.login.benefits.buy"),
     t("auth.login.benefits.manage"),
@@ -85,100 +85,101 @@ export default function LoginPage({ onClose }: LoginPageProps) {
       logoAlt={t("header.logoAlt")}
       closeLabel={t("common.close")}
       brandDescription={t("auth.common.brandDesc")}
-      promoItems={benefitItems}
+      promoItems={promoItems}
       backgroundImage="/(auth)/login/login-bus.png"
       onClose={handleCloseAuthFlow}
       variant="login"
       reverse
       brandDescriptionClassName={styles.loginBrandDesc}
+      promoClassName={styles.loginTextBlock}
       cardClassName={styles.loginCard}
     >
-          <h1 className={styles.loginTitle}>{t("auth.login.title")}</h1>
+      <h1 className={styles.loginTitle}>{t("auth.login.title")}</h1>
 
-          <form className={styles.loginBlock} onSubmit={handleSubmit}>
-            {error ? (
-              <Notification
-                variant="error"
-                size="small"
-                message={error}
-                onClose={() => setError("")}
-                closeLabel={t("common.close")}
-                className={styles.loginNotice}
-              />
-            ) : null}
+      <form className={styles.loginBlock} onSubmit={handleSubmit}>
+        {error ? (
+          <Notification
+            variant="error"
+            size="small"
+            message={error}
+            onClose={() => setError("")}
+            closeLabel={t("common.close")}
+            className={styles.loginNotice}
+          />
+        ) : null}
 
-            <label className={styles.field}>
-              <span className={styles.label}>{t("auth.login.identifierLabel")}</span>
-              <TextField
-                type="text"
-                name="identifier"
-                value={formData.identifier}
-                onChange={handleChange}
-                autoComplete="username"
-                className={styles.loginInput}
-                required
-              />
+        <label className={styles.field}>
+          <span className={styles.label}>{t("auth.login.identifierLabel")}</span>
+          <TextField
+            type="text"
+            name="identifier"
+            value={formData.identifier}
+            onChange={handleChange}
+            autoComplete="username"
+            className={styles.loginInput}
+            required
+          />
+        </label>
+
+        <div className={styles.loginPasswordGroup}>
+          <div className={styles.field}>
+            <span className={styles.label}>{t("auth.login.passwordLabel")}</span>
+            <TextField
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete="current-password"
+              className={styles.loginInput}
+              required
+              passwordToggle
+              showPasswordLabel={t("common.password.show")}
+              hidePasswordLabel={t("common.password.hide")}
+            />
+          </div>
+
+          <div className={styles.rowBetween}>
+            <label className={styles.remember}>
+              <input className={styles.rememberInput} type="checkbox" />
+              <span className={styles.checkboxUi} aria-hidden="true" />
+              <span className={styles.rememberText}>{t("auth.login.remember")}</span>
             </label>
 
-            <div className={styles.loginPasswordGroup}>
-              <div className={styles.field}>
-                <span className={styles.label}>{t("auth.login.passwordLabel")}</span>
-                <TextField
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  autoComplete="current-password"
-                  className={styles.loginInput}
-                  required
-                  passwordToggle
-                  showPasswordLabel={t("common.password.show")}
-                  hidePasswordLabel={t("common.password.hide")}
-                />
-              </div>
+            <LocaleLink className={styles.forgot} href="/forgot-password">
+              {t("auth.login.forgotPassword")}
+            </LocaleLink>
+          </div>
+        </div>
 
-              <div className={styles.rowBetween}>
-                <label className={styles.remember}>
-                  <input className={styles.rememberInput} type="checkbox" />
-                  <span className={styles.checkboxUi} aria-hidden="true" />
-                  <span className={styles.rememberText}>{t("auth.login.remember")}</span>
-                </label>
+        <div className={styles.buttonContainer}>
+          <Button
+            text={isLoading ? t("auth.login.submitLoading") : t("auth.login.submit")}
+            variant="primary"
+            type="submit"
+            disabled={isBusy}
+            onClick={() => {}}
+          />
 
-                <LocaleLink className={styles.forgot} href="/forgot-password">
-                  {t("auth.login.forgotPassword")}
-                </LocaleLink>
-              </div>
-            </div>
+          <Button
+            text={t("auth.login.register")}
+            variant="secondary"
+            type="button"
+            disabled={isBusy}
+            onClick={() => router.replace(resolveHref("/register"))}
+          />
+        </div>
 
-            <div className={styles.buttonContainer}>
-              <Button
-                text={isLoading ? t("auth.login.submitLoading") : t("auth.login.submit")}
-                variant="primary"
-                type="submit"
-                disabled={isBusy}
-                onClick={() => {}}
-              />
-
-              <Button
-                text={t("auth.login.register")}
-                variant="secondary"
-                type="button"
-                disabled={isBusy}
-                onClick={() => router.replace(resolveHref("/register"))}
-              />
-            </div>
-
-            <div className={styles.socialRow}>
-              <GoogleAuthButton
-                intent="login"
-                disabled={isLoading}
-                onBusyChange={setIsGoogleLoading}
-                onSuccess={() => {
-                  void handlePostAuthSuccess();
-                }}
-              />
-            </div>
-          </form>
+        <div className={styles.socialRow}>
+          <GoogleAuthButton
+            intent="login"
+            disabled={isLoading}
+            onBusyChange={setIsGoogleLoading}
+            onSuccess={() => {
+              void handlePostAuthSuccess();
+            }}
+          />
+        </div>
+      </form>
     </AuthShell>
   );
 }

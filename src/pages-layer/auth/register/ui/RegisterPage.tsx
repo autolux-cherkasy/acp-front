@@ -175,7 +175,6 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       variant="register"
       brandDescriptionClassName={styles.registerBrandDesc}
       promoClassName={styles.registerTextBlock}
-      promoItemClassName={styles.registerTextLine}
       cardClassName={styles.registerCard}
     >
       <h1 className={styles.registerTitle}>{t("auth.register.title")}</h1>

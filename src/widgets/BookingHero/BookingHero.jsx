@@ -1,9 +1,13 @@
 import Image from "next/image";
-import { Suspense } from "react";
+import dynamic from "next/dynamic";
 
 import styles from "./BookingHero.module.css";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import BookingForm from "../BookingForm";
+
+const BookingForm = dynamic(() => import("../BookingForm"), {
+  ssr: false,
+  loading: () => <div className={styles.formFallback} aria-hidden="true" />,
+});
 
 export default function BookingHero() {
   const { t } = useI18n();
@@ -12,13 +16,7 @@ export default function BookingHero() {
     <section id="booking" className={styles.section}>
       <div className={styles.mainBlock}>
         <div className={styles.formBlock}>
-          <Suspense
-            fallback={
-              <div className={styles.formFallback} aria-hidden="true" />
-            }
-          >
-            <BookingForm />
-          </Suspense>
+          <BookingForm />
 
           <div className={styles.imageWrap}>
             <Image

@@ -14,7 +14,7 @@
   --banner-backdrop: none;
   --auth-overlay-bg: linear-gradient(
     135deg,
-    rgba(20, 78, 103, 0.82) 0%,
+    rgba(20, 78, 103, 0.7) 0%,
     rgba(34, 96, 120, 0.68) 42%,
     rgba(17, 49, 61, 0.58) 100%
   );
@@ -34,14 +34,20 @@
   --auth-brand-desc-line-height: 150%;
   --auth-brand-desc-color: var(--color-page-bg);
   --auth-brand-desc-shadow: 0 4px 18px rgba(17, 49, 61, 0.28);
-  --auth-promo-border: 1px solid rgba(201, 228, 231, 0.3);
+  --auth-promo-border: 1px solid rgba(201, 228, 231, 0.2);
   --auth-promo-background: linear-gradient(
     180deg,
-    rgba(252, 254, 254, 0.12) 0%,
-    rgba(201, 228, 231, 0.06) 100%
+    rgba(17, 49, 61, 0.38) 0%,
+    rgba(17, 49, 61, 0.28) 100%
   );
   --auth-promo-padding: 22px 22px 22px 36px;
   --auth-promo-gap: 16px;
+  --auth-promo-item-font-weight: 400;
+  --auth-promo-item-font-size: 15px;
+  --auth-promo-item-line-height: 150%;
+  --auth-promo-item-color: var(--color-page-bg);
+  --auth-promo-marker-color: #fcfefe;
+  --auth-promo-marker-font-size: 16px;
   --auth-card-padding: 26px 24px 24px;
   --auth-card-background: linear-gradient(
     180deg,
@@ -93,7 +99,7 @@
   backdrop-filter: var(--banner-backdrop);
   transform: rotate(var(--auth-banner-rotate));
   transform-origin: center;
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
 }
 
@@ -291,23 +297,23 @@
   gap: var(--auth-promo-gap);
   list-style: disc;
   list-style-position: outside;
-  border: var(--auth-promo-border);
-  border-radius: 18px;
-  background: var(--auth-promo-background);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 20px 44px rgba(17, 49, 61, 0.12);
 }
 
 .promoItem {
   margin: 0;
-  font-weight: 500;
-  font-size: 15px;
-  line-height: 150%;
-  color: var(--color-page-bg);
+  font-weight: var(--auth-promo-item-font-weight);
+  font-size: var(--auth-promo-item-font-size);
+  line-height: var(--auth-promo-item-line-height);
+  color: var(--auth-promo-item-color);
+}
+
+.promoItem strong {
+  font-weight: 600;
 }
 
 .promoItem::marker {
-  color: var(--color-accent);
+  color: var(--auth-promo-marker-color);
+  font-size: var(--auth-promo-marker-font-size);
 }
 
 .card {
@@ -519,6 +525,6 @@
   .promoItem {
     width: 100%;
     font-size: 14px;
-    line-height: 144%;
+    line-height: 150%;
   }
 }

@@ -41,7 +41,7 @@ export default function AuthShell({
   onClose,
   children,
   variant = "recovery",
-  bannerVariant = "glass",
+  bannerVariant,
   reverse = false,
   compact = false,
   shellClassName,
@@ -64,7 +64,9 @@ export default function AuthShell({
           ? styles.bannerSoft
           : bannerVariant === "brand"
             ? styles.bannerBrand
-            : styles.bannerGlass,
+            : bannerVariant === "glass"
+              ? styles.bannerGlass
+              : undefined,
         compact ? styles.compact : undefined,
         shellClassName,
       )}

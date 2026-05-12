@@ -63,7 +63,6 @@ export default function PasswordRecoveryShell({
       contentClassName={contentClassName}
       asideClassName={asideClassName}
       promoClassName={styles.infoBlock}
-      promoItemClassName={styles.infoLine}
       cardClassName={cardClassName}
     >
         <section aria-labelledby={titleId} className={styles.shellSection}>
