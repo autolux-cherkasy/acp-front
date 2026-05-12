@@ -1,7 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  CSSProperties,
+  FormEvent,
+  useEffect,
+  useState,
+} from "react";
 
 import { changePassword, getProfile, updateProfile } from "@/src/entities/user";
 import { hasAccessToken } from "@/src/shared/api/session";
@@ -378,16 +383,18 @@ export default function ProfilePage() {
                   onClick={() => setShowCurrentPassword((prev) => !prev)}
                   disabled={isLoading || isSaving || requiresLogin}
                 >
-                  <Image
-                    src={
-                      showCurrentPassword
-                        ? "/icons/eye-open.svg"
-                        : "/icons/eye-off-light.svg"
+                  <span
+                    className={styles.passwordToggleIcon}
+                    style={
+                      {
+                        "--toggle-icon": `url("${
+                          showCurrentPassword
+                            ? "/icons/eye-open.svg"
+                            : "/icons/eye-off-light.svg"
+                        }")`,
+                      } as CSSProperties
                     }
-                    alt=""
-                    width={24}
-                    height={24}
-                    unoptimized
+                    aria-hidden="true"
                   />
                 </button>
               </span>
@@ -419,16 +426,18 @@ export default function ProfilePage() {
                   onClick={() => setShowNewPassword((prev) => !prev)}
                   disabled={isLoading || isSaving || requiresLogin}
                 >
-                  <Image
-                    src={
-                      showNewPassword
-                        ? "/icons/eye-open.svg"
-                        : "/icons/eye-off-light.svg"
+                  <span
+                    className={styles.passwordToggleIcon}
+                    style={
+                      {
+                        "--toggle-icon": `url("${
+                          showNewPassword
+                            ? "/icons/eye-open.svg"
+                            : "/icons/eye-off-light.svg"
+                        }")`,
+                      } as CSSProperties
                     }
-                    alt=""
-                    width={24}
-                    height={24}
-                    unoptimized
+                    aria-hidden="true"
                   />
                 </button>
               </span>

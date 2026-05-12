@@ -168,6 +168,10 @@
   border: none;
   background: transparent;
   cursor: pointer;
+  color: var(--color-border-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .passwordToggle:disabled {
@@ -175,9 +179,55 @@
   opacity: 0.55;
 }
 
+.passwordToggleIcon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-color: currentColor;
+  mask-image: var(--toggle-icon);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: var(--toggle-icon);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
 .submitButtonWrap {
   margin: 32px auto 0;
   width: min(100%, 317px);
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+  .formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .field:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .field:nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .field:nth-child(3) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .field:nth-child(4) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .field:nth-child(5) {
+    grid-column: 2;
+    grid-row: 2;
+  }
 }
 
 @media (max-width: 768px) {
