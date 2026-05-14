@@ -29,11 +29,11 @@ export default function HomePage() {
           </div>
 
           <section id="routes" className={styles.fullWidthSection}>
-            <PopularRoutes />
+            <PopularRoutes titleClassName={styles.sectionTitle} />
           </section>
 
           <section id="about">
-            <About />
+            <About titleClassName={styles.sectionTitle} />
           </section>
         </div>
       </div>

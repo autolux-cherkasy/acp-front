@@ -360,3 +360,9 @@
     line-height: 47px;
   }
 }
+
+@media (max-width: 500px) {
+  .text {
+    font-size: 16px;
+  }
+}

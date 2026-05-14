@@ -16,9 +16,10 @@ import {
 
 type Props = {
   routes?: PopularRoute[];
+  titleClassName?: string;
 };
 
-export default function PopularRoutes({ routes }: Props) {
+export default function PopularRoutes({ routes, titleClassName }: Props) {
   const { lang, t } = useI18n();
   const data = routes?.length ? routes : fallbackRoutes;
   const topRoutes = data.slice(0, 2);
@@ -26,7 +27,9 @@ export default function PopularRoutes({ routes }: Props) {
 
   return (
     <section className={styles.section} aria-label={t("popularRoutes.aria")}>
-      <PopularRoutesTitle>{t("popularRoutes.title")}</PopularRoutesTitle>
+      <PopularRoutesTitle className={titleClassName}>
+        {t("popularRoutes.title")}
+      </PopularRoutesTitle>
 
       <div className={styles.cards}>
         <div className={styles.topRow}>

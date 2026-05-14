@@ -231,14 +231,14 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 625px) {
   .section {
     width: 100%;
     align-items: stretch;
     max-width: none;
     padding: 0 16px;
     box-sizing: border-box;
-    gap: 8px;
+    gap: 20px;
   }
 
   .cards {

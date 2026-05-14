@@ -21,12 +21,16 @@ const cards: Card[] = [
   { key: "corporate", icon: "/icons/Services/Map.svg" },
 ];
 
-export default function About() {
+type Props = {
+  titleClassName?: string;
+};
+
+export default function About({ titleClassName }: Props) {
   const { t } = useI18n();
 
   return (
     <section className={styles.section} aria-label={t("about.ariaLabel")}>
-      <h2 className={styles.title}>{t("about.title")}</h2>
+      <h2 className={titleClassName ?? styles.title}>{t("about.title")}</h2>
 
       <div className={styles.grid}>
         {cards.map((card) => (

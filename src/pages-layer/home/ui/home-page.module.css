@@ -23,7 +23,7 @@
 .mainScreenBlock {
   width: 100vw;
   max-width: var(--layout-max-width);
-  height: 886px;
+  height: 850px;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
 
@@ -68,6 +68,17 @@
   font-weight: 500;
   font-size: 32px;
   line-height: 120%;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--color-brand, var(--color-brand));
+}
+
+.sectionTitle {
+  width: 100%;
+  margin: 0;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 124%;
   letter-spacing: 0;
   text-align: center;
   color: var(--color-brand, var(--color-brand));
@@ -151,6 +162,11 @@
     text-align: center;
     color: var(--color-brand, var(--color-brand));
   }
+
+  .sectionTitle {
+    font-size: 18px;
+    line-height: 124%;
+  }
 }
 
 @media (max-width: 360px) {
@@ -160,5 +176,10 @@
 
   .title {
     font-size: 18px;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+    line-height: 144%;
   }
 }
