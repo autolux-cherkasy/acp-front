@@ -7,21 +7,18 @@ import type {
 export type ProfileFormData = {
   name: string;
   phone: string;
-  email: string;
   newPassword: string;
   confirmPassword: string;
 };
 
 type Translate = (key: string) => string;
-type ProfilePayload = Partial<Pick<ProfileFormData, "name" | "phone" | "email">>;
+type ProfilePayload = Partial<Pick<ProfileFormData, "name" | "phone">>;
 
 const PHONE_PATTERN = /^\+380\d{9}$/;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const EMPTY_PROFILE_FORM: ProfileFormData = {
   name: "",
   phone: "",
-  email: "",
   newPassword: "",
   confirmPassword: "",
 };
@@ -33,7 +30,6 @@ export function normalizeProfileFormData(
     ...values,
     name: values.name.trim(),
     phone: values.phone.trim(),
-    email: values.email.trim(),
   };
 }
 
@@ -112,10 +108,6 @@ export function createProfileValidationRules(
     value,
   ) => PHONE_PATTERN.test(value.trim()) || t("profile.page.errors.phoneFormat");
 
-  const validateEmail: RegisterOptions<ProfileFormData, "email">["validate"] = (
-    value,
-  ) => EMAIL_PATTERN.test(value.trim()) || t("profile.page.errors.emailInvalid");
-
   const validateNewPassword: RegisterOptions<
     ProfileFormData,
     "newPassword"
@@ -133,7 +125,6 @@ export function createProfileValidationRules(
   return {
     name: { validate: validateName },
     phone: { validate: validatePhone },
-    email: { validate: validateEmail },
     newPassword: { validate: validateNewPassword },
     confirmPassword: { validate: validateConfirmPassword },
   } satisfies Record<
@@ -156,11 +147,6 @@ export function buildProfilePayload(
   if (dirtyFields.phone) {
     payload.phone = normalizedValues.phone;
   }
-
-  if (dirtyFields.email) {
-    payload.email = normalizedValues.email;
-  }
-
   return payload;
 }
 

@@ -428,8 +428,8 @@
       "labels": {
         "name": "Full name",
         "phone": "Phone number +380...",
-        "emailConfirm": "Email (for confirmation)",
-        "newPassword": "Password",
+        "emailConfirm": "Email",
+        "newPassword": "New password",
         "confirmPassword": "Confirm password"
       },
       "placeholders": {

@@ -428,8 +428,8 @@
       "labels": {
         "name": "Прізвище та ім'я",
         "phone": "Номер телефону +380...",
-        "emailConfirm": "Email (для підтвердження)",
-        "newPassword": "Пароль",
+        "emailConfirm": "Email",
+        "newPassword": "Новий пароль",
         "confirmPassword": "Підтвердіть пароль"
       },
       "placeholders": {

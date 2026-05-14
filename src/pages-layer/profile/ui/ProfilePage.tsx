@@ -38,6 +38,7 @@ function shouldRequireLogin(error: unknown) {
 export default function ProfilePage() {
   const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(true);
+  const [profileEmail, setProfileEmail] = useState("");
   const [serverError, setServerError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [requiresLogin, setRequiresLogin] = useState(false);
@@ -89,10 +90,10 @@ export default function ProfilePage() {
         reset({
           name: profile.name ?? "",
           phone: profile.phone ?? "",
-          email: profile.email ?? "",
           newPassword: "",
           confirmPassword: "",
         });
+        setProfileEmail(profile.email ?? "");
       } catch (err) {
         if (isCancelled) {
           return;
@@ -154,10 +155,8 @@ export default function ProfilePage() {
 
     const successMessages: string[] = [];
     const failureMessages: string[] = [];
-    let nextProfileDefaults: Pick<
-      ProfileFormData,
-      "name" | "phone" | "email"
-    > | null = null;
+    let nextProfileDefaults: Pick<ProfileFormData, "name" | "phone"> | null =
+      null;
     let didUpdateProfile = false;
     let didChangePassword = false;
 
@@ -168,8 +167,8 @@ export default function ProfilePage() {
         nextProfileDefaults = {
           name: response.user.name ?? "",
           phone: response.user.phone ?? "",
-          email: response.user.email ?? "",
         };
+        setProfileEmail(response.user.email ?? "");
         didUpdateProfile = true;
         successMessages.push(response.message);
       } catch (err) {
@@ -184,7 +183,7 @@ export default function ProfilePage() {
     if (wantsPasswordChange) {
       try {
         const response = await changePassword({
-          newPassword: normalizedData.newPassword,
+          password: normalizedData.newPassword,
           confirmPassword: normalizedData.confirmPassword,
         });
 
@@ -212,17 +211,11 @@ export default function ProfilePage() {
             : "",
       });
     } else if (didChangePassword) {
-      reset(
-        {
-          ...normalizedData,
-          newPassword: "",
-          confirmPassword: "",
-        },
-        {
-          keepDirty: true,
-          keepDirtyValues: true,
-        },
-      );
+      reset({
+        ...normalizedData,
+        newPassword: "",
+        confirmPassword: "",
+      });
     }
 
     if (successMessages.length > 0) {
@@ -360,25 +353,11 @@ export default function ProfilePage() {
                 type="email"
                 placeholder="example@email.com"
                 autoComplete="email"
-                aria-invalid={fieldErrors.email ? "true" : "false"}
-                aria-describedby={
-                  fieldErrors.email ? "profile-email-error" : undefined
-                }
-                className={`${styles.input} ${
-                  fieldErrors.email ? styles.inputInvalid : ""
-                }`}
-                disabled={isFormDisabled}
-                {...registerInput("email", validationRules.email)}
+                value={profileEmail}
+                readOnly
+                className={styles.input}
+                disabled={true}
               />
-              {fieldErrors.email?.message ? (
-                <span
-                  id="profile-email-error"
-                  className={styles.fieldError}
-                  role="alert"
-                >
-                  {fieldErrors.email.message}
-                </span>
-              ) : null}
             </label>
 
             <label className={styles.field}>

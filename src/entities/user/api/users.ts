@@ -21,7 +21,6 @@ export type UserProfile = {
 };
 
 export type UpdateProfilePayload = {
-  email?: string;
   name?: string;
   phone?: string;
   specialCategory?: string;
@@ -34,7 +33,7 @@ export type UpdateProfileResponse = {
 };
 
 export type ChangePasswordPayload = {
-  newPassword: string;
+  password: string;
   confirmPassword: string;
 };
 
