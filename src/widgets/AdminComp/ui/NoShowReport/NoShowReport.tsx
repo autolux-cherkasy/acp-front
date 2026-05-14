@@ -17,7 +17,44 @@ type NoShowRow = {
   ratio: string;
 };
 
-const MOCK_ROWS: NoShowRow[] = [];
+const MOCK_ROWS: NoShowRow[] = [
+  {
+    id: 1,
+    name: "Денисенко Сергій",
+    phone: "+380675494578",
+    ratio: "8/6",
+  },
+  {
+    id: 3,
+    name: "Сисоева Інна",
+    phone: "+380675494578",
+    ratio: "12/7",
+  },
+  {
+    id: 4,
+    name: "Трайтак Ігор",
+    phone: "+380675494578",
+    ratio: "14/12",
+  },
+  {
+    id: 5,
+    name: "Юнак Людмила",
+    phone: "+380675494578",
+    ratio: "17/6",
+  },
+  {
+    id: 6,
+    name: "Науменко Ольга",
+    phone: "+380675494578",
+    ratio: "19/12",
+  },
+  {
+    id: 7,
+    name: "Ковтун Максим",
+    phone: "+380675494578",
+    ratio: "12/6",
+  },
+];
 
 type Props = { rows?: NoShowRow[] };
 
@@ -59,6 +96,13 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
       ) : (
         <div className={styles.tableWrapper}>
           <DashboardTable className={styles.table}>
+            <colgroup>
+              <col className={styles.colNum} />
+              <col className={styles.colName} />
+              <col className={styles.colPhone} />
+              <col className={styles.colRatio} />
+              <col className={styles.colAction} />
+            </colgroup>
             <DashboardThead className={styles.theadRow}>
               <th className={styles.thNum}>
                 {t("dispatcherArea.analytics.noShowReport.columns.number")}
@@ -78,10 +122,10 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
               {visibleRows.map((row, index) => (
                 <DashboardTr key={row.id} className={styles.row}>
                   <td className={styles.tdNum}>{index + 1}</td>
-                  <td className={`${styles.td} ${styles.tdLeft}`}>
+                  <td className={`${styles.td} ${styles.tdLeft} ${styles.tdName}`}>
                     {row.name}
                   </td>
-                  <td className={`${styles.td} ${styles.tdLeft}`}>
+                  <td className={`${styles.td} ${styles.tdLeft} ${styles.tdPhone}`}>
                     {row.phone}
                   </td>
                   <td className={styles.td}>{row.ratio}</td>
