@@ -21,6 +21,10 @@ const menu = [
   { key: "menu.contacts", href: "#contacts" },
 ];
 
+const sectionHrefs = menu
+  .map((item) => item.href)
+  .filter((href) => href.startsWith("#"));
+
 const phones = [
   { text: "+38097 480 24 28", href: "tel:+380974802428" },
   { text: "+38093 966 09 40", href: "tel:+380939660940" },
@@ -40,7 +44,14 @@ export default function Header() {
 
   const isAuthorized = isAuthenticated;
 
-  const [activeMenuHref, setActiveMenuHref] = useState("#home");
+  const [activeMenuHref, setActiveMenuHref] = useState(() => {
+    if (typeof window === "undefined") {
+      return "#home";
+    }
+
+    const hash = window.location.hash;
+    return sectionHrefs.includes(hash) ? hash : "#home";
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isPhoneMenuOpen, setIsPhoneMenuOpen] = useState(false);
   const currentMenuHref =
@@ -48,32 +59,61 @@ export default function Header() {
   const phoneMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (pathnameWithoutLocale !== "/") return;
+    const syncActiveFromHash = () => {
+      const hash = window.location.hash;
+      setActiveMenuHref(sectionHrefs.includes(hash) ? hash : "#home");
+    };
+
+    syncActiveFromHash();
 
     const ids = ["home", "about", "routes", "contacts"];
     const sections = ids
       .map((id) => document.getElementById(id))
       .filter(Boolean) as HTMLElement[];
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    const onScroll = () => {
+      const best = sections
+        .map((section) => {
+          const rect = section.getBoundingClientRect();
+          return {
+            id: section.id,
+            distance: Math.abs(rect.top - 120),
+          };
+        })
+        .sort((a, b) => a.distance - b.distance)[0];
 
-        if (!visible) return;
+      if (best) {
+        console.log("here");
+        setActiveMenuHref(`#${best.id}`);
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [pathnameWithoutLocale]);
 
-        setActiveMenuHref(`#${visible.target.id}`);
-      },
-      {
-        root: null,
-        rootMargin: "-120px 0px -45% 0px",
-        threshold: [0.2, 0.4, 0.6],
-      },
-    );
-    sections.forEach((section) => observer.observe(section));
+  useEffect(() => {
+    if (pathnameWithoutLocale !== "/") return;
 
-    return () => observer.disconnect();
+    const hash = window.location.hash;
+
+    if (!sectionHrefs.includes(hash)) {
+      return;
+    }
+
+    const targetId = hash.slice(1);
+    const elem = document.getElementById(targetId);
+
+    if (!elem) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const top = elem.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top, behavior: "smooth" });
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
   }, [pathnameWithoutLocale]);
 
   useEffect(() => {
@@ -145,7 +185,7 @@ export default function Header() {
       return;
     }
 
-    if (pathnameWithoutLocale === "/cafe" && href !== "#contacts") {
+    if (pathnameWithoutLocale === "/cafe") {
       router.push(resolveHref(`/${href}`));
       return;
     }
