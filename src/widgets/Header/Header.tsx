@@ -50,15 +50,30 @@ export default function Header() {
   useEffect(() => {
     if (pathnameWithoutLocale !== "/") return;
 
-    const syncActiveFromHash = () => {
-      const hash = window.location.hash;
-      const knownHash = menu.some((item) => item.href === hash);
-      setActiveMenuHref(knownHash ? hash : "#home");
-    };
+    const ids = ["home", "about", "routes", "contacts"];
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
 
-    syncActiveFromHash();
-    window.addEventListener("hashchange", syncActiveFromHash);
-    return () => window.removeEventListener("hashchange", syncActiveFromHash);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visible) return;
+
+        setActiveMenuHref(`#${visible.target.id}`);
+      },
+      {
+        root: null,
+        rootMargin: "-120px 0px -45% 0px",
+        threshold: [0.2, 0.4, 0.6],
+      },
+    );
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
   }, [pathnameWithoutLocale]);
 
   useEffect(() => {
@@ -125,12 +140,12 @@ export default function Header() {
     setIsMobileMenuOpen(false);
     setIsPhoneMenuOpen(false);
 
-    if (!href.startsWith("#")) {
+    if (href === "/cafe") {
       router.push(resolveHref(href));
       return;
     }
 
-    if (pathnameWithoutLocale !== "/") {
+    if (pathnameWithoutLocale === "/cafe" && href !== "#contacts") {
       router.push(resolveHref(`/${href}`));
       return;
     }
@@ -139,7 +154,8 @@ export default function Header() {
     const elem = document.getElementById(targetId);
 
     if (elem) {
-      elem.scrollIntoView({ behavior: "smooth", block: "start" });
+      const top = elem.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top, behavior: "smooth" });
 
       if (window.location.hash !== href) {
         window.history.replaceState(null, "", href);
