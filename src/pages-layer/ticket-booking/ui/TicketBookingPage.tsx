@@ -44,9 +44,12 @@ function formatDisplayTime(value: string | null) {
 }
 
 function formatHeroDate(value: string) {
-  return value.replace(/(^\d+\s+)(\p{L})/u, (_match, prefix: string, firstLetter: string) => {
-    return `${prefix}${firstLetter.toUpperCase()}`;
-  });
+  return value.replace(
+    /(^\d+\s+)(\p{L})/u,
+    (_match, prefix: string, firstLetter: string) => {
+      return `${prefix}${firstLetter.toUpperCase()}`;
+    },
+  );
 }
 
 function getPassengerLabelKey(count: number, lang: "uk" | "en") {
@@ -78,8 +81,14 @@ export default function TicketBookingPage({
 }: TicketBookingPageProps) {
   const { lang, t } = useI18n();
   const locale = lang === "en" ? "en-GB" : "uk-UA";
-  const maxBookableSeats = Math.max(1, Math.min(route.maxSeats, MAX_BOOKING_SEATS));
-  const safeInitialSeats = Math.min(Math.max(initialSeats, 1), maxBookableSeats);
+  const maxBookableSeats = Math.max(
+    1,
+    Math.min(route.maxSeats, MAX_BOOKING_SEATS),
+  );
+  const safeInitialSeats = Math.min(
+    Math.max(initialSeats, 1),
+    maxBookableSeats,
+  );
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -112,37 +121,52 @@ export default function TicketBookingPage({
 
   return (
     <main className={styles.page}>
-      <div className={styles.container}>
-        <section className={styles.headBlock}>
+      <section className={styles.headBlock}>
+        <div className={styles.container}>
           <BreadcrumbChips
             className={styles.breadcrumbs}
             ariaLabel={t("ticketBooking.breadcrumbsAria")}
             items={[
               { label: t("ticketBooking.breadcrumbs.home"), href: "/#home" },
-              { label: t("ticketBooking.breadcrumbs.routes"), href: "/#routes" },
+              {
+                label: t("ticketBooking.breadcrumbs.routes"),
+                href: "/#routes",
+              },
               { label: t("ticketBooking.breadcrumbs.current"), current: true },
             ]}
           />
+        </div>
 
-          <div className={styles.hero}>
+        <div className={styles.hero}>
+          <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>
               {t("ticketBooking.routePrefix")}: {routeTitle}
             </h1>
             <p className={styles.heroMeta}>{heroMeta}</p>
           </div>
-        </section>
+        </div>
+      </section>
 
+      <div className={styles.container}>
         <section className={styles.layout}>
           <section>
-            <section className={styles.formCard} aria-labelledby="ticket-booking-form-title">
+            <section
+              className={styles.formCard}
+              aria-labelledby="ticket-booking-form-title"
+            >
               <h2 id="ticket-booking-form-title" className={styles.formTitle}>
                 {t("ticketBooking.form.title")}
               </h2>
 
-              <form className={styles.form} onSubmit={(event) => event.preventDefault()}>
+              <form
+                className={styles.form}
+                onSubmit={(event) => event.preventDefault()}
+              >
                 <div className={styles.formGrid}>
                   <label className={styles.field}>
-                    <span className={styles.label}>{t("ticketBooking.form.nameLabel")}</span>
+                    <span className={styles.label}>
+                      {t("ticketBooking.form.nameLabel")}
+                    </span>
                     <input
                       className={styles.input}
                       type="text"
@@ -155,7 +179,9 @@ export default function TicketBookingPage({
                   </label>
 
                   <label className={styles.field}>
-                    <span className={styles.label}>{t("ticketBooking.form.emailLabel")}</span>
+                    <span className={styles.label}>
+                      {t("ticketBooking.form.emailLabel")}
+                    </span>
                     <input
                       className={styles.input}
                       type="email"
@@ -168,7 +194,9 @@ export default function TicketBookingPage({
                   </label>
 
                   <label className={styles.field}>
-                    <span className={styles.label}>{t("ticketBooking.form.phoneLabel")}</span>
+                    <span className={styles.label}>
+                      {t("ticketBooking.form.phoneLabel")}
+                    </span>
                     <input
                       className={styles.input}
                       type="tel"
@@ -183,7 +211,8 @@ export default function TicketBookingPage({
 
                   <div className={styles.field}>
                     <span className={styles.label}>
-                      {t("ticketBooking.form.seatsLabel")} (Макс. {maxBookableSeats})*
+                      {t("ticketBooking.form.seatsLabel")} (Макс.{" "}
+                      {maxBookableSeats})*
                     </span>
 
                     <div className={styles.seatsRow}>
@@ -192,7 +221,9 @@ export default function TicketBookingPage({
                           type="button"
                           className={styles.stepperButton}
                           aria-label={t("ticketBooking.controls.decreaseSeats")}
-                          onClick={() => setSeats((current) => Math.max(1, current - 1))}
+                          onClick={() =>
+                            setSeats((current) => Math.max(1, current - 1))
+                          }
                           disabled={seats <= 1}
                         >
                           -
@@ -204,14 +235,20 @@ export default function TicketBookingPage({
                           type="button"
                           className={styles.stepperButton}
                           aria-label={t("ticketBooking.controls.increaseSeats")}
-                          onClick={() => setSeats((current) => Math.min(maxBookableSeats, current + 1))}
+                          onClick={() =>
+                            setSeats((current) =>
+                              Math.min(maxBookableSeats, current + 1),
+                            )
+                          }
                           disabled={seats >= maxBookableSeats}
                         >
                           +
                         </button>
                       </div>
 
-                      <span className={styles.seatsHint}>{t("ticketBooking.form.seatsHint")}</span>
+                      <span className={styles.seatsHint}>
+                        {t("ticketBooking.form.seatsHint")}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -221,63 +258,70 @@ export default function TicketBookingPage({
                 </div>
               </form>
             </section>
-            <section className={styles.paymentCard} aria-labelledby="payment-section-title">
+            <section
+              className={styles.paymentCard}
+              aria-labelledby="payment-section-title"
+            >
               <div className={styles.actionBlock}>
-              <div className={styles.paymentSecurity}>
-                <span className={styles.paymentText}>{t("ticketBooking.payment.secure")}</span>
+                <div className={styles.paymentSecurity}>
+                  <span className={styles.paymentText}>
+                    {t("ticketBooking.payment.secure")}
+                  </span>
 
-                <div className={styles.paymentMarks} aria-hidden="true">
-                  <Image
-                    src="/icons/tickets/logos_visa.svg"
-                    alt=""
-                    width={68}
-                    height={22}
-                    className={styles.paymentLogoVisa}
+                  <div className={styles.paymentMarks} aria-hidden="true">
+                    <Image
+                      src="/icons/tickets/logos_visa.svg"
+                      alt=""
+                      width={68}
+                      height={22}
+                      className={styles.paymentLogoVisa}
+                    />
+                    <Image
+                      src="/icons/tickets/logos_mastercard.svg"
+                      alt=""
+                      width={31}
+                      height={24}
+                      className={styles.paymentLogoMastercard}
+                    />
+                    <Image
+                      src="/icons/tickets/logos_maestro.svg"
+                      alt=""
+                      width={31}
+                      height={24}
+                      className={styles.paymentLogoMaestro}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.actions}>
+                  <Button
+                    text={t("ticketBooking.form.pay")}
+                    fullWidth={false}
+                    onClick={() => {}}
                   />
-                  <Image
-                    src="/icons/tickets/logos_mastercard.svg"
-                    alt=""
-                    width={31}
-                    height={24}
-                    className={styles.paymentLogoMastercard}
-                  />
-                  <Image
-                    src="/icons/tickets/logos_maestro.svg"
-                    alt=""
-                    width={31}
-                    height={24}
-                    className={styles.paymentLogoMaestro}
+                  <Button
+                    text={t("ticketBooking.form.reserve")}
+                    variant="secondary"
+                    fullWidth={false}
+                    onClick={() => {}}
                   />
                 </div>
-              </div>
 
-              <div className={styles.actions}>
-                <Button
-                  text={t("ticketBooking.form.pay")}
-                  fullWidth={false}
-                  onClick={() => { }}
-                />
-                <Button
-                  text={t("ticketBooking.form.reserve")}
-                  variant="secondary"
-                  fullWidth={false}
-                  onClick={() => { }}
-                />
+                <p className={styles.termsText}>
+                  {t("ticketBooking.payment.termsPrefix")}{" "}
+                  <LocaleLink href="/public-offer" className={styles.termsLink}>
+                    {t("ticketBooking.payment.termsLink")}
+                  </LocaleLink>
+                </p>
               </div>
-
-              <p className={styles.termsText}>
-                {t("ticketBooking.payment.termsPrefix")}{" "}
-                <LocaleLink href="/public-offer" className={styles.termsLink}>
-                  {t("ticketBooking.payment.termsLink")}
-                </LocaleLink>
-              </p>
-            </div>
             </section>
           </section>
 
           <aside className={styles.sidebarCard}>
             <section className={styles.sidebarSection}>
-              <h2 className={styles.sidebarTitle}>{t("ticketBooking.routeCard.aboutTitle")}</h2>
+              <h2 className={styles.sidebarTitle}>
+                {t("ticketBooking.routeCard.aboutTitle")}
+              </h2>
 
               <div className={styles.routeInfo}>
                 <div className={styles.routeTimes}>
@@ -308,10 +352,17 @@ export default function TicketBookingPage({
             <div className={styles.sidebarDivider} />
 
             <section className={styles.sidebarSection}>
-              <h2 className={styles.sidebarTitle}>{t("ticketBooking.routeCard.title")}</h2>
+              <h2 className={styles.sidebarTitle}>
+                {t("ticketBooking.routeCard.title")}
+              </h2>
 
               <div className={styles.summaryRow}>
-                <span>{t(`ticketBooking.routeCard.passenger.${getPassengerLabelKey(seats, lang)}`)}:</span>
+                <span>
+                  {t(
+                    `ticketBooking.routeCard.passenger.${getPassengerLabelKey(seats, lang)}`,
+                  )}
+                  :
+                </span>
                 <strong>{seats}</strong>
               </div>
 
@@ -321,8 +372,6 @@ export default function TicketBookingPage({
               </div>
             </section>
           </aside>
-
-
         </section>
       </div>
     </main>

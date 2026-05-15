@@ -1,28 +1,33 @@
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 :root {
   /* Global responsive states: 1920 / 1440 / 768 / 393 */
   --layout-max-width: 1920px;
   --layout-padding-x: 256px;
   --color-brand: #226078;
-  --color-page-bg: #FCFEFE;
-  --color-text-strong: #11313D;
-  --color-accent: #EEBB3A;
+  --color-page-bg: #fcfefe;
+  --color-text-strong: #11313d;
+  --color-accent: #eebb3a;
   --DarkSlateGray: #226078;
   --color-brand-overlay: #22607899;
-  --color-surface-accent: #C9E4E7;
-  --color-surface-soft: #F4F7F7;
-  --color-border-muted: #7B98A3;
-  --color-accent-strong: #F0B523;
-  --color-danger: #C8102E;
-  --color-ua-blue: #005BBB;
+  --color-surface-accent: #c9e4e7;
+  --color-surface-soft: #f4f7f7;
+  --color-border-muted: #7b98a3;
+  --color-accent-strong: #f0b523;
+  --color-danger: #c8102e;
+  --color-ua-blue: #005bbb;
   --color-navy: #012169;
-  --color-ua-yellow: #FFD500;
-  --color-white: #FFFFFF;
-  --color-success: #32A352;
-  --color-divider: #E0EAED;
+  --color-ua-yellow: #ffd500;
+  --color-white: #ffffff;
+  --color-success: #32a352;
+  --color-divider: #e0eaed;
   --color-shadow-modal: rgba(17, 49, 61, 0.35);
-  --font-roboto: Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-roboto:
+    Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 
   /* Compatibility aliases for existing CSS */
   --bg: var(--color-page-bg);
@@ -40,12 +45,19 @@
   :root {
     --layout-max-width: 1920px;
     --layout-padding-x: 256px;
+    --layout-padding-booking-x: 180px;
   }
 }
 @media (max-width: 1440px) {
   :root {
     --layout-max-width: 1440px;
     --layout-padding-x: 104px;
+    --layout-padding-booking-x: 124px;
+  }
+}
+@media (max-width: 1200px) {
+  :root {
+    --layout-padding-booking-x: 80px;
   }
 }
 
@@ -53,6 +65,7 @@
   :root {
     --layout-max-width: 768px;
     --layout-padding-x: 24px;
+    --layout-padding-booking-x: 24px;
   }
 }
 
@@ -60,10 +73,12 @@
   :root {
     --layout-max-width: 393px;
     --layout-padding-x: 16px;
+    --layout-padding-booking-x: 16px;
   }
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -71,8 +86,10 @@ html, body {
   font-family: var(--font-roboto), sans-serif;
   scroll-behavior: smooth;
   scroll-padding-top: 100px;
-  background: var(--bg, #FCFEFE);
+  background: var(--bg, #fcfefe);
 }
 
 /* ВАЖЛИВО: clip краще ніж hidden (не “ріже” тіні як hidden інколи) */
-body { overflow-x: clip; }
+body {
+  overflow-x: clip;
+}

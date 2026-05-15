@@ -8,7 +8,7 @@
   width: 100%;
   max-width: var(--layout-max-width);
   margin: 0 auto;
-  padding: 0 var(--layout-padding-x);
+  padding: 0 var(--layout-padding-booking-x);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -28,13 +28,21 @@
 }
 
 .hero {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: var(--color-brand);
+  margin-bottom: 20px;
+}
+
+.heroContent {
+  width: 100%;
+  padding: 16px var(--layout-padding-booking-x);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
   gap: 4px;
-  padding: 16px 24px;
-  background: var(--color-brand);
 }
 
 .heroTitle {
@@ -227,10 +235,9 @@
   height: 24px;
 }
 
-.paymentCard{
+.paymentCard {
   padding-top: 32px;
 }
-
 
 .actionBlock {
   display: flex;
@@ -345,7 +352,11 @@
   width: 8px;
   flex: 1 1 auto;
   min-height: 140px;
-  background-image: radial-gradient(circle, var(--color-surface-accent) 0 3px, transparent 3.2px);
+  background-image: radial-gradient(
+    circle,
+    var(--color-surface-accent) 0 3px,
+    transparent 3.2px
+  );
   background-size: 8px 14px;
   background-repeat: repeat-y;
   background-position: center;
@@ -401,9 +412,9 @@
   font-weight: 500;
 }
 
-@media (max-width: 1279px) {
+@media (max-width: 1100px) {
   .container {
-    padding: 0 24px;
+    padding: 0 var(--layout-padding-booking-x);
     gap: 32px;
   }
 
@@ -422,7 +433,7 @@
   }
 
   .container {
-    padding: 0 16px;
+    padding: 0 var(--layout-padding-booking-x);
     gap: 20px;
   }
 
@@ -430,8 +441,8 @@
     min-height: 40px;
   }
 
-  .hero {
-    padding: 12px 16px;
+  .heroContent {
+    padding: 12px var(--layout-padding-booking-x);
   }
 
   .heroTitle {
@@ -482,5 +493,18 @@
   .routeTimeline,
   .routeStops {
     min-height: 160px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero {
+    margin-bottom: 10px;
+  }
+  .heroTitle {
+    font-size: 16px;
+  }
+  .heroMeta {
+    font-weight: 400;
+    font-size: 13px;
   }
 }
