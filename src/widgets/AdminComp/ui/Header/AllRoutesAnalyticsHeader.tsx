@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import { DashboardDateText } from "@/src/shared";
+import { DashboardDateText, SharedLabel } from "@/src/shared";
 import styles from "./admin-routes-page.module.css";
 import { useRouter } from "next/navigation";
 export default function AllRoutesAnalyticsHeader() {
@@ -15,12 +15,12 @@ export default function AllRoutesAnalyticsHeader() {
           <div className={styles.icon} />
         </div>
         <div className={styles.titleContainer}>
-          <span className={styles.title}>
+          <SharedLabel variant="dashboardHeaderTitle">
             {t("dispatcherArea.sidebar.menu.analytics")}
-          </span>
-          <span className={styles.subtitle}>
+          </SharedLabel>
+          <SharedLabel variant="dashboardHeaderSubtitle">
             {t("dispatcherArea.analytics.subtitle")}
-          </span>
+          </SharedLabel>
         </div>
       </div>
       <div className={styles.dateContainer}>

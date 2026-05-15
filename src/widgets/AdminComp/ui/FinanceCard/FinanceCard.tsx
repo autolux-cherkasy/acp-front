@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import { DashboardCard } from "@/src/shared";
+import { DashboardCard, SharedLabel } from "@/src/shared";
 import {
   BarChart,
   Bar,
@@ -64,12 +64,12 @@ export default function FinanceCard() {
   return (
     <DashboardCard className={styles.card}>
       <div className={styles.header}>
-        <span className={styles.title}>
+        <SharedLabel variant="dashboardCardTitle">
           {t("dispatcherArea.analytics.finance.title")}
-        </span>
-        <span className={styles.subtitle}>
+        </SharedLabel>
+        <SharedLabel variant="dashboardCardSubtitle">
           {t("dispatcherArea.analytics.finance.subtitle")}
-        </span>
+        </SharedLabel>
       </div>
 
       <div className={styles.badgesRow}>

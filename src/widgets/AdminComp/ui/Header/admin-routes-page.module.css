@@ -12,21 +12,6 @@
   flex: 1;
 }
 
-.title {
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 1.44;
-  color: var(--color-brand);
-}
-
-.subtitle {
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 1.44;
-  letter-spacing: 0;
-  color: var(--color-brand);
-}
-
 .buttonWrapper {
   flex-shrink: 0;
   width: 200;
@@ -52,13 +37,6 @@
   flex-shrink: 0;
 }
 
-.dateText {
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 1.44;
-  color: var(--color-brand);
-  white-space: nowrap;
-}
 .iconContainer {
   width: 46px;
   height: 46px;

@@ -15,14 +15,6 @@
 .title {
   width: 100%;
   max-width: 1240px;
-  height: 35px;
-  margin: 0;
-
-  font-weight: 400;
-  font-size: 28px;
-  line-height: 124%;
-  text-align: center;
-  color: var(--color-brand, var(--color-brand));
 }
 
 .grid {
@@ -184,9 +176,6 @@
   }
 
   .title {
-    height: 24px;
-    font-size: 18px;
-    line-height: 132%;
     text-align: left;
   }
 

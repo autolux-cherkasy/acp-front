@@ -8,6 +8,10 @@
   gap: 32px;
 }
 
+.title {
+  width: 100%;
+}
+
 .cards {
   width: 1240px;
   height: 761px;

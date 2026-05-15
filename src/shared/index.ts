@@ -23,6 +23,8 @@ export type {
   NotificationSize,
   NotificationVariant,
 } from "./ui/Notification/Notification";
+export { default as SharedLabel } from "./ui/SharedLabel/SharedLabel";
+export type { SharedLabelVariant } from "./ui/SharedLabel/SharedLabel";
 export { default as DashboardCard } from "./ui/DashboardComponents/DashboardCard";
 export {
   DashboardTable,

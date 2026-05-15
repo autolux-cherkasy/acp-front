@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { SharedLabel } from "@/src/shared";
 import styles from "./About.module.css";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import StatStepperCore from "./StatStepperCore/StatStepperCore";
@@ -21,16 +22,14 @@ const cards: Card[] = [
   { key: "corporate", icon: "/icons/Services/Map.svg" },
 ];
 
-type Props = {
-  titleClassName?: string;
-};
-
-export default function About({ titleClassName }: Props) {
+export default function About() {
   const { t } = useI18n();
 
   return (
     <section className={styles.section} aria-label={t("about.ariaLabel")}>
-      <h2 className={titleClassName ?? styles.title}>{t("about.title")}</h2>
+      <SharedLabel as="h2" variant="sectionTitle" className={styles.title}>
+        {t("about.title")}
+      </SharedLabel>
 
       <div className={styles.grid}>
         {cards.map((card) => (

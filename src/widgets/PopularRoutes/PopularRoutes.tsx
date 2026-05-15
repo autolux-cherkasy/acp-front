@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 
+import { SharedLabel } from "@/src/shared";
 import LocaleLink from "@/src/shared/i18n/Link";
 import styles from "./PopularRoutes.module.css";
-import PopularRoutesTitle from "./PopularRoutesTitle";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Chip from "@/src/shared/ui/Chip/Chip";
 import {
@@ -16,10 +16,9 @@ import {
 
 type Props = {
   routes?: PopularRoute[];
-  titleClassName?: string;
 };
 
-export default function PopularRoutes({ routes, titleClassName }: Props) {
+export default function PopularRoutes({ routes }: Props) {
   const { lang, t } = useI18n();
   const data = routes?.length ? routes : fallbackRoutes;
   const topRoutes = data.slice(0, 2);
@@ -27,9 +26,9 @@ export default function PopularRoutes({ routes, titleClassName }: Props) {
 
   return (
     <section className={styles.section} aria-label={t("popularRoutes.aria")}>
-      <PopularRoutesTitle className={titleClassName}>
+      <SharedLabel as="h2" variant="sectionTitle" className={styles.title}>
         {t("popularRoutes.title")}
-      </PopularRoutesTitle>
+      </SharedLabel>
 
       <div className={styles.cards}>
         <div className={styles.topRow}>

@@ -2,7 +2,7 @@
 
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
-import { DashboardDateText } from "@/src/shared";
+import { DashboardDateText, SharedLabel } from "@/src/shared";
 import styles from "./admin-routes-page.module.css";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
@@ -15,12 +15,12 @@ export default function AnalyticsPageHeader() {
   return (
     <div className={styles.headerContainer}>
       <div className={styles.titleContainer}>
-        <span className={styles.title}>
+        <SharedLabel variant="dashboardHeaderTitle">
           {t("dispatcherArea.sidebar.menu.analytics")}
-        </span>
-        <span className={styles.subtitle}>
+        </SharedLabel>
+        <SharedLabel variant="dashboardHeaderSubtitle">
           {t("dispatcherArea.analytics.subtitle")}
-        </span>
+        </SharedLabel>
       </div>
 
       <div className={styles.buttonWrapper}>

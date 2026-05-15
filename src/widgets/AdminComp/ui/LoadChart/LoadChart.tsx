@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import { DashboardCard } from "@/src/shared";
+import { DashboardCard, SharedLabel } from "@/src/shared";
 import {
   AreaChart,
   Area,
@@ -32,12 +32,12 @@ export default function LoadChart() {
   return (
     <DashboardCard className={styles.card}>
       <div className={styles.header}>
-        <span className={styles.title}>
+        <SharedLabel variant="dashboardCardTitle">
           {t("dispatcherArea.analytics.load.title")}
-        </span>
-        <span className={styles.subtitle}>
+        </SharedLabel>
+        <SharedLabel variant="dashboardCardSubtitle">
           {t("dispatcherArea.analytics.load.subtitle")}
-        </span>
+        </SharedLabel>
       </div>
 
       <div className={styles.chartWrapper}>

@@ -6,6 +6,7 @@ import {
   DashboardCard,
   DashboardTable,
   DashboardThead,
+  SharedLabel,
   DashboardTr,
 } from "@/src/shared";
 import styles from "./NoShowReport.module.css";
@@ -70,12 +71,12 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
   return (
     <DashboardCard className={styles.card}>
       <div className={styles.header}>
-        <span className={styles.title}>
+        <SharedLabel variant="dashboardCardTitle">
           {t("dispatcherArea.analytics.noShowReport.title")}
-        </span>
-        <span className={styles.subtitle}>
+        </SharedLabel>
+        <SharedLabel variant="dashboardCardSubtitle">
           {t("dispatcherArea.analytics.noShowReport.subtitle")}
-        </span>
+        </SharedLabel>
       </div>
 
       {visibleRows.length === 0 ? (
