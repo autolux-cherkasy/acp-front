@@ -137,9 +137,33 @@
   color: var(--color-brand);
 }
 
+.ticketBadgeWarning {
+  background: #ff3d001a;
+  color: #ff3d00;
+  font-weight: 400;
+  font-size: 14px;
+
+  line-height: 144%;
+  vertical-align: middle;
+}
+
 .ticketMetaDate {
   font-size: 14px;
   color: var(--color-border-muted);
+}
+
+.unpaidNotice {
+  margin: 12px 0 0;
+  font-family: var(--font-roboto), sans-serif;
+  font-size: 12px;
+  line-height: 150%;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-brand);
+}
+
+.unpaidNoticeLead {
+  font-weight: 500;
 }
 
 .routeBody {
@@ -191,8 +215,11 @@
   width: 8px;
   flex: 1 1 auto;
   min-height: 120px;
-  background:
-    radial-gradient(circle, var(--color-surface-accent) 0 4px, transparent 4px 100%);
+  background: radial-gradient(
+    circle,
+    var(--color-surface-accent) 0 4px,
+    transparent 4px 100%
+  );
   background-size: 8px 14px;
   background-repeat: repeat-y;
   background-position: center;
@@ -423,7 +450,6 @@
   .actions {
     gap: 8px;
   }
-
 }
 
 @media (max-width: 360px) {
@@ -464,5 +490,4 @@
     height: 16px;
     flex: 0 0 16px;
   }
-
 }

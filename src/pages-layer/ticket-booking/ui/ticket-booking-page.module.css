@@ -85,12 +85,19 @@
   box-shadow: 0 4px 4px rgba(123, 152, 163, 0.7);
 }
 
-.formTitle {
+.sectionTitle {
   margin: 0;
   font-size: 24px;
   line-height: 124%;
   font-weight: 500;
   color: var(--color-brand);
+}
+
+.secondaryText {
+  font-size: 12px;
+  line-height: 150%;
+  font-weight: 400;
+  color: var(--color-text-strong);
 }
 
 .form {
@@ -180,12 +187,6 @@
   color: var(--color-brand);
 }
 
-.seatsHint {
-  font-size: 12px;
-  line-height: 150%;
-  color: var(--color-text-strong);
-}
-
 .identityNote {
   padding: 8px 0 8px 8px;
   border-left: 2px solid var(--color-accent);
@@ -267,11 +268,7 @@
   width: 100%;
   align-self: stretch;
   min-height: 18px;
-  font-size: 12px;
-  line-height: 150%;
-  font-weight: 400;
   text-align: center;
-  color: var(--color-text-strong);
 }
 
 .termsLink {
@@ -293,14 +290,6 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-}
-
-.sidebarTitle {
-  margin: 0;
-  font-size: 24px;
-  line-height: 124%;
-  font-weight: 500;
-  color: var(--color-brand);
 }
 
 .routeInfo {
@@ -422,8 +411,19 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .mainColumn {
+    order: 2;
+  }
+  .sidebarSection {
+    gap: 12px;
+  }
   .sidebarCard {
+    order: 1;
+    width: 100%;
     max-width: 797px;
+  }
+  .paymentCard {
+    padding-top: 16px;
   }
 }
 
@@ -439,6 +439,13 @@
 
   .breadcrumbs {
     min-height: 40px;
+  }
+  .paymentCard {
+    padding-top: 0px;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
   }
 
   .heroContent {
@@ -465,7 +472,7 @@
   }
 
   .formGrid {
-    grid-template-columns: 1fr;
+    /* grid-template-columns: 1fr; */
     gap: 16px;
   }
 
@@ -496,6 +503,11 @@
   }
 }
 
+@media (max-width: 560px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
 @media (max-width: 400px) {
   .hero {
     margin-bottom: 10px;

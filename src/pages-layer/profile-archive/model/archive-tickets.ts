@@ -1,3 +1,5 @@
+import type { TicketStatus } from "@/src/entities/ticket";
+
 export type ArchivedTicketStop = {
   city: string;
   station: string;
@@ -12,8 +14,7 @@ export type ArchivedTicket = {
   passengerPhone: string;
   seatCount: number;
   price: string;
-  status: string;
-  statusTone: "success" | "muted";
+  status: TicketStatus;
   routeFrom: ArchivedTicketStop;
   routeTo: ArchivedTicketStop;
 };
@@ -27,8 +28,7 @@ export const ARCHIVED_TICKETS: ArchivedTicket[] = [
     passengerPhone: "+38067 295 32 12",
     seatCount: 1,
     price: "500 ₴",
-    status: "Сплачено",
-    statusTone: "success",
+    status: "cancelled",
     routeFrom: {
       city: "м.Черкаси",
       station: "(пл.Дружби Народів)",
@@ -48,8 +48,7 @@ export const ARCHIVED_TICKETS: ArchivedTicket[] = [
     passengerPhone: "+38067 295 32 12",
     seatCount: 1,
     price: "500 ₴",
-    status: "Скасовано",
-    statusTone: "muted",
+    status: "booked",
     routeFrom: {
       city: "м.Черкаси",
       station: "(пл.Дружби Народів)",
@@ -69,8 +68,7 @@ export const ARCHIVED_TICKETS: ArchivedTicket[] = [
     passengerPhone: "+38067 295 32 12",
     seatCount: 1,
     price: "500 ₴",
-    status: "Сплачено",
-    statusTone: "success",
+    status: "paid",
     routeFrom: {
       city: "м.Черкаси",
       station: "(пл.Дружби Народів)",

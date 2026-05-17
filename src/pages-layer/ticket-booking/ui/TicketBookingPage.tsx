@@ -149,12 +149,15 @@ export default function TicketBookingPage({
 
       <div className={styles.container}>
         <section className={styles.layout}>
-          <section>
+          <section className={styles.mainColumn}>
             <section
               className={styles.formCard}
               aria-labelledby="ticket-booking-form-title"
             >
-              <h2 id="ticket-booking-form-title" className={styles.formTitle}>
+              <h2
+                id="ticket-booking-form-title"
+                className={styles.sectionTitle}
+              >
                 {t("ticketBooking.form.title")}
               </h2>
 
@@ -246,7 +249,7 @@ export default function TicketBookingPage({
                         </button>
                       </div>
 
-                      <span className={styles.seatsHint}>
+                      <span className={styles.secondaryText}>
                         {t("ticketBooking.form.seatsHint")}
                       </span>
                     </div>
@@ -307,7 +310,7 @@ export default function TicketBookingPage({
                   />
                 </div>
 
-                <p className={styles.termsText}>
+                <p className={`${styles.termsText} ${styles.secondaryText}`}>
                   {t("ticketBooking.payment.termsPrefix")}{" "}
                   <LocaleLink href="/public-offer" className={styles.termsLink}>
                     {t("ticketBooking.payment.termsLink")}
@@ -319,7 +322,7 @@ export default function TicketBookingPage({
 
           <aside className={styles.sidebarCard}>
             <section className={styles.sidebarSection}>
-              <h2 className={styles.sidebarTitle}>
+              <h2 className={styles.sectionTitle}>
                 {t("ticketBooking.routeCard.aboutTitle")}
               </h2>
 
@@ -352,7 +355,7 @@ export default function TicketBookingPage({
             <div className={styles.sidebarDivider} />
 
             <section className={styles.sidebarSection}>
-              <h2 className={styles.sidebarTitle}>
+              <h2 className={styles.sectionTitle}>
                 {t("ticketBooking.routeCard.title")}
               </h2>
 

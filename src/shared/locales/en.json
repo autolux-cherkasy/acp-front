@@ -131,7 +131,7 @@
       "emailLabel": "Email",
       "emailPlaceholder": "Enter your email",
       "phoneLabel": "Phone number",
-      "phonePlaceholder": "+380",
+      "phonePlaceholder": "+380 1234 5678",
       "seatsLabel": "Seats",
       "note": "Fill in the passenger details to continue with booking or payment.",
       "seatsHint": "Free seat choice",
@@ -404,7 +404,14 @@
       "description": "Archived tickets and completed trips are stored here for quick review.",
       "backToTickets": "Back to tickets",
       "pay": "Pay ticket",
-      "cancel": "Cancel reservation"
+      "cancel": "Cancel reservation",
+      "unpaidNoticeLead": "Please note:",
+      "unpaidNoticeText": "you need to pay for the reservation no later than 5 minutes before departure. If delayed, the reservation will be automatically cancelled.",
+      "status": {
+        "booked": "Unpaid",
+        "paid": "Paid",
+        "cancelled": "Cancelled"
+      }
     },
     "logoutAria": "Sign out from personal account",
     "description": "This is a minimal profile page. Settings, tickets, and your trip history will appear here later.",
