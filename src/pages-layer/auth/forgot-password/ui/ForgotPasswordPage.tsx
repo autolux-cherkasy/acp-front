@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { useForgotPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
 import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
-import { forgotPassword, usePostAuthNavigation } from "@/src/features/auth";
+import { usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
 import Button from "@/src/shared/ui/Button/Button";
@@ -32,8 +33,8 @@ export default function ForgotPasswordPage({
 
   const [email, setEmail] = useState("");
   const [feedback, setFeedback] = useState<FeedbackState>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const forgotPasswordMutation = useForgotPasswordMutation();
 
   const rememberedPassword = raw("auth.forgotPassword.rememberedPassword");
   const loginAction =
@@ -53,17 +54,17 @@ export default function ForgotPasswordPage({
     closeAuthRoute(router);
   };
 
-  const isBusy = isLoading || isGoogleLoading;
+  const isBusy = forgotPasswordMutation.isPending || isGoogleLoading;
   const handlePostAuthSuccess = usePostAuthNavigation(handleCloseAuthFlow);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setFeedback(null);
-    setIsLoading(true);
+    forgotPasswordMutation.reset();
 
     try {
-      await forgotPassword({
+      await forgotPasswordMutation.mutateAsync({
         email: email.trim(),
       });
 
@@ -79,8 +80,6 @@ export default function ForgotPasswordPage({
             ? error.message
             : t("auth.forgotPassword.errors.generic"),
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -125,11 +124,14 @@ export default function ForgotPasswordPage({
                 if (feedback) {
                   setFeedback(null);
                 }
+                if (forgotPasswordMutation.isError) {
+                  forgotPasswordMutation.reset();
+                }
               }}
               autoComplete="email"
               placeholder="name@example.com"
               required
-              disabled={isLoading}
+              disabled={forgotPasswordMutation.isPending}
               leadingAdornment={"/icons/Footer/email.svg"}
             />
           </FormField>
@@ -139,7 +141,7 @@ export default function ForgotPasswordPage({
           <div className={styles.actionSection}>
             <Button
               text={
-                isLoading
+                forgotPasswordMutation.isPending
                   ? t("auth.forgotPassword.submitLoading")
                   : t("auth.forgotPassword.submitButton")
               }
@@ -153,7 +155,7 @@ export default function ForgotPasswordPage({
               <div className={styles.socialRow}>
                 <GoogleAuthButton
                   intent="login"
-                  disabled={isLoading}
+                  disabled={forgotPasswordMutation.isPending}
                   onBusyChange={setIsGoogleLoading}
                   onSuccess={() => {
                     void handlePostAuthSuccess();

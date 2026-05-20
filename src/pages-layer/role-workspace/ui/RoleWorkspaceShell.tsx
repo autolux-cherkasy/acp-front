@@ -1,6 +1,7 @@
 "use client";
 
-import { logout, useAuthSession } from "@/src/features/auth";
+import { useAuthSession } from "@/src/features/auth";
+import { useLogoutMutation } from "@/src/features/auth/api/useAuthQueries";
 import { LocaleLink, useI18n, useLocalizedHref } from "@/src/shared";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -96,6 +97,7 @@ export default function RoleWorkspaceShell({
   const { t } = useI18n();
   const localizeHref = useLocalizedHref();
   const { profile, role } = useAuthSession();
+  const logoutMutation = useLogoutMutation();
 
   const currentPath = useMemo(() => normalizePathname(pathname), [pathname]);
 
@@ -115,7 +117,7 @@ export default function RoleWorkspaceShell({
   const displayName = formatSidebarName(rawDisplayName);
 
   async function handleLogout() {
-    await logout();
+    await logoutMutation.mutateAsync();
     router.push(localizeHref("/login"));
     router.refresh();
   }

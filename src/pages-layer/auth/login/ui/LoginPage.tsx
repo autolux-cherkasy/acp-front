@@ -8,7 +8,6 @@ import { useLoginMutation } from "@/src/features/auth/api/useAuthQueries";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
 import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
-import { setAccessToken } from "@/src/shared/api/session";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import LocaleLink from "@/src/shared/i18n/Link";
 import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
@@ -35,7 +34,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
     password: "",
   });
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const loginMutation = useLoginMutation(setAccessToken);
+  const loginMutation = useLoginMutation();
 
   const handleCloseAuthFlow = () => {
     if (onClose) {
@@ -61,7 +60,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
     loginMutation.reset();
 
     try {
-      loginMutation.mutate(formData);
+      await loginMutation.mutateAsync(formData);
       await handlePostAuthSuccess();
     } catch (_) {
       //mutation handles errors

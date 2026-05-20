@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { resetPassword } from "@/src/features/auth";
+import { useResetPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import FormField from "@/src/shared/ui/FormField/FormField";
@@ -33,8 +33,8 @@ export default function ResetPasswordPage({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [feedback, setFeedback] = useState<FeedbackState>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const resetPasswordMutation = useResetPasswordMutation();
 
   const trimmedToken = token.trim();
   const hasToken = trimmedToken.length > 0;
@@ -55,10 +55,10 @@ export default function ResetPasswordPage({
     }
 
     setFeedback(null);
-    setIsLoading(true);
+    resetPasswordMutation.reset();
 
     try {
-      await resetPassword({
+      await resetPasswordMutation.mutateAsync({
         token: trimmedToken,
         newPassword,
       });
@@ -75,8 +75,6 @@ export default function ResetPasswordPage({
         variant: "error",
         message: error instanceof Error ? error.message : t("auth.resetPassword.errors.generic"),
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -135,10 +133,13 @@ export default function ResetPasswordPage({
                 if (feedback) {
                   setFeedback(null);
                 }
+                if (resetPasswordMutation.isError) {
+                  resetPasswordMutation.reset();
+                }
               }}
               autoComplete="new-password"
               required
-              disabled={isLoading || !hasToken}
+              disabled={resetPasswordMutation.isPending || !hasToken}
               passwordToggle
               showPasswordLabel={t("common.password.show")}
               hidePasswordLabel={t("common.password.hide")}
@@ -158,10 +159,13 @@ export default function ResetPasswordPage({
                 if (feedback) {
                   setFeedback(null);
                 }
+                if (resetPasswordMutation.isError) {
+                  resetPasswordMutation.reset();
+                }
               }}
               autoComplete="new-password"
               required
-              disabled={isLoading || !hasToken}
+              disabled={resetPasswordMutation.isPending || !hasToken}
               passwordToggle
               showPasswordLabel={t("common.password.show")}
               hidePasswordLabel={t("common.password.hide")}
@@ -173,13 +177,13 @@ export default function ResetPasswordPage({
           <div className={styles.actions}>
             <Button
               text={
-                isLoading
+                resetPasswordMutation.isPending
                   ? t("auth.resetPassword.submitLoading")
                   : t("auth.resetPassword.submitButton")
               }
               variant="primary"
               type="submit"
-              disabled={isLoading || !hasToken}
+              disabled={resetPasswordMutation.isPending || !hasToken}
               onClick={() => {}}
             />
 

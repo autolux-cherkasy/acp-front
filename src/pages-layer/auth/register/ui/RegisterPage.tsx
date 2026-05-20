@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
+import { useRegisterMutation } from "@/src/features/auth/api/useAuthQueries";
 import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
-import { register, usePostAuthNavigation } from "@/src/features/auth";
+import { usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import FormField from "@/src/shared/ui/FormField/FormField";
@@ -45,8 +46,8 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
     Partial<Record<RegisterField, boolean>>
   >({});
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const registerMutation = useRegisterMutation();
 
   const handleCloseAuthFlow = () => {
     if (onClose) {
@@ -82,6 +83,10 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
 
     if (error) {
       setError("");
+    }
+
+    if (registerMutation.isError) {
+      registerMutation.reset();
     }
   };
 
@@ -128,10 +133,10 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       return;
     }
 
-    setIsLoading(true);
+    registerMutation.reset();
 
     try {
-      await register({
+      await registerMutation.mutateAsync({
         email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
@@ -152,12 +157,10 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
         confirmPassword: true,
       });
       setError(formError);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const isBusy = isLoading || isGoogleLoading;
+  const isBusy = registerMutation.isPending || isGoogleLoading;
   const promoItems = [
     t("auth.common.promo.one"),
     t("auth.common.promo.two"),
@@ -316,7 +319,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
           <div className={styles.buttonRegister}>
             <Button
               text={
-                isLoading
+                registerMutation.isPending
                   ? t("auth.register.submitLoading")
                   : t("auth.register.submit")
               }
@@ -331,7 +334,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
             <div className={styles.socialRowRegister}>
               <GoogleAuthButton
                 intent="register"
-                disabled={isLoading}
+                disabled={registerMutation.isPending}
                 onBusyChange={setIsGoogleLoading}
                 onSuccess={() => {
                   void handlePostAuthSuccess();

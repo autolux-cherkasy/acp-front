@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { AUTH_BACKGROUND_KEY, logout } from "@/src/features/auth";
+import { AUTH_BACKGROUND_KEY } from "@/src/features/auth";
+import { useLogoutMutation } from "@/src/features/auth/api/useAuthQueries";
 import LocaleLink from "@/src/shared/i18n/Link";
 import Chip from "@/src/shared/ui/Chip/Chip";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
@@ -33,11 +34,12 @@ export default function ProfileTabsBar({
   const router = useRouter();
   const resolveHref = useLocalizedHref();
   const { t } = useI18n();
+  const logoutMutation = useLogoutMutation();
   const classes = `${styles.tabsBar} ${className}`.trim();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logoutMutation.mutateAsync();
     } catch (error) {
       console.error("Logout request failed", error);
     } finally {

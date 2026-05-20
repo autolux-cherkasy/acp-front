@@ -1,8 +1,25 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { login, LoginPayload } from "./auth";
+"use client";
 
-export function useLoginMutation(setAccessToken: (a: string) => void) {
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import {
+  forgotPassword,
+  type ForgotPasswordPayload,
+  login,
+  logout,
+  register,
+  resetPassword,
+  type LoginPayload,
+  type RegisterPayload,
+  type ResetPasswordPayload,
+} from "./auth";
+import { setAccessToken } from "@/src/shared/api/session";
+
+const PROFILE_QUERY_KEY = ["profile"];
+
+export function useLoginMutation() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (payload: LoginPayload) => login(payload),
     mutationKey: ["login"],
@@ -12,7 +29,41 @@ export function useLoginMutation(setAccessToken: (a: string) => void) {
       }
 
       setAccessToken(data.access_token);
-      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+    },
+  });
+}
+
+export function useRegisterMutation() {
+  return useMutation({
+    mutationFn: (payload: RegisterPayload) => register(payload),
+    mutationKey: ["register"],
+  });
+}
+
+export function useForgotPasswordMutation() {
+  return useMutation({
+    mutationFn: (payload: ForgotPasswordPayload) => forgotPassword(payload),
+    mutationKey: ["forgot-password"],
+  });
+}
+
+export function useResetPasswordMutation() {
+  return useMutation({
+    mutationFn: (payload: ResetPasswordPayload) => resetPassword(payload),
+    mutationKey: ["reset-password"],
+  });
+}
+
+export function useLogoutMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => logout(),
+    mutationKey: ["logout"],
+    onSettled: async () => {
+      await queryClient.resetQueries({ queryKey: PROFILE_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: PROFILE_QUERY_KEY });
     },
   });
 }
