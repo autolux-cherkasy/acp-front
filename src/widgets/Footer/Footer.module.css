@@ -172,6 +172,14 @@
     height: clamp(240px, 40vw, 356px);
   }
 }
+@media (max-width: 560px) {
+  .contacts {
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0;
+  }
+}
 
 @media (max-width: 430px) {
   .footer {
@@ -182,13 +190,6 @@
   .container {
     width: 100%;
     gap: 24px;
-  }
-
-  .contacts {
-    width: 100%;
-    grid-template-columns: 1fr;
-    gap: 0;
-    padding: 0;
   }
 
   .contactColumn {

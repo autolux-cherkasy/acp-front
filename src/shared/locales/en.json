@@ -403,6 +403,7 @@
     "archive": {
       "description": "Archived tickets and completed trips are stored here for quick review.",
       "backToTickets": "Back to tickets",
+      "bookingTitlePrefix": "Booking",
       "pay": "Pay ticket",
       "cancel": "Cancel reservation",
       "unpaidNoticeLead": "Please note:",

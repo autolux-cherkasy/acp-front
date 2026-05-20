@@ -52,16 +52,19 @@ export default function ProfileArchivePage() {
                   <div className={styles.ticketCardRoute}>
                     <div className={styles.ticketTitleRow}>
                       <h2 className={styles.ticketTitle}>
-                        Бронювання {ticket.code} - {ticket.price}
+                        {t("profile.archive.bookingTitlePrefix")} {ticket.code}{" "}
+                        - {ticket.price}
                       </h2>
-                      <span
-                        className={`${styles.ticketBadge} ${badgeClassName}`.trim()}
-                      >
-                        {statusLabel}
-                      </span>
-                      <span className={styles.ticketMetaDate}>
-                        {ticket.metaDate}
-                      </span>
+                      <div className={styles.badgeRow}>
+                        <span
+                          className={`${styles.ticketBadge} ${badgeClassName}`.trim()}
+                        >
+                          {statusLabel}
+                        </span>
+                        <span className={styles.ticketMetaDate}>
+                          {ticket.metaDate}
+                        </span>
+                      </div>
                     </div>
 
                     {isUnpaid ? (
