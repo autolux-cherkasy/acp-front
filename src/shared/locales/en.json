@@ -132,11 +132,17 @@
       "emailPlaceholder": "Enter your email",
       "phoneLabel": "Phone number",
       "phonePlaceholder": "+380 1234 5678",
-      "seatsLabel": "Seats",
-      "note": "Fill in the passenger details to continue with booking or payment.",
-      "seatsHint": "Free seat choice",
-      "identityNote": "Please provide a valid email and phone number. They are required to identify the passenger.",
-      "pay": "Pay now",
+        "seatsLabel": "Seats",
+        "seatsLabelWithMax": "Seats (max. {count})*",
+        "note": "Fill in the passenger details to continue with booking or payment.",
+        "seatsHint": "Free seat choice",
+        "identityNote": "Please provide a valid email and phone number. They are required to identify the passenger.",
+        "errors": {
+          "fullNameRequired": "Enter your full name",
+          "emailRequired": "Enter your email",
+          "phoneRequired": "Enter your phone number"
+        },
+        "pay": "Pay now",
       "reserve": "Reserve"
     },
     "payment": {

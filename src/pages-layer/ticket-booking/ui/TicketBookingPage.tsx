@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 
-import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { type PopularRoute, getLocalizedRouteValue } from "@/src/entities/trip";
+import { useProfileQuery } from "@/src/entities/user/api/useUserQueries";
 import LocaleLink from "@/src/shared/i18n/Link";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import Button from "@/src/shared/ui/Button/Button";
 import styles from "./ticket-booking-page.module.css";
 
@@ -15,7 +17,15 @@ type TicketBookingPageProps = {
   initialSeats: number;
 };
 
+type PassengerFormData = {
+  fullName: string;
+  email: string;
+  phone: string;
+};
+
 const MAX_BOOKING_SEATS = 7;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^\+380\d{9}$/;
 
 function formatDisplayDate(value: string | null, locale: string) {
   if (!value) {
@@ -46,9 +56,8 @@ function formatDisplayTime(value: string | null) {
 function formatHeroDate(value: string) {
   return value.replace(
     /(^\d+\s+)(\p{L})/u,
-    (_match, prefix: string, firstLetter: string) => {
-      return `${prefix}${firstLetter.toUpperCase()}`;
-    },
+    (_match, prefix: string, firstLetter: string) =>
+      `${prefix}${firstLetter.toUpperCase()}`,
   );
 }
 
@@ -80,6 +89,7 @@ export default function TicketBookingPage({
   initialSeats,
 }: TicketBookingPageProps) {
   const { lang, t } = useI18n();
+  const profileQuery = useProfileQuery();
   const locale = lang === "en" ? "en-GB" : "uk-UA";
   const maxBookableSeats = Math.max(
     1,
@@ -90,9 +100,18 @@ export default function TicketBookingPage({
     maxBookableSeats,
   );
 
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<PassengerFormData>({
+    defaultValues: {
+      fullName: profileQuery.data?.name ?? "",
+      email: profileQuery.data?.email ?? "",
+      phone: profileQuery.data?.phone ?? "",
+    },
+  });
   const [seats, setSeats] = useState(safeInitialSeats);
 
   const routeTitle = getLocalizedRouteValue(route.title, lang);
@@ -118,6 +137,22 @@ export default function TicketBookingPage({
   const heroMeta = formattedDate
     ? `${formatHeroDate(formattedDate)}${route.departureTime ? ` ${t("ticketBooking.hero.timePrefix")} ${departureTime}` : ""}, ${passengerCount}`
     : `${nearestTripLabel}, ${passengerCount}`;
+  const seatsLabel =
+    lang === "en"
+      ? `Seats (max. ${maxBookableSeats})*`
+      : `Кількість місць (макс. ${maxBookableSeats})*`;
+
+  useEffect(() => {
+    if (!profileQuery.data) return;
+
+    reset({
+      fullName: profileQuery.data.name ?? "",
+      email: profileQuery.data.email ?? "",
+      phone: profileQuery.data.phone ?? "",
+    });
+  }, [profileQuery.data, reset]);
+
+  const validatePassengerForm = handleSubmit(() => {});
 
   return (
     <main className={styles.page}>
@@ -161,24 +196,36 @@ export default function TicketBookingPage({
                 {t("ticketBooking.form.title")}
               </h2>
 
-              <form
-                className={styles.form}
-                onSubmit={(event) => event.preventDefault()}
-              >
+              <form className={styles.form} onSubmit={validatePassengerForm}>
                 <div className={styles.formGrid}>
                   <label className={styles.field}>
                     <span className={styles.label}>
                       {t("ticketBooking.form.nameLabel")}
                     </span>
                     <input
-                      className={styles.input}
+                      className={`${styles.input} ${errors.fullName ? styles.inputInvalid : ""}`}
                       type="text"
-                      name="fullName"
-                      value={fullName}
-                      onChange={(event) => setFullName(event.target.value)}
+                      {...register("fullName", {
+                        required: t("ticketBooking.form.namePlaceholder"),
+                      })}
                       placeholder={t("ticketBooking.form.namePlaceholder")}
                       autoComplete="name"
+                      aria-invalid={errors.fullName ? "true" : "false"}
+                      aria-describedby={
+                        errors.fullName
+                          ? "ticket-booking-full-name-error"
+                          : undefined
+                      }
                     />
+                    {errors.fullName?.message ? (
+                      <span
+                        id="ticket-booking-full-name-error"
+                        className={styles.fieldError}
+                        role="alert"
+                      >
+                        {errors.fullName.message}
+                      </span>
+                    ) : null}
                   </label>
 
                   <label className={styles.field}>
@@ -186,14 +233,30 @@ export default function TicketBookingPage({
                       {t("ticketBooking.form.emailLabel")}
                     </span>
                     <input
-                      className={styles.input}
+                      className={`${styles.input} ${errors.email ? styles.inputInvalid : ""}`}
                       type="email"
-                      name="email"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      {...register("email", {
+                        required: t("auth.register.errors.emailRequired"),
+                        validate: (value) =>
+                          EMAIL_PATTERN.test(value.trim()) ||
+                          t("auth.register.errors.emailInvalid"),
+                      })}
                       placeholder={t("ticketBooking.form.emailPlaceholder")}
                       autoComplete="email"
+                      aria-invalid={errors.email ? "true" : "false"}
+                      aria-describedby={
+                        errors.email ? "ticket-booking-email-error" : undefined
+                      }
                     />
+                    {errors.email?.message ? (
+                      <span
+                        id="ticket-booking-email-error"
+                        className={styles.fieldError}
+                        role="alert"
+                      >
+                        {errors.email.message}
+                      </span>
+                    ) : null}
                   </label>
 
                   <label className={styles.field}>
@@ -201,22 +264,35 @@ export default function TicketBookingPage({
                       {t("ticketBooking.form.phoneLabel")}
                     </span>
                     <input
-                      className={styles.input}
+                      className={`${styles.input} ${errors.phone ? styles.inputInvalid : ""}`}
                       type="tel"
-                      name="phone"
-                      value={phone}
-                      onChange={(event) => setPhone(event.target.value)}
+                      {...register("phone", {
+                        required: t("auth.register.errors.phoneRequired"),
+                        validate: (value) =>
+                          PHONE_PATTERN.test(value.trim()) ||
+                          t("auth.register.errors.phoneFormat"),
+                      })}
                       placeholder={t("ticketBooking.form.phonePlaceholder")}
                       autoComplete="tel"
                       inputMode="tel"
+                      aria-invalid={errors.phone ? "true" : "false"}
+                      aria-describedby={
+                        errors.phone ? "ticket-booking-phone-error" : undefined
+                      }
                     />
+                    {errors.phone?.message ? (
+                      <span
+                        id="ticket-booking-phone-error"
+                        className={styles.fieldError}
+                        role="alert"
+                      >
+                        {errors.phone.message}
+                      </span>
+                    ) : null}
                   </label>
 
                   <div className={styles.field}>
-                    <span className={styles.label}>
-                      {t("ticketBooking.form.seatsLabel")} (Макс.{" "}
-                      {maxBookableSeats})*
-                    </span>
+                    <span className={styles.label}>{seatsLabel}</span>
 
                     <div className={styles.seatsRow}>
                       <div className={styles.stepper}>
@@ -300,13 +376,17 @@ export default function TicketBookingPage({
                   <Button
                     text={t("ticketBooking.form.pay")}
                     fullWidth={false}
-                    onClick={() => {}}
+                    onClick={() => {
+                      void validatePassengerForm();
+                    }}
                   />
                   <Button
                     text={t("ticketBooking.form.reserve")}
                     variant="secondary"
                     fullWidth={false}
-                    onClick={() => {}}
+                    onClick={() => {
+                      void validatePassengerForm();
+                    }}
                   />
                 </div>
 
