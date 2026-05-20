@@ -7,7 +7,10 @@ import {
   getDevRole,
   installDevAuthHelpers,
 } from "@/src/shared/api/dev-auth";
-import { hasAccessToken } from "@/src/shared/api/session";
+import {
+  hasAccessToken,
+  subscribeToAuthChange,
+} from "@/src/shared/api/session";
 import {
   createContext,
   useCallback,
@@ -32,47 +35,52 @@ export function AuthSessionProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Keep the first server and client render identical. Real auth state is resolved after mount.
   const profileQuery = useProfileQuery();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [, setAuthVersion] = useState(0);
+  const authenticated = hasAccessToken();
   const devRole = getDevRole() as UserRole | null;
   const { refetch } = profileQuery;
+  const isAuthenticated = authenticated || devRole != null;
+  const profile =
+    devRole != null
+      ? ((getDevProfile() as UserProfile | null) ?? null)
+      : (profileQuery.data ?? null);
+  const isLoading = devRole == null && authenticated
+    ? profileQuery.isPending
+    : false;
 
   const refreshSession = useCallback(async () => {
     if (devRole != null) {
       return getDevProfile() as UserProfile | null;
     }
 
-    if (!hasAccessToken()) {
+    if (!authenticated) {
       return null;
     }
 
-    const set = () => {
-      setIsAuthenticated(hasAccessToken() || devRole != null);
-    };
-    set();
     const result = await refetch();
     return result.data ?? null;
-  }, [refetch, devRole]);
+  }, [authenticated, devRole, refetch]);
 
   useEffect(() => {
     return installDevAuthHelpers();
   }, []);
 
+  useEffect(() => {
+    return subscribeToAuthChange(() => {
+      setAuthVersion((current) => current + 1);
+    });
+  }, []);
+
   const value = useMemo<AuthSessionContextValue>(
     () => ({
       isAuthenticated,
-      isLoading: profileQuery.isPending,
-      profile: profileQuery.data ?? null,
-      role: profileQuery.data?.role ?? null,
+      isLoading,
+      profile,
+      role: profile?.role ?? null,
       refreshSession,
     }),
-    [
-      isAuthenticated,
-      profileQuery.isPending,
-      profileQuery.data,
-      refreshSession,
-    ],
+    [isAuthenticated, isLoading, profile, refreshSession],
   );
 
   return (
