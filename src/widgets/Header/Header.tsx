@@ -83,7 +83,6 @@ export default function Header() {
         .sort((a, b) => a.distance - b.distance)[0];
 
       if (best) {
-        console.log("here");
         setActiveMenuHref(`#${best.id}`);
       }
     };

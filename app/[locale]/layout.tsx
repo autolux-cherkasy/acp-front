@@ -2,11 +2,15 @@ import "../globals.css";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { hasLocale, locales } from "@/src/shared/i18n/config";
-import { getDictionary } from "@/src/shared/i18n/getDictionary";
-import { createSiteMetadata, getOrganizationStructuredData } from "@/src/shared/seo/metadata";
 import { AuthSessionProvider } from "@/src/features/auth";
+import { hasLocale } from "@/src/shared/i18n/config";
+import { getDictionary } from "@/src/shared/i18n/getDictionary";
 import { I18nProvider } from "@/src/shared/i18n/I18nProvider";
+import ReactQueryProvider from "@/src/shared/providers/ReactQueryProvider";
+import {
+  createSiteMetadata,
+  getOrganizationStructuredData,
+} from "@/src/shared/seo/metadata";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -66,10 +70,12 @@ export default async function RootLayout({
 
       <body suppressHydrationWarning>
         <I18nProvider locale={locale} messages={dictionary}>
-          <AuthSessionProvider>
-            {children}
-            {modal}
-          </AuthSessionProvider>
+          <ReactQueryProvider>
+            <AuthSessionProvider>
+              {children}
+              {modal}
+            </AuthSessionProvider>
+          </ReactQueryProvider>
         </I18nProvider>
       </body>
     </html>

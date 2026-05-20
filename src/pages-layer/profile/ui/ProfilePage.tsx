@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
-import { changePassword, getProfile, updateProfile } from "@/src/entities/user";
+import {
+  useChangePasswordMutation,
+  useProfileQuery,
+  useUpdateProfileMutation,
+} from "@/src/entities/user/api/useUserQueries";
+import { hasAccessToken } from "@/src/shared";
 import { ApiError } from "@/src/shared/api/http";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import LocaleLink from "@/src/shared/i18n/Link";
@@ -37,27 +42,32 @@ function shouldRequireLogin(error: unknown) {
 
 export default function ProfilePage() {
   const { t } = useI18n();
-  const [isLoading, setIsLoading] = useState(true);
   const [profileEmail, setProfileEmail] = useState("");
   const [serverError, setServerError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [requiresLogin, setRequiresLogin] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const profileQuery = useProfileQuery();
+  const updateProfileMutation = useUpdateProfileMutation();
+  const changePasswordMutation = useChangePasswordMutation();
   const {
     register,
     handleSubmit,
     reset,
     clearErrors,
     getValues,
-    formState: { errors: fieldErrors, isDirty, dirtyFields, isSubmitting },
+    formState: { errors: fieldErrors, isDirty, dirtyFields },
   } = useForm<ProfileFormData>({
     defaultValues: EMPTY_PROFILE_FORM,
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
   const validationRules = createProfileValidationRules(t, getValues);
+  const isLoading = profileQuery.isPending;
+  const isSubmitting =
+    updateProfileMutation.isPending || changePasswordMutation.isPending;
+  const isAuthenticated = hasAccessToken();
 
   const isFormDisabled = isLoading || isSubmitting || requiresLogin;
 
@@ -69,53 +79,52 @@ export default function ProfilePage() {
     if (successMessage) {
       setSuccessMessage("");
     }
+
+    if (updateProfileMutation.error) {
+      updateProfileMutation.reset();
+    }
+
+    if (changePasswordMutation.error) {
+      changePasswordMutation.reset();
+    }
   };
 
   useEffect(() => {
-    let isCancelled = false;
-
-    const loadProfile = async () => {
-      setIsLoading(true);
-      setServerError("");
-      setSuccessMessage("");
-      setRequiresLogin(false);
-
-      try {
-        const profile = await getProfile();
-
-        if (isCancelled) {
-          return;
-        }
-
-        reset({
-          name: profile.name ?? "",
-          phone: profile.phone ?? "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-        setProfileEmail(profile.email ?? "");
-      } catch (err) {
-        if (isCancelled) {
-          return;
-        }
-
-        const message =
-          err instanceof Error ? err.message : t("profile.page.errors.load");
-        setServerError(message);
-        setRequiresLogin(shouldRequireLogin(err));
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      }
+    const setter = () => {
+      setRequiresLogin(true);
+      setProfileEmail("");
     };
+    if (!isAuthenticated) {
+      setter();
 
-    void loadProfile();
+      return;
+    }
 
-    return () => {
-      isCancelled = true;
+    if (profileQuery.data) {
+      reset({
+        name: profileQuery.data.name ?? "",
+        phone: profileQuery.data.phone ?? "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      const set = () => {
+        setProfileEmail(profileQuery.data.email ?? "");
+        setRequiresLogin(false);
+      };
+      set();
+    }
+  }, [isAuthenticated, profileQuery.data, reset]);
+
+  useEffect(() => {
+    if (!profileQuery.error) {
+      return;
+    }
+
+    const set = () => {
+      setRequiresLogin(shouldRequireLogin(profileQuery.error));
     };
-  }, [reloadKey, reset, t]);
+    set();
+  }, [profileQuery.error]);
 
   const registerInput = (
     field: keyof ProfileFormData,
@@ -162,7 +171,8 @@ export default function ProfilePage() {
 
     if (hasProfileChanges) {
       try {
-        const response = await updateProfile(profilePayload);
+        const response =
+          await updateProfileMutation.mutateAsync(profilePayload);
 
         nextProfileDefaults = {
           name: response.user.name ?? "",
@@ -182,7 +192,7 @@ export default function ProfilePage() {
 
     if (wantsPasswordChange) {
       try {
-        const response = await changePassword({
+        const response = await changePasswordMutation.mutateAsync({
           password: normalizedData.newPassword,
           confirmPassword: normalizedData.confirmPassword,
         });
@@ -233,8 +243,19 @@ export default function ProfilePage() {
   };
 
   const retryLoad = () => {
-    setReloadKey((prev) => prev + 1);
+    setServerError("");
+    setSuccessMessage("");
+    updateProfileMutation.reset();
+    changePasswordMutation.reset();
+    void profileQuery.refetch();
   };
+
+  const loadErrorMessage = profileQuery.error
+    ? profileQuery.error instanceof Error
+      ? profileQuery.error.message
+      : t("profile.page.errors.load")
+    : "";
+  const displayedError = serverError || loadErrorMessage;
 
   return (
     <ProfileWrapper mode="profile">
@@ -242,14 +263,14 @@ export default function ProfilePage() {
         <h1 id="profile-title" className={styles.title}>
           {t("profile.page.title")}
         </h1>
-        {serverError ? (
+        {displayedError ? (
           <div
             className={`${styles.notice} ${styles.noticeError}`}
             role="alert"
           >
-            <span>{serverError}</span>
+            <span>{displayedError}</span>
 
-            {!isLoading ? (
+            {!isLoading && isAuthenticated ? (
               <button
                 type="button"
                 className={styles.noticeAction}
