@@ -62,7 +62,6 @@ export function useLogoutMutation() {
     mutationFn: () => logout(),
     mutationKey: ["logout"],
     onSettled: async () => {
-      await queryClient.resetQueries({ queryKey: PROFILE_QUERY_KEY });
       queryClient.removeQueries({ queryKey: PROFILE_QUERY_KEY });
     },
   });

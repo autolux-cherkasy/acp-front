@@ -1,55 +1,235 @@
-import { getLocaleFromPathnameOrDefault } from "@/src/shared/i18n/routing";
-import { localizeHref } from "@/src/shared/i18n/routing";
+import { getRoleLandingPath } from "@/src/features/access-control/model/roles";
+import {
+  localizeHref,
+  stripLocaleFromPathname,
+} from "@/src/shared/i18n/routing";
+import type { Locale } from "@/src/shared/i18n/config";
+import { ReadonlyURLSearchParams } from "next/navigation";
 
 type RouterLike = {
-  back: () => void;
-  replace: (href: string) => void;
-  refresh?: () => void;
+  push: (href: string, options?: { scroll?: boolean }) => void;
+  replace: (href: string, options?: { scroll?: boolean }) => void;
 };
 
-export const AUTH_BACKGROUND_KEY = "auth:background";
+type ResolveHref = (href: string) => string;
+
+type AuthModalNavigationOptions = {
+  backgroundHref?: string;
+  next?: string | null;
+  replace?: boolean;
+  scroll?: boolean;
+};
+
+type UpdateAuthHrefOptions = {
+  view?: AuthView | null;
+  next?: string | null;
+};
+
+export type AuthView = "login" | "register" | "forgot-password";
+
+export const AUTH_QUERY_PARAM = "auth";
+export const AUTH_NEXT_QUERY_PARAM = "next";
+export const AUTH_FALLBACK_PATH = "/home";
+export const AUTH_LOGOUT_BYPASS_KEY = "auth:logout-bypass";
+
+const AUTH_VIEWS = new Set<AuthView>(["login", "register", "forgot-password"]);
+const EXTERNAL_HREF_RE = /^(?:[a-z][a-z\d+\-.]*:)?\/\//i;
+
+function getCurrentBrowserHref() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+}
 
 function isBrowser() {
   return typeof window !== "undefined";
 }
 
-export function getAuthBackground() {
-  if (!isBrowser()) return null;
-  return window.sessionStorage.getItem(AUTH_BACKGROUND_KEY);
+function parseInternalHref(href: string) {
+  if (
+    !href ||
+    EXTERNAL_HREF_RE.test(href) ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:")
+  ) {
+    return null;
+  }
+
+  const match = href.match(/^([^?#]*)(\?[^#]*)?(#.*)?$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, rawPathname = "/", search = "", hash = ""] = match;
+  const pathname = rawPathname.startsWith("/")
+    ? rawPathname
+    : `/${rawPathname}`;
+
+  return {
+    pathname,
+    search,
+    hash,
+  };
 }
 
-export function storeAuthBackground(href: string) {
-  if (!isBrowser()) return;
-  window.sessionStorage.setItem(AUTH_BACKGROUND_KEY, href);
+export function isAuthView(
+  value: string | null | undefined,
+): value is AuthView {
+  return value != null && AUTH_VIEWS.has(value as AuthView);
 }
 
-export function clearAuthBackground() {
-  if (!isBrowser()) return;
-  window.sessionStorage.removeItem(AUTH_BACKGROUND_KEY);
+export function normalizeInternalHref(href: string | null | undefined) {
+  if (!href) {
+    return null;
+  }
+
+  const parsed = parseInternalHref(href);
+
+  if (!parsed) {
+    return null;
+  }
+
+  const pathname = stripLocaleFromPathname(parsed.pathname || "/");
+  return `${pathname}${parsed.search}${parsed.hash}`;
 }
 
-export function consumeAuthBackground() {
-  const background = getAuthBackground();
-  clearAuthBackground();
-  return background;
-}
-
-export function closeAuthRoute(
-  router: RouterLike,
-  options: { fallback?: string } = {},
+export function buildAuthModalHref(
+  href: string,
+  { view, next }: UpdateAuthHrefOptions = {},
 ) {
-  const { fallback = "/" } = options;
-  const background = getAuthBackground();
-  clearAuthBackground();
+  const parsed = parseInternalHref(href);
 
-  // background is set iff the modal was opened via router.push() from openLoginModal.
-  // router.back() correctly restores the Next.js router tree so that subsequent
-  // router.push("/login") re-triggers the intercepted route. router.replace() does not.
-  if (background) {
-    router.back();
+  if (!parsed) {
+    return href;
+  }
+
+  const searchParams = new URLSearchParams(parsed.search);
+
+  if (view === null) {
+    searchParams.delete(AUTH_QUERY_PARAM);
+  } else if (view !== undefined) {
+    searchParams.set(AUTH_QUERY_PARAM, view);
+  }
+
+  if (next === null) {
+    searchParams.delete(AUTH_NEXT_QUERY_PARAM);
+  } else if (next !== undefined) {
+    const normalizedNext = normalizeInternalHref(next);
+
+    if (normalizedNext) {
+      searchParams.set(AUTH_NEXT_QUERY_PARAM, normalizedNext);
+    } else {
+      searchParams.delete(AUTH_NEXT_QUERY_PARAM);
+    }
+  }
+
+  const search = searchParams.toString();
+  return `${parsed.pathname}${search ? `?${search}` : ""}${parsed.hash}`;
+}
+
+export function getAuthModalState(
+  searchParams: URLSearchParams | ReadonlyURLSearchParams,
+) {
+  const rawView = searchParams.get(AUTH_QUERY_PARAM);
+
+  if (!isAuthView(rawView)) {
+    return null;
+  }
+
+  return {
+    view: rawView,
+    next: normalizeInternalHref(searchParams.get(AUTH_NEXT_QUERY_PARAM)),
+  };
+}
+
+export function openAuthModal(
+  router: RouterLike,
+  resolveHref: ResolveHref,
+  view: AuthView,
+  {
+    backgroundHref,
+    next,
+    replace = false,
+    scroll = false,
+  }: AuthModalNavigationOptions = {},
+) {
+  const currentHref = backgroundHref ?? getCurrentBrowserHref();
+
+  if (!currentHref) {
     return;
   }
 
-  const locale = isBrowser() ? getLocaleFromPathnameOrDefault(window.location.pathname) : "uk";
-  router.replace(localizeHref(fallback, locale));
+  const href = buildAuthModalHref(currentHref, { view, next });
+  const navigate = replace
+    ? router.replace.bind(router)
+    : router.push.bind(router);
+
+  navigate(resolveHref(href), { scroll });
+}
+
+export function closeAuthModal(
+  router: RouterLike,
+  resolveHref: ResolveHref,
+  backgroundHref?: string,
+) {
+  const currentHref = backgroundHref ?? getCurrentBrowserHref();
+
+  if (!currentHref) {
+    return;
+  }
+
+  const href = buildAuthModalHref(currentHref, {
+    view: null,
+    next: null,
+  });
+
+  router.replace(resolveHref(href), { scroll: false });
+}
+
+export function markLogoutRedirectBypass() {
+  if (!isBrowser()) {
+    return;
+  }
+
+  window.sessionStorage.setItem(AUTH_LOGOUT_BYPASS_KEY, "1");
+}
+
+export function consumeLogoutRedirectBypass() {
+  if (!isBrowser()) {
+    return false;
+  }
+
+  const shouldBypass = window.sessionStorage.getItem(AUTH_LOGOUT_BYPASS_KEY) === "1";
+
+  if (shouldBypass) {
+    window.sessionStorage.removeItem(AUTH_LOGOUT_BYPASS_KEY);
+  }
+
+  return shouldBypass;
+}
+
+export function buildDirectAuthRedirectHref(
+  locale: Locale,
+  view: AuthView,
+  next?: string | null,
+) {
+  const href = buildAuthModalHref(AUTH_FALLBACK_PATH, {
+    view,
+    next,
+  });
+
+  return localizeHref(href, locale);
+}
+
+export function getPostAuthDestination({
+  next,
+  role,
+}: {
+  next?: string | null;
+  role: Parameters<typeof getRoleLandingPath>[0];
+}) {
+  return normalizeInternalHref(next) ?? getRoleLandingPath(role);
 }
