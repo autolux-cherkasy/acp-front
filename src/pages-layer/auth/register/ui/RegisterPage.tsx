@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
 import { useRegisterMutation } from "@/src/features/auth/api/useAuthQueries";
-import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
+import {
+  closeAuthModal,
+  openAuthModal,
+} from "@/src/features/auth/model/auth-flow";
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
@@ -55,7 +58,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       return;
     }
 
-    closeAuthRoute(router);
+    closeAuthModal(router, resolveHref);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +109,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
     setFieldErrors(validateRegisterForm(nextFormData, t));
   };
 
-  const handlePostAuthSuccess = usePostAuthNavigation(handleCloseAuthFlow);
+  const handlePostAuthSuccess = usePostAuthNavigation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,7 +146,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
         phone,
       });
 
-      router.replace(resolveHref("/login"));
+      openAuthModal(router, resolveHref, "login", { replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
       const { fieldErrors: nextFieldErrors, formError } =
@@ -345,7 +348,9 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
             <button
               className={styles.underLink}
               type="button"
-              onClick={() => router.replace(resolveHref("/login"))}
+              onClick={() =>
+                openAuthModal(router, resolveHref, "login", { replace: true })
+              }
             >
               {t("auth.register.existingAccount")}
             </button>

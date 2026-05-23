@@ -1,7 +1,9 @@
 "use client";
 
+import { openAuthModal } from "@/src/features/auth/model/auth-flow";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 import {
   useChangePasswordMutation,
@@ -10,8 +12,7 @@ import {
 } from "@/src/entities/user/api/useUserQueries";
 import { hasAccessToken } from "@/src/shared";
 import { ApiError } from "@/src/shared/api/http";
-import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import LocaleLink from "@/src/shared/i18n/Link";
+import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import {
   buildProfilePayload,
@@ -41,6 +42,8 @@ function shouldRequireLogin(error: unknown) {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const resolveHref = useLocalizedHref();
   const { t } = useI18n();
   // const [profileEmail, setProfileEmail] = useState("");
   const [serverError, setServerError] = useState("");
@@ -300,9 +303,17 @@ export default function ProfilePage() {
             <p className={styles.loginStateText}>
               {t("profile.page.messages.sessionInactive")}
             </p>
-            <LocaleLink href="/login" className={styles.loginStateButton}>
+            <button
+              type="button"
+              className={styles.loginStateButton}
+              onClick={() =>
+                openAuthModal(router, resolveHref, "login", {
+                  next: "/profile",
+                })
+              }
+            >
               {t("profile.page.actions.login")}
-            </LocaleLink>
+            </button>
           </div>
         ) : null}
 

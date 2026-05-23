@@ -6,10 +6,12 @@ import { useState } from "react";
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useLoginMutation } from "@/src/features/auth/api/useAuthQueries";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
-import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
+import {
+  closeAuthModal,
+  openAuthModal,
+} from "@/src/features/auth/model/auth-flow";
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
-import LocaleLink from "@/src/shared/i18n/Link";
 import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
 import Button from "@/src/shared/ui/Button/Button";
 import Notification from "@/src/shared/ui/Notification/Notification";
@@ -42,7 +44,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
       return;
     }
 
-    closeAuthRoute(router);
+    closeAuthModal(router, resolveHref);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +54,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
     if (loginMutation.isError) loginMutation.reset();
   };
 
-  const handlePostAuthSuccess = usePostAuthNavigation(handleCloseAuthFlow);
+  const handlePostAuthSuccess = usePostAuthNavigation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,9 +147,17 @@ export default function LoginPage({ onClose }: LoginPageProps) {
               </span>
             </label>
 
-            <LocaleLink className={styles.forgot} href="/forgot-password">
+            <button
+              type="button"
+              className={styles.forgot}
+              onClick={() =>
+                openAuthModal(router, resolveHref, "forgot-password", {
+                  replace: true,
+                })
+              }
+            >
               {t("auth.login.forgotPassword")}
-            </LocaleLink>
+            </button>
           </div>
         </div>
 
@@ -169,7 +179,9 @@ export default function LoginPage({ onClose }: LoginPageProps) {
             variant="secondary"
             type="button"
             disabled={isBusy}
-            onClick={() => router.replace(resolveHref("/register"))}
+            onClick={() =>
+              openAuthModal(router, resolveHref, "register", { replace: true })
+            }
           />
         </div>
 

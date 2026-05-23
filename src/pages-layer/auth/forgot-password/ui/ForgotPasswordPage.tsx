@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useForgotPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
-import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
+import {
+  closeAuthModal,
+  openAuthModal,
+} from "@/src/features/auth/model/auth-flow";
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
@@ -51,11 +54,11 @@ export default function ForgotPasswordPage({
       return;
     }
 
-    closeAuthRoute(router);
+    closeAuthModal(router, resolveHref);
   };
 
   const isBusy = forgotPasswordMutation.isPending || isGoogleLoading;
-  const handlePostAuthSuccess = usePostAuthNavigation(handleCloseAuthFlow);
+  const handlePostAuthSuccess = usePostAuthNavigation();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -168,7 +171,9 @@ export default function ForgotPasswordPage({
                 variant="secondary"
                 type="button"
                 disabled={isBusy}
-                onClick={() => router.replace(resolveHref("/login"))}
+                onClick={() =>
+                  openAuthModal(router, resolveHref, "login", { replace: true })
+                }
               />
             </div>
           </div>

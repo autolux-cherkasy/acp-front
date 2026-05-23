@@ -1,13 +1,12 @@
 "use client";
 
 import { getRoleLandingPath } from "@/src/features/access-control";
-import { storeAuthBackground } from "@/src/features/auth/model/auth-flow";
 import { useAuthSession } from "@/src/features/auth";
-import { LanguageSwitcher } from "@/src/features/change-language";
+import { openAuthModal } from "@/src/features/auth/model/auth-flow";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import { stripLocaleFromPathname } from "@/src/shared/i18n/routing";
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MouseEvent, useEffect, useEffectEvent, useRef, useState } from "react";
 
 import styles from "./Header.module.css";
@@ -128,10 +127,6 @@ export default function Header() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  useEffect(() => {
-    router.prefetch(resolveHref("/login"));
-  }, [resolveHref, router]);
-
   const closePhoneMenu = useEffectEvent(() => {
     setIsPhoneMenuOpen(false);
   });
@@ -162,11 +157,7 @@ export default function Header() {
 
   const openLoginModal = () => {
     setIsPhoneMenuOpen(false);
-    const search = typeof window !== "undefined" ? window.location.search : "";
-    const hash = typeof window !== "undefined" ? window.location.hash : "";
-    const background = pathname ? `${pathname}${search}` : `/${search}`;
-    storeAuthBackground(`${background}${hash}`);
-    router.push(resolveHref("/login"), { scroll: false });
+    openAuthModal(router, resolveHref, "login", { next: null });
   };
 
   const handleAvatarClick = () => {

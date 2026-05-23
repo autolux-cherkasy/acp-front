@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useResetPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
+import { openAuthModal } from "@/src/features/auth/model/auth-flow";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import FormField from "@/src/shared/ui/FormField/FormField";
@@ -115,7 +116,9 @@ export default function ResetPasswordPage({
             text={t("auth.resetPassword.loginAction")}
             variant="primary"
             type="button"
-            onClick={() => router.replace(resolveHref("/login"))}
+            onClick={() =>
+              openAuthModal(router, resolveHref, "login", { replace: true })
+            }
           />
         </div>
       ) : (
@@ -190,7 +193,9 @@ export default function ResetPasswordPage({
             <button
               type="button"
               className={styles.actionLink}
-              onClick={() => router.replace(resolveHref("/login"))}
+              onClick={() =>
+                openAuthModal(router, resolveHref, "login", { replace: true })
+              }
             >
               {t("auth.resetPassword.backToLogin")}
             </button>
