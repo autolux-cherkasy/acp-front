@@ -3,8 +3,8 @@
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
-import { closeAuthRoute } from "@/src/features/auth/model/auth-flow";
-import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { closeAuthModal } from "@/src/features/auth/model/auth-flow";
+import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
 import styles from "./password-recovery-shell.module.css";
 
@@ -32,6 +32,7 @@ export default function PasswordRecoveryShell({
   children,
 }: PasswordRecoveryShellProps) {
   const router = useRouter();
+  const resolveHref = useLocalizedHref();
   const { t } = useI18n();
 
   const promoItems = [
@@ -46,7 +47,7 @@ export default function PasswordRecoveryShell({
       return;
     }
 
-    closeAuthRoute(router);
+    closeAuthModal(router, resolveHref);
   };
 
   return (

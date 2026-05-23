@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { AUTH_BACKGROUND_KEY } from "@/src/features/auth";
 import { useLogoutMutation } from "@/src/features/auth/api/useAuthQueries";
+import { markLogoutRedirectBypass } from "@/src/features/auth/model/auth-flow";
 import LocaleLink from "@/src/shared/i18n/Link";
 import Chip from "@/src/shared/ui/Chip/Chip";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
@@ -39,14 +39,11 @@ export default function ProfileTabsBar({
 
   const handleLogout = async () => {
     try {
-      logoutMutation.mutateAsync();
+      markLogoutRedirectBypass();
+      await logoutMutation.mutateAsync();
       router.replace(resolveHref("/"));
     } catch (error) {
       console.error("Logout request failed", error);
-    } finally {
-      if (typeof window !== "undefined") {
-        window.sessionStorage.removeItem(AUTH_BACKGROUND_KEY);
-      }
     }
   };
 

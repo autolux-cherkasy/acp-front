@@ -2,6 +2,10 @@
 
 import { useAuthSession } from "@/src/features/auth";
 import { useLogoutMutation } from "@/src/features/auth/api/useAuthQueries";
+import {
+  AUTH_FALLBACK_PATH,
+  markLogoutRedirectBypass,
+} from "@/src/features/auth/model/auth-flow";
 import { LocaleLink, useI18n, useLocalizedHref } from "@/src/shared";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -15,7 +19,13 @@ type RoleWorkspaceShellProps = {
   children: ReactNode;
 };
 
-type NavItemKey = "tickets" | "routes" | "data" | "analytics" | "statistics" | "settings";
+type NavItemKey =
+  | "tickets"
+  | "routes"
+  | "data"
+  | "analytics"
+  | "statistics"
+  | "settings";
 
 type NavItem = {
   key: NavItemKey;
@@ -37,9 +47,21 @@ const NAV_ITEMS: NavItem[] = [
   { key: "tickets", segment: "", iconPath: SIDEBAR_ICON_PATHS.tickets },
   { key: "routes", segment: "routes", iconPath: SIDEBAR_ICON_PATHS.routes },
   { key: "data", segment: "data", iconPath: SIDEBAR_ICON_PATHS.data },
-  { key: "analytics", segment: "analytics", iconPath: SIDEBAR_ICON_PATHS.analytics },
-  { key: "statistics", segment: "statistics", iconPath: SIDEBAR_ICON_PATHS.statistics },
-  { key: "settings", segment: "settings", iconPath: SIDEBAR_ICON_PATHS.settings },
+  {
+    key: "analytics",
+    segment: "analytics",
+    iconPath: SIDEBAR_ICON_PATHS.analytics,
+  },
+  {
+    key: "statistics",
+    segment: "statistics",
+    iconPath: SIDEBAR_ICON_PATHS.statistics,
+  },
+  {
+    key: "settings",
+    segment: "settings",
+    iconPath: SIDEBAR_ICON_PATHS.settings,
+  },
 ];
 
 function joinClassNames(...tokens: Array<string | false | null | undefined>) {
@@ -53,12 +75,16 @@ function normalizePathname(pathname: string) {
     return "/";
   }
 
-  const withoutLocale = segments[0] === "uk" || segments[0] === "en" ? segments.slice(1) : segments;
+  const withoutLocale =
+    segments[0] === "uk" || segments[0] === "en" ? segments.slice(1) : segments;
 
   return withoutLocale.length ? `/${withoutLocale.join("/")}` : "/";
 }
 
-function buildHref(basePath: RoleWorkspaceShellProps["basePath"], segment: NavItem["segment"]) {
+function buildHref(
+  basePath: RoleWorkspaceShellProps["basePath"],
+  segment: NavItem["segment"],
+) {
   return segment ? `${basePath}/${segment}` : basePath;
 }
 
@@ -113,12 +139,14 @@ export default function RoleWorkspaceShell({
         ? t("dispatcherArea.sidebar.roleDispatcher")
         : fallbackRoleLabel || defaultRoleLabel;
 
-  const rawDisplayName = profile?.name?.trim() || t("dispatcherArea.sidebar.fallbackName");
+  const rawDisplayName =
+    profile?.name?.trim() || t("dispatcherArea.sidebar.fallbackName");
   const displayName = formatSidebarName(rawDisplayName);
 
   async function handleLogout() {
+    markLogoutRedirectBypass();
     await logoutMutation.mutateAsync();
-    router.push(localizeHref("/login"));
+    router.replace(localizeHref(AUTH_FALLBACK_PATH));
     router.refresh();
   }
 
@@ -143,24 +171,42 @@ export default function RoleWorkspaceShell({
             <div className={styles.profileBlock}>
               <div className={styles.profileText}>
                 <span className={styles.userName}>{displayName}</span>
-                <span className={styles.roleLabel}>{roleLabel || fallbackRoleLabel}</span>
+                <span className={styles.roleLabel}>
+                  {roleLabel || fallbackRoleLabel}
+                </span>
               </div>
             </div>
 
-            <nav className={styles.nav} aria-label={t("dispatcherArea.sidebar.navAria")}>
+            <nav
+              className={styles.nav}
+              aria-label={t("dispatcherArea.sidebar.navAria")}
+            >
               {NAV_ITEMS.map((item) => {
                 const href = buildHref(basePath, item.segment);
-                const isActive = isActivePath(currentPath, href, item.segment === "");
+                const isActive = isActivePath(
+                  currentPath,
+                  href,
+                  item.segment === "",
+                );
 
                 return (
                   <LocaleLink
                     key={item.key}
                     href={href}
                     aria-current={isActive ? "page" : undefined}
-                    className={joinClassNames(styles.navItem, isActive && styles.navItemActive)}
+                    className={joinClassNames(
+                      styles.navItem,
+                      isActive && styles.navItemActive,
+                    )}
                   >
-                    <span className={styles.navIcon} style={getIconStyle(item.iconPath)} aria-hidden="true" />
-                    <span className={styles.navLabel}>{t(`dispatcherArea.sidebar.menu.${item.key}`)}</span>
+                    <span
+                      className={styles.navIcon}
+                      style={getIconStyle(item.iconPath)}
+                      aria-hidden="true"
+                    />
+                    <span className={styles.navLabel}>
+                      {t(`dispatcherArea.sidebar.menu.${item.key}`)}
+                    </span>
                   </LocaleLink>
                 );
               })}
@@ -168,13 +214,19 @@ export default function RoleWorkspaceShell({
           </div>
 
           <div className={styles.sidebarBottom}>
-            <button type="button" className={styles.logoutButton} onClick={handleLogout}>
+            <button
+              type="button"
+              className={styles.logoutButton}
+              onClick={handleLogout}
+            >
               <span
                 className={styles.navIcon}
                 style={getIconStyle("/icons/account/exit-icon-v2.svg")}
                 aria-hidden="true"
               />
-              <span className={styles.navLabel}>{t("dispatcherArea.sidebar.logout")}</span>
+              <span className={styles.navLabel}>
+                {t("dispatcherArea.sidebar.logout")}
+              </span>
             </button>
           </div>
         </aside>
