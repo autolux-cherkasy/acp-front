@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
+import { buildDirectAuthRedirectHref } from "@/src/features/auth/model/auth-flow";
 import { hasLocale } from "@/src/shared/i18n/config";
 import { createPageMetadata, getSeoCopy } from "@/src/shared/seo/metadata";
-import RegisterPage from "@/src/pages-layer/auth/register/ui/RegisterPage";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -27,6 +28,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export default function RegisterRoutePage() {
-  return <RegisterPage />;
+export default async function RegisterRoutePage({ params }: PageProps) {
+  const { locale } = await params;
+  const safeLocale = hasLocale(locale) ? locale : "uk";
+
+  redirect(buildDirectAuthRedirectHref(safeLocale, "register"));
 }

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { AuthSessionProvider } from "@/src/features/auth";
+import AuthModalController from "@/src/features/auth/ui/AuthModalController";
 import { hasLocale } from "@/src/shared/i18n/config";
 import { getDictionary } from "@/src/shared/i18n/getDictionary";
 import { I18nProvider } from "@/src/shared/i18n/I18nProvider";
@@ -14,7 +15,6 @@ import {
 
 type LayoutProps = {
   children: React.ReactNode;
-  modal: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
 
@@ -33,7 +33,6 @@ export async function generateMetadata({
 
 export default async function RootLayout({
   children,
-  modal,
   params,
 }: LayoutProps) {
   const { locale } = await params;
@@ -73,7 +72,7 @@ export default async function RootLayout({
           <ReactQueryProvider>
             <AuthSessionProvider>
               {children}
-              {modal}
+              <AuthModalController />
             </AuthSessionProvider>
           </ReactQueryProvider>
         </I18nProvider>

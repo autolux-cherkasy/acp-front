@@ -39,15 +39,14 @@ export default function ProfileTabsBar({
 
   const handleLogout = async () => {
     try {
-      await logoutMutation.mutateAsync();
+      logoutMutation.mutateAsync();
+      router.replace(resolveHref("/"));
     } catch (error) {
       console.error("Logout request failed", error);
     } finally {
       if (typeof window !== "undefined") {
         window.sessionStorage.removeItem(AUTH_BACKGROUND_KEY);
       }
-
-      router.replace(resolveHref("/"));
     }
   };
 

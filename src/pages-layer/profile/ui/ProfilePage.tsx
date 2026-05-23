@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
 import {
@@ -42,7 +42,7 @@ function shouldRequireLogin(error: unknown) {
 
 export default function ProfilePage() {
   const { t } = useI18n();
-  const [profileEmail, setProfileEmail] = useState("");
+  // const [profileEmail, setProfileEmail] = useState("");
   const [serverError, setServerError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [requiresLogin, setRequiresLogin] = useState(false);
@@ -63,7 +63,10 @@ export default function ProfilePage() {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
-  const validationRules = createProfileValidationRules(t, getValues);
+  const validationRules = useMemo(
+    () => createProfileValidationRules(t, getValues),
+    [t, getValues],
+  );
   const isLoading = profileQuery.isPending;
   const isSubmitting =
     updateProfileMutation.isPending || changePasswordMutation.isPending;
@@ -71,28 +74,9 @@ export default function ProfilePage() {
 
   const isFormDisabled = isLoading || isSubmitting || requiresLogin;
 
-  const clearNotices = () => {
-    if (serverError) {
-      setServerError("");
-    }
-
-    if (successMessage) {
-      setSuccessMessage("");
-    }
-
-    if (updateProfileMutation.error) {
-      updateProfileMutation.reset();
-    }
-
-    if (changePasswordMutation.error) {
-      changePasswordMutation.reset();
-    }
-  };
-
   useEffect(() => {
     const setter = () => {
       setRequiresLogin(true);
-      setProfileEmail("");
     };
     if (!isAuthenticated) {
       setter();
@@ -108,7 +92,6 @@ export default function ProfilePage() {
         confirmPassword: "",
       });
       const set = () => {
-        setProfileEmail(profileQuery.data.email ?? "");
         setRequiresLogin(false);
       };
       set();
@@ -125,24 +108,46 @@ export default function ProfilePage() {
     };
     set();
   }, [profileQuery.error]);
+  const clearNotices = useCallback(() => {
+    if (serverError) {
+      setServerError("");
+    }
 
-  const registerInput = (
-    field: keyof ProfileFormData,
-    options?: Parameters<typeof register>[1],
-  ) =>
-    register(field, {
-      ...options,
-      onChange: () => {
-        clearNotices();
+    if (successMessage) {
+      setSuccessMessage("");
+    }
 
-        if (field === "newPassword" || field === "confirmPassword") {
-          clearErrors(["newPassword", "confirmPassword"]);
-          return;
-        }
+    if (updateProfileMutation.error) {
+      updateProfileMutation.reset();
+    }
 
-        clearErrors(field);
-      },
-    });
+    if (changePasswordMutation.error) {
+      changePasswordMutation.reset();
+    }
+  }, [
+    serverError,
+    successMessage,
+    updateProfileMutation,
+    changePasswordMutation,
+  ]);
+
+  const registerInput = useCallback(
+    (field: keyof ProfileFormData, options?: Parameters<typeof register>[1]) =>
+      register(field, {
+        ...options,
+        onChange: () => {
+          clearNotices();
+
+          if (field === "newPassword" || field === "confirmPassword") {
+            clearErrors(["newPassword", "confirmPassword"]);
+            return;
+          }
+
+          clearErrors(field);
+        },
+      }),
+    [register, clearErrors, clearNotices],
+  );
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (submittedData) => {
     setServerError("");
@@ -178,7 +183,6 @@ export default function ProfilePage() {
           name: response.user.name ?? "",
           phone: response.user.phone ?? "",
         };
-        setProfileEmail(response.user.email ?? "");
         didUpdateProfile = true;
         successMessages.push(response.message);
       } catch (err) {
@@ -374,7 +378,7 @@ export default function ProfilePage() {
                 type="email"
                 placeholder="example@email.com"
                 autoComplete="email"
-                value={profileEmail}
+                value={profileQuery.data?.email}
                 readOnly
                 className={styles.input}
                 disabled={true}
