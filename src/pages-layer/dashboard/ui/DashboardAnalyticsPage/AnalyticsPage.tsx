@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import AnalyticsPageHeader from "@/src/widgets/AdminComp/ui/Header/AnalyticsPageHeader";
 import NoShowReport from "@/src/widgets/AdminComp/ui/NoShowReport/NoShowReport";
 import PopularRoutesCard from "@/src/widgets/AdminComp/ui/PopularRoutes/PopularRoutesCard";
+import pageStyles from "./AnalyticsPage.module.css";
 import styles from "./analytics.module.css";
 
 const LoadChart = dynamic(
@@ -16,7 +17,7 @@ const FinanceCard = dynamic(
 );
 export default function AnalyticsPage() {
   return (
-    <div className={styles.mainContainer}>
+    <div className={`${styles.mainContainer} ${pageStyles.pageRoot}`}>
       <AnalyticsPageHeader />
       <div className={styles.grid}>
         <NoShowReport />

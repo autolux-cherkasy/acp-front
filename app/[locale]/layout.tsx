@@ -12,6 +12,7 @@ import {
   createSiteMetadata,
   getOrganizationStructuredData,
 } from "@/src/shared/seo/metadata";
+import ToastProvider from "@/src/shared/ui/ToastProvider/ToastProvider";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -73,6 +74,7 @@ export default async function RootLayout({
             <AuthSessionProvider>
               {children}
               <AuthModalController />
+              <ToastProvider />
             </AuthSessionProvider>
           </ReactQueryProvider>
         </I18nProvider>

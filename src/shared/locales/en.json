@@ -274,6 +274,24 @@
   },
   "common": {
     "close": "Close",
+    "toast": {
+      "loginSuccess": "Signed in successfully.",
+      "loginError": "Failed to sign in. Please try again.",
+      "registerSuccess": "Account created successfully.",
+      "registerError": "Failed to create the account. Please try again.",
+      "forgotPasswordSuccess": "Password reset instructions have been sent if the account exists.",
+      "forgotPasswordError": "Failed to send the reset instructions. Please try again.",
+      "resetPasswordSuccess": "Password updated successfully.",
+      "resetPasswordError": "Failed to update the password. Please try again.",
+      "profileUpdateSuccess": "Profile updated successfully.",
+      "profileUpdateError": "Failed to update the profile.",
+      "passwordChangeSuccess": "Password changed successfully.",
+      "passwordChangeError": "Failed to change the password.",
+      "logoutSuccess": "Signed out successfully.",
+      "logoutError": "Failed to sign out. Please try again.",
+      "requestError": "Request failed. Please try again.",
+      "noChanges": "There are no changes to save."
+    },
     "password": {
       "show": "Show password",
       "hide": "Hide password"
@@ -659,6 +677,7 @@
           "phone": "Phone",
           "ratio": "Booked/unpaid"
         },
+        "moreActions": "More actions",
         "blockBtn": "Block",
         "blocked": "Blocked"
       },
