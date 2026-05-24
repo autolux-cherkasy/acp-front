@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import StatusBadge from "@/src/shared/ui/StatusBadge/StatusBadge";
 import {
   DashboardCard,
   DashboardTable,
@@ -16,6 +17,7 @@ type NoShowRow = {
   name: string;
   phone: string;
   ratio: string;
+  isBlocked: boolean;
 };
 
 const MOCK_ROWS: NoShowRow[] = [
@@ -24,36 +26,42 @@ const MOCK_ROWS: NoShowRow[] = [
     name: "Денисенко Сергій",
     phone: "+380675494578",
     ratio: "8/6",
+    isBlocked: false,
   },
   {
     id: 3,
     name: "Сисоева Інна",
     phone: "+380675494578",
     ratio: "12/7",
+    isBlocked: true,
   },
   {
     id: 4,
     name: "Трайтак Ігор",
     phone: "+380675494578",
     ratio: "14/12",
+    isBlocked: false,
   },
   {
     id: 5,
     name: "Юнак Людмила",
     phone: "+380675494578",
     ratio: "17/6",
+    isBlocked: false,
   },
   {
     id: 6,
     name: "Науменко Ольга",
     phone: "+380675494578",
     ratio: "19/12",
+    isBlocked: true,
   },
   {
     id: 7,
     name: "Ковтун Максим",
     phone: "+380675494578",
     ratio: "12/6",
+    isBlocked: false,
   },
 ];
 
@@ -62,7 +70,6 @@ type Props = { rows?: NoShowRow[] };
 export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
   const { t } = useI18n();
   const [blocked, setBlocked] = useState<Set<number>>(new Set());
-  const visibleRows = rows.filter((row) => !blocked.has(row.id));
 
   function block(id: number) {
     setBlocked((prev) => new Set(prev).add(id));
@@ -79,7 +86,7 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
         </SharedLabel>
       </div>
 
-      {visibleRows.length === 0 ? (
+      {rows.length === 0 ? (
         <div className={styles.emptyState} aria-live="polite">
           <div className={styles.emptyCard}>
             <div className={styles.icon} aria-hidden="true" />
@@ -120,7 +127,7 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
               <th className={styles.thAction} />
             </DashboardThead>
             <tbody>
-              {visibleRows.map((row, index) => (
+              {rows.map((row, index) => (
                 <DashboardTr key={row.id} className={styles.row}>
                   <td className={styles.tdNum}>{index + 1}</td>
                   <td className={`${styles.td} ${styles.tdLeft} ${styles.tdName}`}>
@@ -132,13 +139,22 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
                   <td className={styles.td}>{row.ratio}</td>
                   <td className={styles.tdAction}>
                     <div className={styles.actionGroup}>
-                      <button
-                        type="button"
-                        className={styles.blockBtn}
-                        onClick={() => block(row.id)}
-                      >
-                        {t("dispatcherArea.analytics.noShowReport.blockBtn")}
-                      </button>
+                      {row.isBlocked || blocked.has(row.id) ? (
+                        <StatusBadge
+                          label={t("dispatcherArea.analytics.noShowReport.blocked")}
+                          variant="softDanger"
+                          className={styles.blockedBadge}
+                          withDot={false}
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          className={styles.blockBtn}
+                          onClick={() => block(row.id)}
+                        >
+                          {t("dispatcherArea.analytics.noShowReport.blockBtn")}
+                        </button>
+                      )}
                       <button
                         type="button"
                         className={styles.moreBtn}

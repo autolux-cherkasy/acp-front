@@ -75,3 +75,17 @@
 .neutral .dot {
   background: #a0b4bc;
 }
+
+.softDanger {
+  justify-content: center;
+  min-height: 28px;
+  width: auto;
+  gap: 0;
+  border-radius: 12px;
+  background: #ff3d001a;
+  color: #ff3d00;
+  font-size: 14px;
+  line-height: 144%;
+  vertical-align: middle;
+  box-shadow: none;
+}
