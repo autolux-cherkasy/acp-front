@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useResetPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
 import { openAuthModal } from "@/src/features/auth/model/auth-flow";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
+import { useServerToast } from "@/src/shared/lib/toast";
 import Button from "@/src/shared/ui/Button/Button";
 import FormField from "@/src/shared/ui/FormField/FormField";
 import Notification from "@/src/shared/ui/Notification/Notification";
@@ -20,7 +21,7 @@ type ResetPasswordPageProps = {
 
 type FeedbackState = {
   message: string;
-  variant: "error" | "success";
+  variant: "error";
 } | null;
 
 export default function ResetPasswordPage({
@@ -36,6 +37,7 @@ export default function ResetPasswordPage({
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const resetPasswordMutation = useResetPasswordMutation();
+  const { notifyError, notifySuccess } = useServerToast();
 
   const trimmedToken = token.trim();
   const hasToken = trimmedToken.length > 0;
@@ -59,7 +61,7 @@ export default function ResetPasswordPage({
     resetPasswordMutation.reset();
 
     try {
-      await resetPasswordMutation.mutateAsync({
+      const result = await resetPasswordMutation.mutateAsync({
         token: trimmedToken,
         newPassword,
       });
@@ -67,15 +69,9 @@ export default function ResetPasswordPage({
       setNewPassword("");
       setConfirmPassword("");
       setIsSuccess(true);
-      setFeedback({
-        variant: "success",
-        message: t("auth.resetPassword.successMessage"),
-      });
+      notifySuccess(result, t("common.toast.resetPasswordSuccess"));
     } catch (error) {
-      setFeedback({
-        variant: "error",
-        message: error instanceof Error ? error.message : t("auth.resetPassword.errors.generic"),
-      });
+      notifyError(error, t("common.toast.resetPasswordError"));
     }
   };
 

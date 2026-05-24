@@ -131,13 +131,28 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
                   </td>
                   <td className={styles.td}>{row.ratio}</td>
                   <td className={styles.tdAction}>
-                    <button
-                      type="button"
-                      className={styles.blockBtn}
-                      onClick={() => block(row.id)}
-                    >
-                      {t("dispatcherArea.analytics.noShowReport.blockBtn")}
-                    </button>
+                    <div className={styles.actionGroup}>
+                      <button
+                        type="button"
+                        className={styles.blockBtn}
+                        onClick={() => block(row.id)}
+                      >
+                        {t("dispatcherArea.analytics.noShowReport.blockBtn")}
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.moreBtn}
+                        aria-label={t(
+                          "dispatcherArea.analytics.noShowReport.moreActions",
+                        )}
+                        onClick={() => {}}
+                      >
+                        <span
+                          className={styles.moreBtnIcon}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </div>
                   </td>
                 </DashboardTr>
               ))}

@@ -169,6 +169,13 @@
   text-align: right;
 }
 
+.actionGroup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .tdAction,
 .thAction {
   padding-right: clamp(4px, 1vw, 12px);
@@ -200,6 +207,37 @@
 
 .blockBtn:hover {
   background: rgba(213, 18, 22, 0.06);
+}
+
+.moreBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.moreBtn:hover {
+  opacity: 0.72;
+}
+
+.moreBtnIcon {
+  width: 24px;
+  height: 24px;
+  background-color: var(--DarkSlateGray, var(--color-brand));
+  -webkit-mask-image: url("/icons/pepicons-pencil-dots-y.svg");
+  mask-image: url("/icons/pepicons-pencil-dots-y.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .blockedLabel {

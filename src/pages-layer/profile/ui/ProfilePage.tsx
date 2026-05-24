@@ -13,6 +13,7 @@ import {
 import { hasAccessToken } from "@/src/shared";
 import { ApiError } from "@/src/shared/api/http";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
+import { useServerToast } from "@/src/shared/lib/toast";
 import Button from "@/src/shared/ui/Button/Button";
 import {
   buildProfilePayload,
@@ -46,11 +47,10 @@ export default function ProfilePage() {
   const resolveHref = useLocalizedHref();
   const { t } = useI18n();
   // const [profileEmail, setProfileEmail] = useState("");
-  const [serverError, setServerError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [requiresLogin, setRequiresLogin] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { notifyError, notifyInfo, notifySuccess } = useServerToast();
   const profileQuery = useProfileQuery();
   const updateProfileMutation = useUpdateProfileMutation();
   const changePasswordMutation = useChangePasswordMutation();
@@ -112,14 +112,6 @@ export default function ProfilePage() {
     set();
   }, [profileQuery.error]);
   const clearNotices = useCallback(() => {
-    if (serverError) {
-      setServerError("");
-    }
-
-    if (successMessage) {
-      setSuccessMessage("");
-    }
-
     if (updateProfileMutation.error) {
       updateProfileMutation.reset();
     }
@@ -128,8 +120,6 @@ export default function ProfilePage() {
       changePasswordMutation.reset();
     }
   }, [
-    serverError,
-    successMessage,
     updateProfileMutation,
     changePasswordMutation,
   ]);
@@ -153,9 +143,6 @@ export default function ProfilePage() {
   );
 
   const onSubmit: SubmitHandler<ProfileFormData> = async (submittedData) => {
-    setServerError("");
-    setSuccessMessage("");
-
     const normalizedData = normalizeProfileFormData(submittedData);
     const wantsPasswordChange = hasPasswordChange(
       normalizedData.newPassword,
@@ -166,12 +153,9 @@ export default function ProfilePage() {
     const hasProfileChanges = Object.keys(profilePayload).length > 0;
 
     if (!hasProfileChanges && !wantsPasswordChange) {
-      setSuccessMessage(t("profile.page.messages.noChanges"));
+      notifyInfo(t("common.toast.noChanges"));
       return;
     }
-
-    const successMessages: string[] = [];
-    const failureMessages: string[] = [];
     let nextProfileDefaults: Pick<ProfileFormData, "name" | "phone"> | null =
       null;
     let didUpdateProfile = false;
@@ -187,13 +171,10 @@ export default function ProfilePage() {
           phone: response.user.phone ?? "",
         };
         didUpdateProfile = true;
-        successMessages.push(response.message);
+        notifySuccess(response, t("common.toast.profileUpdateSuccess"));
       } catch (err) {
-        failureMessages.push(
-          err instanceof Error
-            ? err.message
-            : t("profile.page.errors.updateProfile"),
-        );
+        notifyError(err, t("common.toast.profileUpdateError"));
+        setRequiresLogin(shouldRequireLogin(err));
       }
     }
 
@@ -205,13 +186,10 @@ export default function ProfilePage() {
         });
 
         didChangePassword = true;
-        successMessages.push(response.message);
+        notifySuccess(response, t("common.toast.passwordChangeSuccess"));
       } catch (err) {
-        failureMessages.push(
-          err instanceof Error
-            ? err.message
-            : t("profile.page.errors.changePassword"),
-        );
+        notifyError(err, t("common.toast.passwordChangeError"));
+        setRequiresLogin(shouldRequireLogin(err));
       }
     }
 
@@ -234,24 +212,9 @@ export default function ProfilePage() {
         confirmPassword: "",
       });
     }
-
-    if (successMessages.length > 0) {
-      setSuccessMessage(successMessages.join(" "));
-    }
-
-    if (failureMessages.length > 0) {
-      setServerError(failureMessages.join(" "));
-      setRequiresLogin(
-        failureMessages.some((message) =>
-          shouldRequireLogin(new Error(message)),
-        ),
-      );
-    }
   };
 
   const retryLoad = () => {
-    setServerError("");
-    setSuccessMessage("");
     updateProfileMutation.reset();
     changePasswordMutation.reset();
     void profileQuery.refetch();
@@ -262,7 +225,7 @@ export default function ProfilePage() {
       ? profileQuery.error.message
       : t("profile.page.errors.load")
     : "";
-  const displayedError = serverError || loadErrorMessage;
+  const displayedError = loadErrorMessage;
 
   return (
     <ProfileWrapper mode="profile">
@@ -286,15 +249,6 @@ export default function ProfilePage() {
                 {t("profile.page.actions.retry")}
               </button>
             ) : null}
-          </div>
-        ) : null}
-
-        {successMessage ? (
-          <div
-            className={`${styles.notice} ${styles.noticeSuccess}`}
-            role="status"
-          >
-            {successMessage}
           </div>
         ) : null}
 

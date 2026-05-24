@@ -11,6 +11,7 @@ import {
 } from "@/src/features/auth/model/auth-flow";
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
+import { useServerToast } from "@/src/shared/lib/toast";
 import Button from "@/src/shared/ui/Button/Button";
 import FormField from "@/src/shared/ui/FormField/FormField";
 import TextField from "@/src/shared/ui/TextField/TextField";
@@ -51,6 +52,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
   const [error, setError] = useState("");
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const registerMutation = useRegisterMutation();
+  const { notifySuccess } = useServerToast();
 
   const handleCloseAuthFlow = () => {
     if (onClose) {
@@ -139,12 +141,13 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
     registerMutation.reset();
 
     try {
-      await registerMutation.mutateAsync({
+      const result = await registerMutation.mutateAsync({
         email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
         phone,
       });
+      notifySuccess(result, t("common.toast.registerSuccess"));
 
       openAuthModal(router, resolveHref, "login", { replace: true });
     } catch (err) {

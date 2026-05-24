@@ -7,6 +7,7 @@ import {
   markLogoutRedirectBypass,
 } from "@/src/features/auth/model/auth-flow";
 import { LocaleLink, useI18n, useLocalizedHref } from "@/src/shared";
+import { useServerToast } from "@/src/shared/lib/toast";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, type CSSProperties, type ReactNode } from "react";
@@ -124,6 +125,7 @@ export default function RoleWorkspaceShell({
   const localizeHref = useLocalizedHref();
   const { profile, role } = useAuthSession();
   const logoutMutation = useLogoutMutation();
+  const { notifyError, notifySuccess } = useServerToast();
 
   const currentPath = useMemo(() => normalizePathname(pathname), [pathname]);
 
@@ -145,9 +147,14 @@ export default function RoleWorkspaceShell({
 
   async function handleLogout() {
     markLogoutRedirectBypass();
-    await logoutMutation.mutateAsync();
-    router.replace(localizeHref(AUTH_FALLBACK_PATH));
-    router.refresh();
+    try {
+      const result = await logoutMutation.mutateAsync();
+      notifySuccess(result, t("common.toast.logoutSuccess"));
+      router.replace(localizeHref(AUTH_FALLBACK_PATH));
+      router.refresh();
+    } catch (error) {
+      notifyError(error, t("common.toast.logoutError"));
+    }
   }
 
   return (

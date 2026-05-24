@@ -11,10 +11,13 @@ import {
   openAuthModal,
 } from "@/src/features/auth/model/auth-flow";
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
-import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
+import {
+  useI18n,
+  useLocalizedHref,
+} from "@/src/shared/i18n/I18nProvider";
+import { useServerToast } from "@/src/shared/lib/toast";
 import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
 import Button from "@/src/shared/ui/Button/Button";
-import Notification from "@/src/shared/ui/Notification/Notification";
 import TextField from "@/src/shared/ui/TextField/TextField";
 
 type LoginFormData = {
@@ -37,6 +40,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
   });
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const loginMutation = useLoginMutation();
+  const { notifyError, notifySuccess } = useServerToast();
 
   const handleCloseAuthFlow = () => {
     if (onClose) {
@@ -62,10 +66,11 @@ export default function LoginPage({ onClose }: LoginPageProps) {
     loginMutation.reset();
 
     try {
-      await loginMutation.mutateAsync(formData);
+      const result = await loginMutation.mutateAsync(formData);
+      notifySuccess(result, t("common.toast.loginSuccess"));
       await handlePostAuthSuccess();
-    } catch (_) {
-      //mutation handles errors
+    } catch (error) {
+      notifyError(error, t("common.toast.loginError"));
     }
   };
 
@@ -93,17 +98,6 @@ export default function LoginPage({ onClose }: LoginPageProps) {
       <h1 className={styles.loginTitle}>{t("auth.login.title")}</h1>
 
       <form className={styles.loginBlock} onSubmit={handleSubmit}>
-        {loginMutation.isError ? (
-          <Notification
-            variant="error"
-            size="small"
-            message={loginMutation.error.message}
-            onClose={() => loginMutation.reset()}
-            closeLabel={t("common.close")}
-            className={styles.loginNotice}
-          />
-        ) : null}
-
         <label className={styles.field}>
           <span className={styles.label}>
             {t("auth.login.identifierLabel")}

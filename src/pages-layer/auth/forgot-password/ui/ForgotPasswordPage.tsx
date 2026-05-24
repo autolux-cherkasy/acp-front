@@ -10,22 +10,17 @@ import {
 } from "@/src/features/auth/model/auth-flow";
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
+import { useServerToast } from "@/src/shared/lib/toast";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
 import Button from "@/src/shared/ui/Button/Button";
 import FormField from "@/src/shared/ui/FormField/FormField";
 import TextField from "@/src/shared/ui/TextField/TextField";
-import Notification from "@/src/shared/ui/Notification/Notification";
 import PasswordRecoveryShell from "@/src/widgets/password-recovery-shell/ui/PasswordRecoveryShell";
 import styles from "@/src/widgets/password-recovery-shell/ui/password-recovery-shell.module.css";
 
 type ForgotPasswordPageProps = {
   onClose?: () => void;
 };
-
-type FeedbackState = {
-  message: string;
-  variant: "error" | "info";
-} | null;
 
 export default function ForgotPasswordPage({
   onClose,
@@ -35,9 +30,9 @@ export default function ForgotPasswordPage({
   const resolveHref = useLocalizedHref();
 
   const [email, setEmail] = useState("");
-  const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const forgotPasswordMutation = useForgotPasswordMutation();
+  const { notifyError, notifySuccess } = useServerToast();
 
   const rememberedPassword = raw("auth.forgotPassword.rememberedPassword");
   const loginAction =
@@ -63,26 +58,15 @@ export default function ForgotPasswordPage({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setFeedback(null);
     forgotPasswordMutation.reset();
 
     try {
-      await forgotPasswordMutation.mutateAsync({
+      const result = await forgotPasswordMutation.mutateAsync({
         email: email.trim(),
       });
-
-      setFeedback({
-        variant: "info",
-        message: t("auth.forgotPassword.successMessage"),
-      });
+      notifySuccess(result, t("common.toast.forgotPasswordSuccess"));
     } catch (error) {
-      setFeedback({
-        variant: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : t("auth.forgotPassword.errors.generic"),
-      });
+      notifyError(error, t("common.toast.forgotPasswordError"));
     }
   };
 
@@ -102,17 +86,6 @@ export default function ForgotPasswordPage({
         onSubmit={handleSubmit}
       >
         <div className={styles.formSection}>
-          {feedback ? (
-            <Notification
-              variant={feedback.variant}
-              size="small"
-              message={feedback.message}
-              onClose={() => setFeedback(null)}
-              closeLabel={t("common.close")}
-              className={styles.notice}
-            />
-          ) : null}
-
           <FormField
             className={styles.field}
             label={t("auth.forgotPassword.emailLabel")}
@@ -124,9 +97,6 @@ export default function ForgotPasswordPage({
               value={email}
               onChange={(event) => {
                 setEmail(event.target.value);
-                if (feedback) {
-                  setFeedback(null);
-                }
                 if (forgotPasswordMutation.isError) {
                   forgotPasswordMutation.reset();
                 }
