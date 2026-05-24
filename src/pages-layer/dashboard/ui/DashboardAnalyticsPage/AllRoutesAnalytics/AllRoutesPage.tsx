@@ -236,6 +236,7 @@ export default function AllRoutesPage() {
   const selectedRouteDetails = selectedRoute
     ? ROUTE_ANALYTICS_DETAILS[selectedRoute.id]
     : null;
+  const hasSelection = Boolean(selectedRoute && selectedRouteDetails);
   const trendChartData =
     selectedRouteDetails?.trend.map((point) => ({
       dayLabel: t(
@@ -261,7 +262,9 @@ export default function AllRoutesPage() {
       <AllRoutesAnalyticsHeader />
       <div
         ref={cardRef}
-        className={`${styles.routesCard} ${selectedRoute ? styles.routesCardCompact : ""}`}
+        className={`${styles.routesCard} ${
+          hasSelection ? styles.routesCardCompact : styles.routesCardFull
+        }`}
       >
         <DashboardCard className={styles.routesCardInner}>
           <div ref={headerRef} className={styles.header}>
@@ -362,21 +365,24 @@ export default function AllRoutesPage() {
           </div>
         </DashboardCard>
       </div>
-      {selectedRoute && selectedRouteDetails && (
-        <div className={styles.grid}>
-          <RouteAnalyticsDetails
-            routeTitle={selectedRoute.direction}
-            statisticsTitle={t(
-              "dispatcherArea.analytics.allRoutesPage.details.statisticsTitle",
-            )}
-            trendTitle={t(
-              "dispatcherArea.analytics.allRoutesPage.details.dynamicsTitle",
-            )}
-            trendChartData={trendChartData}
-            ticketStatsData={ticketStatsData}
-          />
-        </div>
-      )}
+      <div
+        className={`${styles.grid} ${
+          hasSelection ? styles.gridVisible : styles.gridHidden
+        }`}
+        aria-hidden={!hasSelection}
+      >
+        <RouteAnalyticsDetails
+          routeTitle={selectedRoute?.direction ?? ""}
+          statisticsTitle={t(
+            "dispatcherArea.analytics.allRoutesPage.details.statisticsTitle",
+          )}
+          trendTitle={t(
+            "dispatcherArea.analytics.allRoutesPage.details.dynamicsTitle",
+          )}
+          trendChartData={trendChartData}
+          ticketStatsData={ticketStatsData}
+        />
+      </div>
     </div>
   );
 }
