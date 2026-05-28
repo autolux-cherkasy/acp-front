@@ -182,7 +182,9 @@ export default function RouteAnalyticsDetails({
           </ResponsiveContainer>
         </div>
       </DashboardCard>
-      <DashboardCard className={`${styles.detailCard} ${styles.statisticsCard}`}>
+      <DashboardCard
+        className={`${styles.detailCard} ${styles.statisticsCard}`}
+      >
         <div className={pageStyles.header}>
           <span className={pageStyles.title}>{statisticsTitle}</span>
         </div>
@@ -207,8 +209,8 @@ export default function RouteAnalyticsDetails({
                   nameKey="label"
                   cx="50%"
                   cy="52%"
-                  innerRadius={42}
-                  outerRadius={68}
+                  innerRadius={44}
+                  outerRadius={75}
                   paddingAngle={1}
                   stroke="none"
                   labelLine={false}

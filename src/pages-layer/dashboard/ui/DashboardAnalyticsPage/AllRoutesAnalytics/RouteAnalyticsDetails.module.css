@@ -12,6 +12,8 @@
   min-height: 220px;
   height: 100%;
   width: 100%;
+  background: var(--color-page-bg);
+  border-radius: 12px;
 }
 
 .statisticsContent {
@@ -20,6 +22,9 @@
   gap: 12px;
   flex: 1;
   overflow: visible;
+  background: var(--color-page-bg);
+  border-radius: 12px;
+  padding: 10px;
 }
 
 .statisticsLegend {

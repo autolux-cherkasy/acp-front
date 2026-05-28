@@ -1,20 +1,9 @@
-import { apiFetch } from "@/src/shared/api/http";
-import { setAccessToken } from "@/src/shared/api/session";
-import type { TokenResponse } from "@/src/features/auth/api/auth";
-
-const GOOGLE_IDENTITY_SCRIPT_SRC = "https://accounts.google.com/gsi/client";
-
 type GoogleClientConfigStatus =
   | "ready"
   | "missing_client_id"
   | "invalid_client"
   | "redirect_uri_mismatch"
   | "unknown_error";
-
-type GoogleClientConfigResponse = {
-  clientId?: string;
-  status: GoogleClientConfigStatus;
-};
 
 type GoogleAuthErrorCode =
   | "missing_client_id"
@@ -55,9 +44,6 @@ declare global {
     };
   }
 }
-
-let googleIdentityScriptPromise: Promise<void> | null = null;
-let googleClientConfigPromise: Promise<string> | null = null;
 
 const GOOGLE_AUTH_MESSAGES = {
   only_browser: {
@@ -113,10 +99,14 @@ function getClientLocale() {
     return "uk" as const;
   }
 
-  return document.documentElement.lang?.toLowerCase().startsWith("en") ? "en" : "uk";
+  return document.documentElement.lang?.toLowerCase().startsWith("en")
+    ? "en"
+    : "uk";
 }
 
-function getGoogleClientConfigError(status: Exclude<GoogleClientConfigStatus, "ready">) {
+function getGoogleClientConfigError(
+  status: Exclude<GoogleClientConfigStatus, "ready">,
+) {
   switch (status) {
     case "missing_client_id":
       return new GoogleAuthError("missing_client_id");
@@ -134,125 +124,7 @@ export function getGoogleAuthErrorMessage(error: unknown) {
     return error.message;
   }
 
-  return error instanceof Error ? error.message : GOOGLE_AUTH_MESSAGES.request_failed[getClientLocale()];
-}
-
-export async function getGoogleClientId() {
-  if (!isBrowser()) {
-    throw new GoogleAuthError("only_browser");
-  }
-
-  if (googleClientConfigPromise) {
-    return googleClientConfigPromise;
-  }
-
-  googleClientConfigPromise = fetch("/api/google-auth/config", {
-    method: "GET",
-    cache: "no-store",
-  })
-    .then(async (response) => {
-      let payload: GoogleClientConfigResponse | null = null;
-
-      try {
-        payload = (await response.json()) as GoogleClientConfigResponse;
-      } catch {}
-
-      if (!payload) {
-        throw new GoogleAuthError("request_failed");
-      }
-
-      if (payload.status !== "ready") {
-        throw getGoogleClientConfigError(payload.status);
-      }
-
-      if (!payload.clientId) {
-        throw getGoogleClientConfigError("missing_client_id");
-      }
-
-      if (!response.ok) {
-        throw new GoogleAuthError("request_failed");
-      }
-
-      return payload.clientId;
-    })
-    .catch((error) => {
-      googleClientConfigPromise = null;
-      throw error;
-    });
-
-  return googleClientConfigPromise;
-}
-
-export function loadGoogleIdentityScript() {
-  if (!isBrowser()) {
-    return Promise.reject(new GoogleAuthError("only_browser"));
-  }
-
-  if (window.google?.accounts?.id) {
-    return Promise.resolve();
-  }
-
-  if (googleIdentityScriptPromise) {
-    return googleIdentityScriptPromise;
-  }
-
-  googleIdentityScriptPromise = new Promise<void>((resolve, reject) => {
-    const existingScript = document.querySelector<HTMLScriptElement>(
-      `script[src="${GOOGLE_IDENTITY_SCRIPT_SRC}"]`,
-    );
-
-    const handleLoad = () => {
-      if (window.google?.accounts?.id) {
-        resolve();
-        return;
-      }
-
-      reject(new GoogleAuthError("init_failed"));
-    };
-
-    if (existingScript) {
-      if (window.google?.accounts?.id) {
-        resolve();
-        return;
-      }
-
-      existingScript.addEventListener("load", handleLoad, { once: true });
-      existingScript.addEventListener("error", () => reject(new GoogleAuthError("load_failed")), {
-        once: true,
-      });
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = GOOGLE_IDENTITY_SCRIPT_SRC;
-    script.async = true;
-    script.defer = true;
-    script.addEventListener("load", handleLoad, { once: true });
-    script.addEventListener("error", () => reject(new GoogleAuthError("load_failed")), {
-      once: true,
-    });
-
-    document.head.appendChild(script);
-  }).catch((error) => {
-    googleIdentityScriptPromise = null;
-    throw error;
-  });
-
-  return googleIdentityScriptPromise;
-}
-
-export async function authenticateWithGoogleCredential(idToken: string) {
-  const response = await apiFetch<TokenResponse>("/auth/google", {
-    method: "POST",
-    body: JSON.stringify({ idToken }),
-    includeAuth: false,
-    skipAuthRefresh: true,
-  });
-
-  if (!response?.access_token) {
-    throw new GoogleAuthError("missing_token");
-  }
-
-  setAccessToken(response.access_token);
-  return response;
+  return error instanceof Error
+    ? error.message
+    : GOOGLE_AUTH_MESSAGES.request_failed[getClientLocale()];
 }
