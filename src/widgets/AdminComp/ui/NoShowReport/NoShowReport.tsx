@@ -11,6 +11,8 @@ import {
   DashboardTr,
 } from "@/src/shared";
 import styles from "./NoShowReport.module.css";
+import { useDisclosure } from "@/src/shared/lib/useDisclosure";
+import BlockedUserModal from "@/src/features/admin-modals/BlockedUserModal/BlockedUserModal";
 
 type NoShowRow = {
   id: number;
@@ -70,6 +72,7 @@ type Props = { rows?: NoShowRow[] };
 export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
   const { t } = useI18n();
   const [blocked, setBlocked] = useState<Set<number>>(new Set());
+  const blockedUserModal = useDisclosure<number>();
 
   function block(id: number) {
     setBlocked((prev) => new Set(prev).add(id));
@@ -130,12 +133,8 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
               {rows.map((row, index) => (
                 <DashboardTr key={row.id} className={styles.row}>
                   <td className={styles.tdNum}>{index + 1}</td>
-                  <td className={`${styles.td} ${styles.tdLeft} ${styles.tdName}`}>
-                    {row.name}
-                  </td>
-                  <td className={`${styles.td} ${styles.tdLeft} ${styles.tdPhone}`}>
-                    {row.phone}
-                  </td>
+                  <td className={`${styles.td} ${styles.tdLeft} ${styles.tdName}`}>{row.name}</td>
+                  <td className={`${styles.td} ${styles.tdLeft} ${styles.tdPhone}`}>{row.phone}</td>
                   <td className={styles.td}>{row.ratio}</td>
                   <td className={styles.tdAction}>
                     <div className={styles.actionGroup}>
@@ -158,15 +157,12 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
                       <button
                         type="button"
                         className={styles.moreBtn}
-                        aria-label={t(
-                          "dispatcherArea.analytics.noShowReport.moreActions",
-                        )}
-                        onClick={() => {}}
+                        aria-label={t("dispatcherArea.analytics.noShowReport.moreActions")}
+                        onClick={() => {
+                          blockedUserModal.open(row.id);
+                        }}
                       >
-                        <span
-                          className={styles.moreBtnIcon}
-                          aria-hidden="true"
-                        />
+                        <span className={styles.moreBtnIcon} aria-hidden="true" />
                       </button>
                     </div>
                   </td>
@@ -175,6 +171,16 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
             </tbody>
           </DashboardTable>
         </div>
+      )}
+      {blockedUserModal.isOpen && (
+        <BlockedUserModal
+          userId={blockedUserModal.data}
+          onClose={blockedUserModal.close}
+          onUnblock={() => {
+            if (blockedUserModal.data !== null) block(blockedUserModal.data);
+            blockedUserModal.close();
+          }}
+        />
       )}
     </DashboardCard>
   );
