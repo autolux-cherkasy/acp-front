@@ -1,0 +1,84 @@
+.modalFrame {
+  --modal-frame-max-width: 460px;
+  --modal-frame-shadow: 0 8px 32px var(--color-shadow-modal);
+}
+
+.body {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.userSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.ordersSection {
+  margin-top: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-muted) transparent;
+  padding: 8px;
+  background-color: var(--light-bg, #f4f7f7);
+  border-radius: 12px;
+  gap: 24px;
+}
+
+.orderCard {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.orderTitle {
+  margin: 0;
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-brand);
+}
+
+.orderInlineRow {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.orderInlineItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 16px;
+  color: var(--color-text-strong);
+}
+
+.orderInlineIcon {
+  color: var(--color-border-muted);
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.orderInlineSep {
+  width: 1px;
+  height: 16px;
+  background: var(--color-divider);
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+.actions {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}

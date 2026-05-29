@@ -52,12 +52,7 @@
   color: #11313d;
 }
 .warning .dot {
-  background: radial-gradient(
-    circle at 35% 30%,
-    #fff7a8 0%,
-    #ffe352 45%,
-    #f6c014 100%
-  );
+  background: radial-gradient(circle at 35% 30%, #fff7a8 0%, #ffe352 45%, #f6c014 100%);
 }
 
 .danger {
@@ -79,7 +74,6 @@
 .softDanger {
   justify-content: center;
   min-height: 28px;
-  width: auto;
   gap: 0;
   border-radius: 12px;
   background: #ff3d001a;

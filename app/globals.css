@@ -18,16 +18,15 @@
   --color-surface-soft: #f4f7f7;
   --color-border-muted: #7b98a3;
   --color-accent-strong: #f0b523;
-  --color-danger: #c8102e;
+  --color-danger: #d51216;
   --color-ua-blue: #005bbb;
   --color-navy: #012169;
   --color-ua-yellow: #ffd500;
   --color-white: #ffffff;
-  --color-success: #32a352;
+  --color-success: #169f2c;
   --color-divider: #e0eaed;
   --color-shadow-modal: rgba(17, 49, 61, 0.35);
-  --font-roboto:
-    Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-roboto: Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 
   /* Compatibility aliases for existing CSS */
   --bg: var(--color-page-bg);
