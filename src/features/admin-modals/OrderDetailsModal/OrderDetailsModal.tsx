@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useEffect } from "react";
 import type { Ticket } from "@/src/entities/ticket";
 import { useCountdown } from "@/src/features/ticket-timer";
@@ -8,6 +7,7 @@ import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import Icon from "@/src/shared/ui/Icon/Icon";
 import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
+import ModalRow from "@/src/shared/ui/ModalRow/ModalRow";
 import styles from "./OrderDetailsModal.module.css";
 import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
 
@@ -21,15 +21,6 @@ function formatSeconds(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const remainder = seconds % 60;
   return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
-}
-
-function Row({ icon, children }: { icon: ReactNode; children: ReactNode }) {
-  return (
-    <div className={styles.row}>
-      <span className={styles.rowIcon}>{icon}</span>
-      <span className={styles.rowValue}>{children}</span>
-    </div>
-  );
 }
 
 export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
@@ -73,17 +64,17 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
         onClose={onClose}
       />
       <div className={styles.body}>
-        <Row icon={<Icon src="/icons/account/archive/clarity_avatar-line.svg" />}>
+        <ModalRow icon={<Icon src="/icons/account/archive/clarity_avatar-line.svg" />}>
           {ticket.passengerName}
-        </Row>
-        <Row icon={<Icon src="/icons/account/archive/phone.svg" />}>{ticket.passengerPhone}</Row>
-        <Row icon={<Icon src="/icons/Footer/map-point.svg" />}>{route}</Row>
-        <Row icon={<Icon src="/icons/calendar.svg" />}>{ticket.departureDate}</Row>
-        <Row icon={<Icon src="/icons/Footer/clock.svg" />}>{ticket.departureTime}</Row>
-        <Row icon={<Icon src="/icons/account/archive/ticket-outline.svg" />}>
+        </ModalRow>
+        <ModalRow icon={<Icon src="/icons/account/archive/phone.svg" />}>{ticket.passengerPhone}</ModalRow>
+        <ModalRow icon={<Icon src="/icons/Footer/map-point.svg" />}>{route}</ModalRow>
+        <ModalRow icon={<Icon src="/icons/calendar.svg" />}>{ticket.departureDate}</ModalRow>
+        <ModalRow icon={<Icon src="/icons/Footer/clock.svg" />}>{ticket.departureTime}</ModalRow>
+        <ModalRow icon={<Icon src="/icons/account/archive/ticket-outline.svg" />}>
           {ticket.ticketCount}
-        </Row>
-        <Row icon={<Icon src="/icons/currency-hryvnia.svg" />}>{ticket.totalPrice}</Row>
+        </ModalRow>
+        <ModalRow icon={<Icon src="/icons/currency-hryvnia.svg" />}>{ticket.totalPrice}</ModalRow>
 
         <div className={styles.metaRow}>
           <span className={styles.metaLabel}>
