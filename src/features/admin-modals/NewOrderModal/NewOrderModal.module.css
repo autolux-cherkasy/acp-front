@@ -2,21 +2,6 @@
   --modal-frame-max-width: 500px;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 16px;
-}
-
-.title {
-  font-family: Roboto, system-ui, sans-serif;
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--color-text-strong);
-  margin: 0;
-}
-
 .body {
   padding: 0 24px;
   display: flex;
@@ -34,7 +19,7 @@
   font-family: Roboto, system-ui, sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: var(--color-text-strong);
+  color: var(--DarkSlateGray, #226078);
 }
 
 .row {

@@ -8,8 +8,8 @@ import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import Icon from "@/src/shared/ui/Icon/Icon";
 import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
-import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import styles from "./OrderDetailsModal.module.css";
+import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
 
 type Props = {
   ticket: Ticket;
@@ -68,36 +68,22 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
       usePortal
       surfaceClassName={styles.modalFrame}
     >
-      <div className={styles.header}>
-        <h2 className={styles.title} id="order-details-title">
-          {t("dispatcherArea.tickets.modal.orderDetailsTitle")} №
-          {bookingNumberStr}
-        </h2>
-        <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
-      </div>
-
+      <AdminModalHeader
+        title={`${t("dispatcherArea.tickets.modal.orderDetailsTitle")} № ${bookingNumberStr}`}
+        onClose={onClose}
+      />
       <div className={styles.body}>
-        <Row
-          icon={<Icon src="/icons/account/archive/clarity_avatar-line.svg" />}
-        >
+        <Row icon={<Icon src="/icons/account/archive/clarity_avatar-line.svg" />}>
           {ticket.passengerName}
         </Row>
-        <Row icon={<Icon src="/icons/account/archive/phone.svg" />}>
-          {ticket.passengerPhone}
-        </Row>
+        <Row icon={<Icon src="/icons/account/archive/phone.svg" />}>{ticket.passengerPhone}</Row>
         <Row icon={<Icon src="/icons/Footer/map-point.svg" />}>{route}</Row>
-        <Row icon={<Icon src="/icons/calendar.svg" />}>
-          {ticket.departureDate}
-        </Row>
-        <Row icon={<Icon src="/icons/Footer/clock.svg" />}>
-          {ticket.departureTime}
-        </Row>
+        <Row icon={<Icon src="/icons/calendar.svg" />}>{ticket.departureDate}</Row>
+        <Row icon={<Icon src="/icons/Footer/clock.svg" />}>{ticket.departureTime}</Row>
         <Row icon={<Icon src="/icons/account/archive/ticket-outline.svg" />}>
           {ticket.ticketCount}
         </Row>
-        <Row icon={<Icon src="/icons/currency-hryvnia.svg" />}>
-          {ticket.totalPrice}
-        </Row>
+        <Row icon={<Icon src="/icons/currency-hryvnia.svg" />}>{ticket.totalPrice}</Row>
 
         <div className={styles.metaRow}>
           <span className={styles.metaLabel}>
@@ -123,11 +109,7 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
             variant="success"
             onClick={() => {}}
           />
-          <Button
-            text={t("ticketBooking.form.reserve")}
-            variant="yellow"
-            onClick={() => {}}
-          />
+          <Button text={t("ticketBooking.form.reserve")} variant="yellow" onClick={() => {}} />
           <Button
             text={t("dispatcherArea.routes.table.statuses.edit")}
             variant="outlined"

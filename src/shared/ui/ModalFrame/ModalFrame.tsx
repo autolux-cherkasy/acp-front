@@ -2,12 +2,15 @@
 
 import type { ReactNode } from "react";
 import Portal from "@/src/shared/ui/Portal/Portal";
+import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
+import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import styles from "./ModalFrame.module.css";
 
 type Props = {
   children: ReactNode;
   onClose?: () => void;
   ariaLabelledBy?: string;
+  title?: ReactNode;
   variant?: "route" | "dialog";
   usePortal?: boolean;
   backdropClassName?: string;
@@ -23,12 +26,15 @@ export default function ModalFrame({
   children,
   onClose,
   ariaLabelledBy,
+  title,
   variant = "dialog",
   usePortal = false,
   backdropClassName,
   surfaceClassName,
   surfaceOverflow = "hidden",
 }: Props) {
+  const { t } = useI18n();
+
   const content = (
     <div
       className={joinClassNames(
@@ -53,6 +59,14 @@ export default function ModalFrame({
         aria-modal="true"
         aria-labelledby={ariaLabelledBy}
       >
+        {title && (
+          <div className={styles.header}>
+            <h2 className={styles.title} id={ariaLabelledBy}>
+              {title}
+            </h2>
+            <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
+          </div>
+        )}
         {children}
       </div>
     </div>

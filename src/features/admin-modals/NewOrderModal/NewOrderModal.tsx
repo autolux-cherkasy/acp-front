@@ -6,9 +6,9 @@ import type { TicketStatus } from "@/src/entities/ticket";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
-import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import TextField from "@/src/shared/ui/TextField/TextField";
 import styles from "./NewOrderModal.module.css";
+import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
 
 type Props = {
   onClose: () => void;
@@ -84,13 +84,10 @@ export default function NewOrderModal({
       usePortal
       surfaceClassName={styles.modalFrame}
     >
-          <div className={styles.header}>
-            <h2 className={styles.title} id="new-order-title">
-              {t("dispatcherArea.tickets.modal.newOrderTitle")} №{" "}
-              {bookingNumberStr}
-            </h2>
-            <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
-          </div>
+      <AdminModalHeader
+        title={`${t("dispatcherArea.tickets.modal.newOrderTitle")} № ${bookingNumberStr}`}
+        onClose={onClose}
+      />
 
           <div className={styles.body}>
             <Field label={t("profile.fields.name")}>

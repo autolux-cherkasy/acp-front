@@ -4,21 +4,6 @@
   --modal-frame-shadow: 0 8px 32px var(--color-shadow-modal);
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 12px;
-}
-
-.title {
-  font-family: Roboto, system-ui, sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--color-text-strong);
-  margin: 0;
-}
-
 .body {
   padding: 0 24px 24px;
   display: flex;
@@ -43,7 +28,7 @@
 
 .rowValue {
   font-family: Roboto, system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--color-text-strong);
 }
 

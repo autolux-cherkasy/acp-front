@@ -1,0 +1,25 @@
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 24px 16px;
+}
+
+.title {
+  margin: 0;
+
+  color: var(--DarkSlateGray, #226078);
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 16px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.closeButton {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+}
