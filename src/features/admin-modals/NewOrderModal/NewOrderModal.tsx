@@ -1,12 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import type { TicketStatus } from "@/src/entities/ticket";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
-import TextField from "@/src/shared/ui/TextField/TextField";
+import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
 import styles from "./NewOrderModal.module.css";
 import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
 
@@ -28,14 +27,6 @@ type FormState = {
   bookingNumber?: string;
 };
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className={styles.field}>
-      <label className={styles.label}>{label}</label>
-      {children}
-    </div>
-  );
-}
 
 export default function NewOrderModal({
   onClose,
@@ -71,7 +62,11 @@ export default function NewOrderModal({
     status: routeInfo?.status ?? "booked",
   });
 
+  const isEditMode = routeInfo !== undefined;
   const bookingNumberStr = routeInfo?.bookingNumber ?? String(nextBookingNumber).padStart(6, "0");
+  const modalTitle = isEditMode
+    ? t("dispatcherArea.tickets.modal.editOrderTitle")
+    : t("dispatcherArea.tickets.modal.newOrderTitle");
 
   function setField(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -85,87 +80,66 @@ export default function NewOrderModal({
       surfaceClassName={styles.modalFrame}
     >
       <AdminModalHeader
-        title={`${t("dispatcherArea.tickets.modal.newOrderTitle")} № ${bookingNumberStr}`}
+        title={`${modalTitle} № ${bookingNumberStr}`}
         onClose={onClose}
       />
 
           <div className={styles.body}>
-            <Field label={t("profile.fields.name")}>
-              <TextField
-                placeholder={t("ticketBooking.form.namePlaceholder")}
-                value={form.passengerName}
-                onChange={(event) =>
-                  setField("passengerName", event.target.value)
-                }
-              />
-            </Field>
+            <InputWithLabel
+              label={t("profile.fields.name")}
+              placeholder={t("ticketBooking.form.namePlaceholder")}
+              value={form.passengerName}
+              onChange={(event) => setField("passengerName", event.target.value)}
+            />
 
-            <Field label={t("profile.fields.phone")}>
-              <TextField
-                placeholder={t("profile.placeholders.phone")}
-                value={form.passengerPhone}
-                onChange={(event) =>
-                  setField("passengerPhone", event.target.value)
-                }
-              />
-            </Field>
+            <InputWithLabel
+              label={t("profile.fields.phone")}
+              placeholder={t("profile.placeholders.phone")}
+              value={form.passengerPhone}
+              onChange={(event) => setField("passengerPhone", event.target.value)}
+            />
 
-            <Field
+            <InputWithLabel
               label={t("dispatcherArea.analytics.popularRoutes.columns.route")}
-            >
-              <TextField
-                placeholder={t("dispatcherArea.tickets.modal.routePlaceholder")}
-                value={form.route}
-                onChange={(event) => setField("route", event.target.value)}
-              />
-            </Field>
+              placeholder={t("dispatcherArea.tickets.modal.routePlaceholder")}
+              value={form.route}
+              onChange={(event) => setField("route", event.target.value)}
+            />
 
             <div className={styles.row}>
-              <Field label={t("bookingForm.date.placeholder")}>
-                <TextField
-                  placeholder={t(
-                    "dispatcherArea.tickets.modal.datePlaceholder",
-                  )}
-                  value={form.date}
-                  onChange={(event) => setField("date", event.target.value)}
-                  trailingAdornment="/icons/calendar.svg"
-                />
-              </Field>
-              <Field label={t("dispatcherArea.tickets.modal.departureTime")}>
-                <TextField
-                  placeholder="00:00"
-                  value={form.departureTime}
-                  onChange={(event) =>
-                    setField("departureTime", event.target.value)
-                  }
-                  trailingAdornment="/icons/Footer/clock.svg"
-                />
-              </Field>
+              <InputWithLabel
+                label={t("bookingForm.date.placeholder")}
+                placeholder={t("dispatcherArea.tickets.modal.datePlaceholder")}
+                value={form.date}
+                onChange={(event) => setField("date", event.target.value)}
+                trailingAdornment="/icons/calendar.svg"
+              />
+              <InputWithLabel
+                label={t("dispatcherArea.tickets.modal.departureTime")}
+                placeholder="00:00"
+                value={form.departureTime}
+                onChange={(event) => setField("departureTime", event.target.value)}
+                trailingAdornment="/icons/Footer/clock.svg"
+              />
             </div>
 
             <div className={styles.row}>
-              <Field label={t("dispatcherArea.tickets.modal.ticketCount")}>
-                <TextField
-                  type="number"
-                  min={0}
-                  value={form.ticketCount}
-                  onChange={(event) =>
-                    setField("ticketCount", event.target.value)
-                  }
-                  trailingAdornment="/icons/account/archive/ticket-outline.svg"
-                />
-              </Field>
-              <Field label={t("bookingForm.price.placeholder")}>
-                <TextField
-                  type="number"
-                  min={0}
-                  value={form.totalPrice}
-                  onChange={(event) =>
-                    setField("totalPrice", event.target.value)
-                  }
-                  trailingAdornment="/icons/currency-hryvnia.svg"
-                />
-              </Field>
+              <InputWithLabel
+                label={t("dispatcherArea.tickets.modal.ticketCount")}
+                type="number"
+                min={0}
+                value={form.ticketCount}
+                onChange={(event) => setField("ticketCount", event.target.value)}
+                trailingAdornment="/icons/account/archive/ticket-outline.svg"
+              />
+              <InputWithLabel
+                label={t("bookingForm.price.placeholder")}
+                type="number"
+                min={0}
+                value={form.totalPrice}
+                onChange={(event) => setField("totalPrice", event.target.value)}
+                trailingAdornment="/icons/currency-hryvnia.svg"
+              />
             </div>
 
             <div className={styles.statusRow}>

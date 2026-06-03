@@ -9,19 +9,6 @@
   gap: 14px;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.label {
-  font-family: Roboto, system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--DarkSlateGray, #226078);
-}
-
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;

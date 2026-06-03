@@ -18,7 +18,7 @@ import {
 import { useServerToast } from "@/src/shared/lib/toast";
 import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
 import Button from "@/src/shared/ui/Button/Button";
-import TextField from "@/src/shared/ui/TextField/TextField";
+import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
 
 type LoginFormData = {
   identifier: string;
@@ -98,39 +98,31 @@ export default function LoginPage({ onClose }: LoginPageProps) {
       <h1 className={styles.loginTitle}>{t("auth.login.title")}</h1>
 
       <form className={styles.loginBlock} onSubmit={handleSubmit}>
-        <label className={styles.field}>
-          <span className={styles.label}>
-            {t("auth.login.identifierLabel")}
-          </span>
-          <TextField
-            type="text"
-            name="identifier"
-            value={formData.identifier}
-            onChange={handleChange}
-            autoComplete="username"
-            className={styles.loginInput}
-            required
-          />
-        </label>
+        <InputWithLabel
+          label={t("auth.login.identifierLabel")}
+          type="text"
+          name="identifier"
+          value={formData.identifier}
+          onChange={handleChange}
+          autoComplete="username"
+          className={styles.loginInput}
+          required
+        />
 
         <div className={styles.loginPasswordGroup}>
-          <div className={styles.field}>
-            <span className={styles.label}>
-              {t("auth.login.passwordLabel")}
-            </span>
-            <TextField
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              autoComplete="current-password"
-              className={styles.loginInput}
-              required
-              passwordToggle
-              showPasswordLabel={t("common.password.show")}
-              hidePasswordLabel={t("common.password.hide")}
-            />
-          </div>
+          <InputWithLabel
+            label={t("auth.login.passwordLabel")}
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            autoComplete="current-password"
+            className={styles.loginInput}
+            required
+            passwordToggle
+            showPasswordLabel={t("common.password.show")}
+            hidePasswordLabel={t("common.password.hide")}
+          />
 
           <div className={styles.rowBetween}>
             <label className={styles.remember}>

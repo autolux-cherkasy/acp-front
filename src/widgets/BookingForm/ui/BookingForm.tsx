@@ -11,7 +11,7 @@ import { useBookingTrips } from "../model/useBookingTrips";
 import BookingStatus from "./controls/BookingStatus";
 import DateField from "./controls/DateField";
 import PriceField from "./controls/PriceField";
-import RouteDropdown from "./controls/RouteDropdown";
+import SelectField from "@/src/shared/ui/SelectField/SelectField";
 import SeatsSelect from "./controls/SeatsSelect";
 import TripTimeSelect from "./controls/TripTimeSelect";
 import Button from "@/src/shared/ui/Button/Button";
@@ -150,10 +150,9 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.inputBlock}>
-          <RouteDropdown
+          <SelectField
             value={selectedRouteValue}
             options={routeOptions}
-            selectedOption={selectedRouteOption}
             placeholder={t("bookingForm.route.placeholder")}
             disabled={isBootstrapping || routeOptions.length === 0}
             onChange={setSelectedRouteValue}
