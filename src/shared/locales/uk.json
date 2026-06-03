@@ -577,6 +577,7 @@
       },
       "modal": {
         "newOrderTitle": "Нове замовлення",
+        "editOrderTitle": "Редагування замовлення",
         "orderDetailsTitle": "Дані замовлення",
         "routePlaceholder": "м.Кременчук - м.Черкаси",
         "datePlaceholder": "дд.мм.рррр",
