@@ -132,17 +132,17 @@
       "emailPlaceholder": "Enter your email",
       "phoneLabel": "Phone number",
       "phonePlaceholder": "+380 1234 5678",
-        "seatsLabel": "Seats",
-        "seatsLabelWithMax": "Seats (max. {count})*",
-        "note": "Fill in the passenger details to continue with booking or payment.",
-        "seatsHint": "Free seat choice",
-        "identityNote": "Please provide a valid email and phone number. They are required to identify the passenger.",
-        "errors": {
-          "fullNameRequired": "Enter your full name",
-          "emailRequired": "Enter your email",
-          "phoneRequired": "Enter your phone number"
-        },
-        "pay": "Pay now",
+      "seatsLabel": "Seats",
+      "seatsLabelWithMax": "Seats (max. {count})*",
+      "note": "Fill in the passenger details to continue with booking or payment.",
+      "seatsHint": "Free seat choice",
+      "identityNote": "Please provide a valid email and phone number. They are required to identify the passenger.",
+      "errors": {
+        "fullNameRequired": "Enter your full name",
+        "emailRequired": "Enter your email",
+        "phoneRequired": "Enter your phone number"
+      },
+      "pay": "Pay now",
       "reserve": "Reserve"
     },
     "payment": {
@@ -274,6 +274,12 @@
   },
   "common": {
     "close": "Close",
+    "actions": {
+      "add": "Add",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
     "toast": {
       "loginSuccess": "Signed in successfully.",
       "loginError": "Failed to sign in. Please try again.",
@@ -594,6 +600,13 @@
     "routes": {
       "subtitle": "Route logistics management.",
       "addRoute": "Add route",
+      "modal": {
+        "newTitle": "New route",
+        "editTitle": "Edit route",
+        "directionPlaceholder": "City - City",
+        "seatsLabel": "Seats: occupied/free",
+        "seatsPlaceholder": "0/0"
+      },
       "calendarAria": "Open calendar",
       "stats": {
         "total": "Total trips",

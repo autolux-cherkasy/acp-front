@@ -5,7 +5,11 @@ import Button from "@/src/shared/ui/Button/Button";
 import { DashboardDateText, SharedLabel } from "@/src/shared";
 import styles from "./admin-routes-page.module.css";
 
-export default function RoutesPageHeader() {
+type RoutesPageHeaderProps = {
+  onAddRoute: () => void;
+};
+
+export default function RoutesPageHeader({ onAddRoute }: RoutesPageHeaderProps) {
   const { t } = useI18n();
 
   return (
@@ -22,7 +26,7 @@ export default function RoutesPageHeader() {
       <div className={styles.buttonWrapper}>
         <Button
           text={t("dispatcherArea.routes.addRoute")}
-          onClick={() => {}}
+          onClick={onAddRoute}
           variant="secondary"
           fullWidth={false}
         />

@@ -1,14 +1,20 @@
-import RoutesPageHeader from "@/src/widgets/AdminComp/ui/Header/RoutesPageHeader";
-import RoutesStats from "@/src/widgets/AdminComp/ui/Header/RoutesStats";
+import { MOCK_ROWS } from "@/src/widgets/AdminComp/lib/routesTable.utils";
 import styles from "./routes.module.css";
-import RoutesTable from "@/src/widgets/AdminComp/ui/RoutesTable";
+import RoutesPageClient from "./RoutesPageClient";
 
 export default function DashboardRoutesPage() {
+  const rows = MOCK_ROWS;
+
+  const stats = {
+    total: rows.length,
+    boarding: rows.filter((r) => r.status === "BOARDING").length,
+    departed: rows.filter((r) => r.status === "DEPARTED").length,
+    cancelled: rows.filter((r) => r.status === "CANCELLED").length,
+  };
+
   return (
     <div className={styles.mainContainer}>
-      <RoutesPageHeader />
-      <RoutesStats total={11} boarding={2} departed={4} cancelled={1} />
-      <RoutesTable />
+      <RoutesPageClient rows={rows} stats={stats} />
     </div>
   );
 }
