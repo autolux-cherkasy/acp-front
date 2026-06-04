@@ -277,6 +277,7 @@
     "actions": {
       "add": "Add",
       "save": "Save",
+      "edit": "Edit",
       "cancel": "Cancel",
       "delete": "Delete"
     },
@@ -778,6 +779,30 @@
       "security": {
         "title": "Access security",
         "description": "Password, active sessions, and sign-in control belong in a separate area so they do not interfere with active operations."
+      },
+      "company": {
+        "title": "Company",
+        "fields": {
+          "name": "Company name",
+          "phone1": "Phone number 1",
+          "phone2": "Phone number 2",
+          "phone3": "Phone number 3",
+          "manager": "Manager"
+        },
+        "placeholders": {
+          "name": "Your company name",
+          "managerName": "Name",
+          "phone": "Phone number of the manager"
+        }
+      },
+      "dataAccess": {
+        "title": "Data editing access",
+        "items": {
+          "routes": "Routes and schedule",
+          "cafe": "Cafe",
+          "fleet": "Fleet",
+          "staff": "Staff"
+        }
       }
     }
   }
