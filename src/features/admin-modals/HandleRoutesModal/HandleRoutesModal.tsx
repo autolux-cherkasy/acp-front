@@ -57,6 +57,7 @@ export default function HandleRoutesModal({
     <AdminModalFrame
       mode={mode}
       title={title}
+      icon="/icons/workspace/sidebar/routes.svg"
       onClose={onClose}
       onSubmit={() => onSubmit(form)}
       onDelete={onDelete}

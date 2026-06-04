@@ -1,16 +1,17 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useEffect } from "react";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
 import Button from "@/src/shared/ui/Button/Button";
+import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
 import styles from "./AdminModalFrame.module.css";
 
 type AdminModalFrameProps = {
   mode: "create" | "edit";
   title: string;
+  icon?: string;
   onClose: () => void;
   onSubmit: () => void;
   onDelete?: () => void;
@@ -20,6 +21,7 @@ type AdminModalFrameProps = {
 export default function AdminModalFrame({
   mode,
   title,
+  icon,
   onClose,
   onSubmit,
   onDelete,
@@ -46,23 +48,32 @@ export default function AdminModalFrame({
       usePortal
       surfaceClassName={styles.surface}
     >
-      <AdminModalHeader title={title} onClose={onClose} />
+      <ModalCloseButton
+        className={styles.closeButton}
+        onClose={onClose}
+        ariaLabel={t("common.close")}
+      />
+
+      <div className={styles.titleRow}>
+        {icon && (
+          <span
+            aria-hidden="true"
+            className={styles.titleIcon}
+            style={{ "--title-icon-url": `url(${icon})` } as CSSProperties}
+          />
+        )}
+        <h2 id="admin-modal-title" className={styles.title}>
+          {title}
+        </h2>
+      </div>
 
       <div className={styles.body}>{children}</div>
 
       <div className={[styles.footer, styles[mode]].join(" ")}>
         {mode === "edit" && (
-          <Button
-            text={t("common.actions.delete")}
-            variant="danger"
-            onClick={onDelete}
-          />
+          <Button text={t("common.actions.delete")} variant="danger" onClick={onDelete} />
         )}
-        <Button
-          text={t("common.actions.cancel")}
-          variant="outlined"
-          onClick={onClose}
-        />
+        <Button text={t("common.actions.cancel")} variant="outlined" onClick={onClose} />
         <Button
           text={mode === "create" ? t("common.actions.add") : t("common.actions.save")}
           variant="success"

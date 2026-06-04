@@ -1,16 +1,55 @@
 .surface {
   --modal-frame-max-width: 500px;
+  position: relative;
+  gap: 16px;
+
+  padding: 28px 40px 40px 40px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.titleIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background-color: #226078;
+  -webkit-mask-image: var(--title-icon-url);
+  mask-image: var(--title-icon-url);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.title {
+  margin: 0;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 132%;
+  letter-spacing: 0%;
+  color: var(--DarkSlateGray, #226078);
 }
 
 .body {
-  padding: 0 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .footer {
-  padding: 16px 24px 24px;
+  padding-top: 16px;
   display: grid;
   gap: 12px;
 }
