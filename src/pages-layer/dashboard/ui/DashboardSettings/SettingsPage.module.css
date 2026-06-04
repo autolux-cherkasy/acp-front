@@ -1,0 +1,5 @@
+.infoContainer {
+  gap: 16px;
+  display: grid;
+  grid-template-columns: 1.6fr 0.4fr;
+}

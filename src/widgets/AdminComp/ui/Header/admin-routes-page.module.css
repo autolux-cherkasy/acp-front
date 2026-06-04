@@ -33,7 +33,6 @@
 .dateContainer {
   display: flex;
   align-items: center;
-  margin-right: 16px;
   flex-shrink: 0;
 }
 
@@ -51,6 +50,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.rightCont {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-shrink: 0;
 }
 
 .iconContainer:hover {

@@ -6,7 +6,7 @@ import styles from "./admin-routes-page.module.css";
 
 type DashboardPageHeaderProps = {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   onBack?: () => void;
   action?: {
     text: string;
@@ -30,7 +30,7 @@ export default function DashboardPageHeader({
         )}
         <div className={styles.titleContainer}>
           <SharedLabel variant="dashboardHeaderTitle">{title}</SharedLabel>
-          <SharedLabel variant="dashboardHeaderSubtitle">{subtitle}</SharedLabel>
+          {subtitle && <SharedLabel variant="dashboardHeaderSubtitle">{subtitle}</SharedLabel>}
         </div>
       </div>
 
