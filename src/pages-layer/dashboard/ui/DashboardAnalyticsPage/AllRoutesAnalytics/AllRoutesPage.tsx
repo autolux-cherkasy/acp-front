@@ -10,7 +10,8 @@ import {
   useI18n,
 } from "@/src/shared";
 import { useResizeTableHook } from "@/src/shared/lib/resizeTableHook";
-import AllRoutesAnalyticsHeader from "@/src/widgets/AdminComp/ui/Header/AllRoutesAnalyticsHeader";
+import { useRouter } from "next/navigation";
+import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPageHeader";
 import { useState } from "react";
 import RouteAnalyticsDetails from "./RouteAnalyticsDetails";
 import styles from "../analytics.module.css";
@@ -199,6 +200,7 @@ const ROUTE_ANALYTICS_DETAILS: Record<number, RouteAnalyticsDetail> = {
 
 export default function AllRoutesPage() {
   const { t } = useI18n();
+  const router = useRouter();
   const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
   const {
     page,
@@ -259,7 +261,11 @@ export default function AllRoutesPage() {
 
   return (
     <div className={styles.mainContainer}>
-      <AllRoutesAnalyticsHeader />
+      <DashboardPageHeader
+        title={t("dispatcherArea.sidebar.menu.analytics")}
+        subtitle={t("dispatcherArea.analytics.subtitle")}
+        onBack={() => router.back()}
+      />
       <div
         ref={cardRef}
         className={`${styles.routesCard} ${

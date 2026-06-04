@@ -4,7 +4,7 @@ import HandleRoutesModal from "@/src/features/admin-modals/HandleRoutesModal/Han
 import type { SelectOption } from "@/src/shared/ui/SelectField/SelectField";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import RoutesPageHeader from "@/src/widgets/AdminComp/ui/Header/RoutesPageHeader";
+import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPageHeader";
 import RoutesStats from "@/src/widgets/AdminComp/ui/Header/RoutesStats";
 import RoutesTable from "@/src/widgets/AdminComp/ui/RoutesTable";
 import type { RouteRow } from "@/src/widgets/AdminComp/model/types";
@@ -59,7 +59,14 @@ export default function RoutesPageClient({ rows, stats }: RoutesPageClientProps)
 
   return (
     <>
-      <RoutesPageHeader onAddRoute={() => disclosure.open({ mode: "create" })} />
+      <DashboardPageHeader
+        title={t("dispatcherArea.sidebar.menu.routes")}
+        subtitle={t("dispatcherArea.routes.subtitle")}
+        action={{
+          text: t("dispatcherArea.routes.addRoute"),
+          onClick: () => disclosure.open({ mode: "create" }),
+        }}
+      />
       <RoutesStats {...stats} />
       <RoutesTable
         rows={rows}
