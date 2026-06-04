@@ -108,12 +108,10 @@ export default function RouteAnalyticsDetails({
 }: RouteAnalyticsDetailsProps) {
   return (
     <>
-      <DashboardCard className={styles.detailCard}>
-        <div className={pageStyles.header}>
-          <span className={pageStyles.title}>
-            {trendTitle.replace("{{route}}", routeTitle)}
-          </span>
-        </div>
+      <DashboardCard
+        className={styles.detailCard}
+        title={trendTitle.replace("{{route}}", routeTitle)}
+      >
         <div className={styles.chartWrapper}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
@@ -184,10 +182,8 @@ export default function RouteAnalyticsDetails({
       </DashboardCard>
       <DashboardCard
         className={`${styles.detailCard} ${styles.statisticsCard}`}
+        title={statisticsTitle}
       >
-        <div className={pageStyles.header}>
-          <span className={pageStyles.title}>{statisticsTitle}</span>
-        </div>
         <div className={styles.statisticsContent}>
           <div className={styles.statisticsLegend}>
             {ticketStatsData.map((item) => (

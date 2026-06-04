@@ -79,15 +79,11 @@ export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
   }
 
   return (
-    <DashboardCard className={styles.card}>
-      <div className={styles.header}>
-        <SharedLabel variant="dashboardCardTitle">
-          {t("dispatcherArea.analytics.noShowReport.title")}
-        </SharedLabel>
-        <SharedLabel variant="dashboardCardSubtitle">
-          {t("dispatcherArea.analytics.noShowReport.subtitle")}
-        </SharedLabel>
-      </div>
+    <DashboardCard
+      className={styles.card}
+      title={t("dispatcherArea.analytics.noShowReport.title")}
+      subtitle={t("dispatcherArea.analytics.noShowReport.subtitle")}
+    >
 
       {rows.length === 0 ? (
         <div className={styles.emptyState} aria-live="polite">

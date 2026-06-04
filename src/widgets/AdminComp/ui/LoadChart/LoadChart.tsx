@@ -30,16 +30,11 @@ export default function LoadChart() {
   const { t } = useI18n();
 
   return (
-    <DashboardCard className={styles.card}>
-      <div className={styles.header}>
-        <SharedLabel variant="dashboardCardTitle">
-          {t("dispatcherArea.analytics.load.title")}
-        </SharedLabel>
-        <SharedLabel variant="dashboardCardSubtitle">
-          {t("dispatcherArea.analytics.load.subtitle")}
-        </SharedLabel>
-      </div>
-
+    <DashboardCard
+      className={styles.card}
+      title={t("dispatcherArea.analytics.load.title")}
+      subtitle={t("dispatcherArea.analytics.load.subtitle")}
+    >
       <div className={styles.chartWrapper}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart

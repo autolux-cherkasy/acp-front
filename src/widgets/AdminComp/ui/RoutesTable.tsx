@@ -87,11 +87,11 @@ export default function RoutesTable({
 
   return (
     <div ref={cardRef} className={styles.cardRoot}>
-      <DashboardCard className={styles.card}>
-        <div ref={headerRef} className={styles.header}>
-          <span className={styles.title}>
-            {t("dispatcherArea.routes.table.title")}
-          </span>
+      <DashboardCard
+        className={styles.card}
+        title={t("dispatcherArea.routes.table.title")}
+        headerRef={headerRef}
+        headerAction={
           <TicketSortDropdown
             ariaLabel={t("dispatcherArea.routes.table.sort")}
             defaultLabel={t("dispatcherArea.routes.table.filters.all")}
@@ -107,7 +107,8 @@ export default function RoutesTable({
               );
             }}
           />
-        </div>
+        }
+      >
 
         <div ref={tableAreaRef} className={styles.tableArea}>
           <div ref={tableScrollRef} className={styles.tableScroll}>

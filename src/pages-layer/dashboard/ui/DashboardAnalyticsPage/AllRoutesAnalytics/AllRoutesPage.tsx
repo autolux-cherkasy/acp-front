@@ -272,12 +272,11 @@ export default function AllRoutesPage() {
           hasSelection ? styles.routesCardCompact : styles.routesCardFull
         }`}
       >
-        <DashboardCard className={styles.routesCardInner}>
-          <div ref={headerRef} className={styles.header}>
-            <span className={styles.title}>
-              {t("dispatcherArea.routes.table.title")}
-            </span>
-          </div>
+        <DashboardCard
+          className={styles.routesCardInner}
+          title={t("dispatcherArea.routes.table.title")}
+          headerRef={headerRef}
+        >
           <div ref={tableAreaRef} className={styles.tableArea}>
             <div ref={tableScrollRef} className={styles.tableScroll}>
               <DashboardTable>

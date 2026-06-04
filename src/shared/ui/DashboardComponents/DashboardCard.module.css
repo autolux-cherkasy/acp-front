@@ -10,3 +10,16 @@
   min-width: 0;
   box-sizing: border-box;
 }
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 8px;
+}
+
+.cardTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

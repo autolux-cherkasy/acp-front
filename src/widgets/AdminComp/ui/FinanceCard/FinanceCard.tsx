@@ -62,16 +62,11 @@ export default function FinanceCard() {
   const { domain, ticks } = getNiceAxisConfig(maxValue);
 
   return (
-    <DashboardCard className={styles.card}>
-      <div className={styles.header}>
-        <SharedLabel variant="dashboardCardTitle">
-          {t("dispatcherArea.analytics.finance.title")}
-        </SharedLabel>
-        <SharedLabel variant="dashboardCardSubtitle">
-          {t("dispatcherArea.analytics.finance.subtitle")}
-        </SharedLabel>
-      </div>
-
+    <DashboardCard
+      className={styles.card}
+      title={t("dispatcherArea.analytics.finance.title")}
+      subtitle={t("dispatcherArea.analytics.finance.subtitle")}
+    >
       <div className={styles.badgesRow}>
         {FINANCE_DATA.map(({ key, value, color, icon }) => (
           <div

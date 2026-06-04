@@ -31,16 +31,11 @@ export default function PopularRoutesCard({ routes = MOCK_ROUTES }: Props) {
   const { t } = useI18n();
 
   return (
-    <DashboardCard className={styles.card}>
-      <div className={styles.header}>
-        <span className={styles.title}>
-          {t("dispatcherArea.analytics.popularRoutes.title")}
-        </span>
-        <span className={styles.subtitle}>
-          {t("dispatcherArea.analytics.popularRoutes.subtitle")}
-        </span>
-      </div>
-
+    <DashboardCard
+      className={styles.card}
+      title={t("dispatcherArea.analytics.popularRoutes.title")}
+      subtitle={t("dispatcherArea.analytics.popularRoutes.subtitle")}
+    >
       <div className={styles.tableWrapper}>
         <DashboardTable className={styles.table}>
           <DashboardThead className={styles.theadRow}>
