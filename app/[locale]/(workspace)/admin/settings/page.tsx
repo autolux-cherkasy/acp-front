@@ -1,5 +1,5 @@
-import RoleWorkspaceSectionPage from "@/src/pages-layer/role-workspace/ui/RoleWorkspaceSectionPage";
+import DashboardSettingsPage from "@/src/pages-layer/dashboard/ui/DashboardSettings/SettingsPage";
 
 export default function AdminSettingsRoutePage() {
-  return <RoleWorkspaceSectionPage sectionKey="settings" />;
+  return <DashboardSettingsPage />;
 }

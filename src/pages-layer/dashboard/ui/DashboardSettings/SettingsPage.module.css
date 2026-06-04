@@ -1,5 +1,49 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
 .infoContainer {
   gap: 16px;
   display: grid;
-  grid-template-columns: 1.6fr 0.4fr;
+  grid-template-columns: 1.3fr 0.7fr;
+}
+
+.tableWrapper {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  flex: 1;
+  min-height: 0;
+  border-radius: 8px;
+}
+
+.inputsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.phoneRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--bg, var(--color-page-bg));
+  overflow: hidden;
+}
+
+.buttonsCont {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
 }
