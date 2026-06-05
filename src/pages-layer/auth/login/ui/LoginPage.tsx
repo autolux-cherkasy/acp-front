@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useLoginMutation } from "@/src/features/auth/api/useAuthQueries";
@@ -34,9 +35,8 @@ export default function LoginPage({ onClose }: LoginPageProps) {
   const { t } = useI18n();
   const resolveHref = useLocalizedHref();
 
-  const [formData, setFormData] = useState<LoginFormData>({
-    identifier: "",
-    password: "",
+  const { register, handleSubmit } = useForm<LoginFormData>({
+    defaultValues: { identifier: "", password: "" },
   });
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const loginMutation = useLoginMutation();
@@ -51,22 +51,13 @@ export default function LoginPage({ onClose }: LoginPageProps) {
     closeAuthModal(router, resolveHref);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (loginMutation.isError) loginMutation.reset();
-  };
-
   const handlePostAuthSuccess = usePostAuthNavigation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: LoginFormData) => {
     loginMutation.reset();
 
     try {
-      const result = await loginMutation.mutateAsync(formData);
+      const result = await loginMutation.mutateAsync(data);
       notifySuccess(result, t("common.toast.loginSuccess"));
       await handlePostAuthSuccess();
     } catch (error) {
@@ -97,13 +88,13 @@ export default function LoginPage({ onClose }: LoginPageProps) {
     >
       <h1 className={styles.loginTitle}>{t("auth.login.title")}</h1>
 
-      <form className={styles.loginBlock} onSubmit={handleSubmit}>
+      <form className={styles.loginBlock} onSubmit={handleSubmit(onSubmit)}>
         <InputWithLabel
           label={t("auth.login.identifierLabel")}
+          {...register("identifier", {
+            onChange: () => { if (loginMutation.isError) loginMutation.reset(); },
+          })}
           type="text"
-          name="identifier"
-          value={formData.identifier}
-          onChange={handleChange}
           autoComplete="username"
           className={styles.loginInput}
           required
@@ -112,10 +103,10 @@ export default function LoginPage({ onClose }: LoginPageProps) {
         <div className={styles.loginPasswordGroup}>
           <InputWithLabel
             label={t("auth.login.passwordLabel")}
+            {...register("password", {
+              onChange: () => { if (loginMutation.isError) loginMutation.reset(); },
+            })}
             type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
             autoComplete="current-password"
             className={styles.loginInput}
             required

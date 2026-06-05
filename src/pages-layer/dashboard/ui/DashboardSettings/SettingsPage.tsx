@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPageHeader";
 import styles from "./SettingsPage.module.css";
 import { Button, DashboardCard, useI18n } from "@/src/shared";
@@ -20,11 +20,7 @@ const MOCK_COMPANY: CompanyForm = {
 
 const DashboardSettingsPage = () => {
   const { t } = useI18n();
-  const [form, setForm] = useState<CompanyForm>(MOCK_COMPANY);
-
-  function setField(field: keyof CompanyForm, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
+  const { register } = useForm<CompanyForm>({ defaultValues: MOCK_COMPANY });
 
   const fields = getCompanyFields(t);
 
@@ -48,8 +44,7 @@ const DashboardSettingsPage = () => {
                           key={field.key}
                           label={field.label}
                           placeholder={field.placeholder}
-                          value={form[field.key]}
-                          onChange={(e) => setField(field.key, e.target.value)}
+                          {...register(field.key)}
                         />
                       ))}
                     </div>
@@ -61,8 +56,7 @@ const DashboardSettingsPage = () => {
                     key={config.key}
                     label={config.label}
                     placeholder={config.placeholder}
-                    value={form[config.key]}
-                    onChange={(e) => setField(config.key, e.target.value)}
+                    {...register(config.key)}
                   />
                 );
               })}

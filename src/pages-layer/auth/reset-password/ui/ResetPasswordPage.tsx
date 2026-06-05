@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 import { useResetPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
 import { openAuthModal } from "@/src/features/auth/model/auth-flow";
@@ -19,11 +20,6 @@ type ResetPasswordPageProps = {
   token: string;
 };
 
-type FeedbackState = {
-  message: string;
-  variant: "error";
-} | null;
-
 export default function ResetPasswordPage({
   onClose,
   token,
@@ -32,9 +28,8 @@ export default function ResetPasswordPage({
   const { t } = useI18n();
   const resolveHref = useLocalizedHref();
 
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [feedback, setFeedback] = useState<FeedbackState>(null);
+  const { register, handleSubmit, setError, clearErrors, reset, formState: { errors } } =
+    useForm({ defaultValues: { newPassword: "", confirmPassword: "" } });
   const [isSuccess, setIsSuccess] = useState(false);
   const resetPasswordMutation = useResetPasswordMutation();
   const { notifyError, notifySuccess } = useServerToast();
@@ -42,22 +37,15 @@ export default function ResetPasswordPage({
   const trimmedToken = token.trim();
   const hasToken = trimmedToken.length > 0;
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!hasToken) {
-      return;
-    }
+  const onSubmit = async ({ newPassword, confirmPassword }: { newPassword: string; confirmPassword: string }) => {
+    if (!hasToken) return;
 
     if (newPassword !== confirmPassword) {
-      setFeedback({
-        variant: "error",
-        message: t("auth.resetPassword.errors.passwordMismatch"),
-      });
+      setError("root", { message: t("auth.resetPassword.errors.passwordMismatch") });
       return;
     }
 
-    setFeedback(null);
+    clearErrors("root");
     resetPasswordMutation.reset();
 
     try {
@@ -66,8 +54,7 @@ export default function ResetPasswordPage({
         newPassword,
       });
 
-      setNewPassword("");
-      setConfirmPassword("");
+      reset();
       setIsSuccess(true);
       notifySuccess(result, t("common.toast.resetPasswordSuccess"));
     } catch (error) {
@@ -75,14 +62,8 @@ export default function ResetPasswordPage({
     }
   };
 
-  const derivedFeedback =
-    feedback ??
-    (!hasToken
-      ? {
-          variant: "error" as const,
-          message: t("auth.resetPassword.errors.missingToken"),
-        }
-      : null);
+  const feedbackMessage = errors.root?.message ?? (!hasToken ? t("auth.resetPassword.errors.missingToken") : null);
+  const derivedFeedback = feedbackMessage ? { variant: "error" as const, message: feedbackMessage } : null;
 
   return (
     <PasswordRecoveryShell
@@ -100,7 +81,7 @@ export default function ResetPasswordPage({
           variant={derivedFeedback.variant}
           size="small"
           message={derivedFeedback.message}
-          onClose={feedback ? () => setFeedback(null) : undefined}
+          onClose={errors.root ? () => clearErrors("root") : undefined}
           closeLabel={t("common.close")}
           className={styles.notice}
         />
@@ -118,24 +99,19 @@ export default function ResetPasswordPage({
           />
         </div>
       ) : (
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <FormField
             className={styles.field}
             label={t("auth.resetPassword.newPasswordLabel")}
           >
             <TextField
+              {...register("newPassword", {
+                onChange: () => {
+                  clearErrors("root");
+                  if (resetPasswordMutation.isError) resetPasswordMutation.reset();
+                },
+              })}
               type="password"
-              name="newPassword"
-              value={newPassword}
-              onChange={(event) => {
-                setNewPassword(event.target.value);
-                if (feedback) {
-                  setFeedback(null);
-                }
-                if (resetPasswordMutation.isError) {
-                  resetPasswordMutation.reset();
-                }
-              }}
               autoComplete="new-password"
               required
               disabled={resetPasswordMutation.isPending || !hasToken}
@@ -150,18 +126,13 @@ export default function ResetPasswordPage({
             label={t("auth.resetPassword.confirmPasswordLabel")}
           >
             <TextField
+              {...register("confirmPassword", {
+                onChange: () => {
+                  clearErrors("root");
+                  if (resetPasswordMutation.isError) resetPasswordMutation.reset();
+                },
+              })}
               type="password"
-              name="confirmPassword"
-              value={confirmPassword}
-              onChange={(event) => {
-                setConfirmPassword(event.target.value);
-                if (feedback) {
-                  setFeedback(null);
-                }
-                if (resetPasswordMutation.isError) {
-                  resetPasswordMutation.reset();
-                }
-              }}
               autoComplete="new-password"
               required
               disabled={resetPasswordMutation.isPending || !hasToken}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
 import { useRegisterMutation } from "@/src/features/auth/api/useAuthQueries";
@@ -24,10 +25,9 @@ import {
   PASSWORD_MAX_LENGTH,
   PHONE_MAX_LENGTH,
   sanitizeRegisterFieldInput,
+  validateRegisterField,
   type RegisterField,
-  type RegisterFieldErrors,
   type RegisterFormData,
-  validateRegisterForm,
 } from "../model/validation";
 
 type RegisterPageProps = {
@@ -39,16 +39,16 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
   const { t } = useI18n();
   const resolveHref = useLocalizedHref();
 
-  const [formData, setFormData] = useState<RegisterFormData>({
-    phone: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const {
+    register,
+    handleSubmit,
+    setError: setFieldError,
+    getValues,
+    formState: { errors: fieldErrors },
+  } = useForm<RegisterFormData>({
+    defaultValues: { phone: "", email: "", password: "", confirmPassword: "" },
+    mode: "onTouched",
   });
-  const [fieldErrors, setFieldErrors] = useState<RegisterFieldErrors>({});
-  const [touchedFields, setTouchedFields] = useState<
-    Partial<Record<RegisterField, boolean>>
-  >({});
   const [error, setError] = useState("");
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const registerMutation = useRegisterMutation();
@@ -63,89 +63,30 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
     closeAuthModal(router, resolveHref);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    if (!["phone", "email", "password", "confirmPassword"].includes(name)) {
-      return;
-    }
-
-    const field = name as RegisterField;
-    const sanitizedValue = sanitizeRegisterFieldInput(field, value);
-
-    setFormData((prev) => {
-      const nextFormData = { ...prev, [field]: sanitizedValue };
-      const hasTouchedFields = Object.keys(touchedFields).length > 0;
-
-      if (hasTouchedFields) {
-        setFieldErrors(validateRegisterForm(nextFormData, t));
-      } else {
-        setFieldErrors({});
-      }
-
-      return nextFormData;
-    });
-
-    if (error) {
-      setError("");
-    }
-
-    if (registerMutation.isError) {
-      registerMutation.reset();
-    }
-  };
-
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const field = event.target.name as RegisterField;
-
-    if (!["phone", "email", "password", "confirmPassword"].includes(field)) {
-      return;
-    }
-
-    const nextFormData = {
-      ...formData,
-      [field]: sanitizeRegisterFieldInput(field, event.target.value),
+  function makeSanitizedOnChange(
+    field: RegisterField,
+    rhfOnChange: React.ChangeEventHandler<HTMLInputElement>,
+  ) {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.target.value = sanitizeRegisterFieldInput(field, e.target.value);
+      void rhfOnChange(e);
+      if (error) setError("");
+      if (registerMutation.isError) registerMutation.reset();
     };
-
-    setTouchedFields((prev) => ({ ...prev, [field]: true }));
-    setFieldErrors(validateRegisterForm(nextFormData, t));
-  };
+  }
 
   const handlePostAuthSuccess = usePostAuthNavigation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: RegisterFormData) => {
     setError("");
-
-    const email = formData.email.trim();
-    const phone = formData.phone.trim();
-    const normalizedFormData: RegisterFormData = {
-      ...formData,
-      email,
-      phone,
-    };
-    const validationErrors = validateRegisterForm(normalizedFormData, t);
-
-    if (Object.keys(validationErrors).length > 0) {
-      setTouchedFields({
-        phone: true,
-        email: true,
-        password: true,
-        confirmPassword: true,
-      });
-      setFieldErrors(validationErrors);
-      return;
-    }
-
     registerMutation.reset();
 
     try {
       const result = await registerMutation.mutateAsync({
-        email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-        phone,
+        email: data.email.trim(),
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        phone: data.phone.trim(),
       });
       notifySuccess(result, t("common.toast.registerSuccess"));
 
@@ -155,16 +96,25 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       const { fieldErrors: nextFieldErrors, formError } =
         mapRegisterServerError(message, t);
 
-      setFieldErrors(nextFieldErrors);
-      setTouchedFields({
-        phone: true,
-        email: true,
-        password: true,
-        confirmPassword: true,
-      });
+      for (const [field, msg] of Object.entries(nextFieldErrors)) {
+        setFieldError(field as RegisterField, { message: msg });
+      }
       setError(formError);
     }
   };
+
+  const phoneReg = register("phone", {
+    validate: (v) => validateRegisterField("phone", { ...getValues(), phone: v }, t) || true,
+  });
+  const emailReg = register("email", {
+    validate: (v) => validateRegisterField("email", { ...getValues(), email: v }, t) || true,
+  });
+  const passwordReg = register("password", {
+    validate: (v) => validateRegisterField("password", { ...getValues(), password: v }, t) || true,
+  });
+  const confirmPasswordReg = register("confirmPassword", {
+    validate: (v) => validateRegisterField("confirmPassword", { ...getValues(), confirmPassword: v }, t) || true,
+  });
 
   const isBusy = registerMutation.isPending || isGoogleLoading;
   const promoItems = [
@@ -199,24 +149,22 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
         />
       ) : null}
 
-      <form className={styles.registerBlock} onSubmit={handleSubmit} noValidate>
+      <form className={styles.registerBlock} onSubmit={handleSubmit(onSubmit)} noValidate>
         <FormField
           className={styles.field}
           label={t("auth.register.phoneLabel")}
-          error={fieldErrors.phone}
+          error={fieldErrors.phone?.message}
           errorId="register-phone-error"
         >
           <TextField
+            {...phoneReg}
+            onChange={makeSanitizedOnChange("phone", phoneReg.onChange)}
             type="text"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
             placeholder="+380991234567"
             autoComplete="tel"
             inputMode="tel"
             maxLength={PHONE_MAX_LENGTH}
             required
-            onBlur={handleBlur}
             aria-invalid={fieldErrors.phone ? "true" : "false"}
             aria-describedby={
               fieldErrors.phone ? "register-phone-error" : undefined
@@ -230,14 +178,13 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
         <FormField
           className={styles.field}
           label={t("auth.register.emailLabel")}
-          error={fieldErrors.email}
+          error={fieldErrors.email?.message}
           errorId="register-email-error"
         >
           <TextField
+            {...emailReg}
+            onChange={makeSanitizedOnChange("email", emailReg.onChange)}
             type="text"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
             placeholder="name@example.com"
             autoComplete="email"
             autoCapitalize="none"
@@ -246,7 +193,6 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
             maxLength={EMAIL_MAX_LENGTH}
             spellCheck={false}
             required
-            onBlur={handleBlur}
             aria-invalid={fieldErrors.email ? "true" : "false"}
             aria-describedby={
               fieldErrors.email ? "register-email-error" : undefined
@@ -260,21 +206,19 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
         <FormField
           className={styles.field}
           label={t("auth.register.passwordLabel")}
-          error={fieldErrors.password}
+          error={fieldErrors.password?.message}
           errorId="register-password-error"
         >
           <TextField
+            {...passwordReg}
+            onChange={makeSanitizedOnChange("password", passwordReg.onChange)}
             type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
             autoComplete="new-password"
             maxLength={PASSWORD_MAX_LENGTH}
             required
             passwordToggle
             showPasswordLabel={t("common.password.show")}
             hidePasswordLabel={t("common.password.hide")}
-            onBlur={handleBlur}
             aria-invalid={fieldErrors.password ? "true" : "false"}
             aria-describedby={
               fieldErrors.password ? "register-password-error" : undefined
@@ -289,21 +233,19 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
           <FormField
             className={styles.field}
             label={t("auth.register.confirmPasswordLabel")}
-            error={fieldErrors.confirmPassword}
+            error={fieldErrors.confirmPassword?.message}
             errorId="register-confirm-password-error"
           >
             <TextField
+              {...confirmPasswordReg}
+              onChange={makeSanitizedOnChange("confirmPassword", confirmPasswordReg.onChange)}
               type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
               autoComplete="new-password"
               maxLength={PASSWORD_MAX_LENGTH}
               required
               passwordToggle
               showPasswordLabel={t("common.password.show")}
               hidePasswordLabel={t("common.password.hide")}
-              onBlur={handleBlur}
               aria-invalid={fieldErrors.confirmPassword ? "true" : "false"}
               aria-describedby={
                 fieldErrors.confirmPassword
