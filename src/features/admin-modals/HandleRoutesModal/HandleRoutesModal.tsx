@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import AdminModalFrame from "@/src/shared/ui/AdminModalFrame/AdminModalFrame";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
@@ -36,17 +36,15 @@ export default function HandleRoutesModal({
 }: HandleRoutesModalProps) {
   const { t } = useI18n();
 
-  const [form, setForm] = useState<RouteFormState>({
-    direction: initialData?.direction ?? "",
-    departureTime: initialData?.departureTime ?? "",
-    vehicle: initialData?.vehicle ?? "",
-    seats: initialData?.seats ?? "",
-    status: initialData?.status ?? "",
+  const { register, handleSubmit, control } = useForm<RouteFormState>({
+    defaultValues: {
+      direction: initialData?.direction ?? "",
+      departureTime: initialData?.departureTime ?? "",
+      vehicle: initialData?.vehicle ?? "",
+      seats: initialData?.seats ?? "",
+      status: initialData?.status ?? "",
+    },
   });
-
-  function setField(field: keyof RouteFormState, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
 
   const title =
     mode === "create"
@@ -59,29 +57,33 @@ export default function HandleRoutesModal({
       title={title}
       icon="/icons/workspace/sidebar/routes.svg"
       onClose={onClose}
-      onSubmit={() => onSubmit(form)}
+      onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
     >
       <InputWithLabel
         label={t("dispatcherArea.routes.table.columns.direction")}
         placeholder={t("dispatcherArea.routes.modal.directionPlaceholder")}
-        value={form.direction}
-        onChange={(e) => setField("direction", e.target.value)}
+        {...register("direction")}
       />
 
       <div className={styles.row}>
         <InputWithLabel
           label={t("dispatcherArea.tickets.modal.departureTime")}
           placeholder="00:00"
-          value={form.departureTime}
-          onChange={(e) => setField("departureTime", e.target.value)}
           trailingAdornment="/icons/Footer/clock.svg"
+          {...register("departureTime")}
         />
-        <SelectField
-          value={form.vehicle}
-          options={vehicleOptions}
-          onChange={(value) => setField("vehicle", value)}
-          placeholder={t("dispatcherArea.routes.table.columns.bus")}
+        <Controller
+          control={control}
+          name="vehicle"
+          render={({ field }) => (
+            <SelectField
+              value={field.value}
+              options={vehicleOptions}
+              onChange={field.onChange}
+              placeholder={t("dispatcherArea.routes.table.columns.bus")}
+            />
+          )}
         />
       </div>
 
@@ -89,14 +91,19 @@ export default function HandleRoutesModal({
         <InputWithLabel
           label={t("dispatcherArea.routes.modal.seatsLabel")}
           placeholder={t("dispatcherArea.routes.modal.seatsPlaceholder")}
-          value={form.seats}
-          onChange={(e) => setField("seats", e.target.value)}
+          {...register("seats")}
         />
-        <SelectField
-          value={form.status}
-          options={statusOptions}
-          onChange={(value) => setField("status", value)}
-          placeholder={t("dispatcherArea.routes.table.columns.status")}
+        <Controller
+          control={control}
+          name="status"
+          render={({ field }) => (
+            <SelectField
+              value={field.value}
+              options={statusOptions}
+              onChange={field.onChange}
+              placeholder={t("dispatcherArea.routes.table.columns.status")}
+            />
+          )}
         />
       </div>
     </AdminModalFrame>

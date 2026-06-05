@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 import { useForgotPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
 import {
@@ -29,7 +30,7 @@ export default function ForgotPasswordPage({
   const { t, raw } = useI18n();
   const resolveHref = useLocalizedHref();
 
-  const [email, setEmail] = useState("");
+  const { register, handleSubmit } = useForm({ defaultValues: { email: "" } });
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const forgotPasswordMutation = useForgotPasswordMutation();
   const { notifyError, notifySuccess } = useServerToast();
@@ -55,15 +56,11 @@ export default function ForgotPasswordPage({
   const isBusy = forgotPasswordMutation.isPending || isGoogleLoading;
   const handlePostAuthSuccess = usePostAuthNavigation();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const onSubmit = async ({ email }: { email: string }) => {
     forgotPasswordMutation.reset();
 
     try {
-      const result = await forgotPasswordMutation.mutateAsync({
-        email: email.trim(),
-      });
+      const result = await forgotPasswordMutation.mutateAsync({ email: email.trim() });
       notifySuccess(result, t("common.toast.forgotPasswordSuccess"));
     } catch (error) {
       notifyError(error, t("common.toast.forgotPasswordError"));
@@ -83,7 +80,7 @@ export default function ForgotPasswordPage({
     >
       <form
         className={`${styles.form} ${styles.compactForm}`}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className={styles.formSection}>
           <FormField
@@ -92,15 +89,10 @@ export default function ForgotPasswordPage({
             labelClassName={styles.label}
           >
             <TextField
+              {...register("email", {
+                onChange: () => { if (forgotPasswordMutation.isError) forgotPasswordMutation.reset(); },
+              })}
               type="email"
-              name="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                if (forgotPasswordMutation.isError) {
-                  forgotPasswordMutation.reset();
-                }
-              }}
               autoComplete="email"
               placeholder="name@example.com"
               required
