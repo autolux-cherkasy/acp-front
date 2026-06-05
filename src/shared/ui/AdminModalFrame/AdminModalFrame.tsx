@@ -1,11 +1,10 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
-import { useEffect } from "react";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
+import type { CSSProperties, ReactNode } from "react";
 import styles from "./AdminModalFrame.module.css";
 
 type AdminModalFrameProps = {
@@ -28,18 +27,6 @@ export default function AdminModalFrame({
   children,
 }: AdminModalFrameProps) {
   const { t } = useI18n();
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [onClose]);
 
   return (
     <ModalFrame

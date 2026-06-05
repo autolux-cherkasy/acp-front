@@ -1,10 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Portal from "@/src/shared/ui/Portal/Portal";
 import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import styles from "./ModalFrame.module.css";
+import * as Dialog from "@radix-ui/react-dialog";
 
 type Props = {
   children: ReactNode;
@@ -36,44 +36,45 @@ export default function ModalFrame({
   const { t } = useI18n();
 
   const content = (
-    <div
-      className={joinClassNames(
-        styles.backdrop,
-        variant === "route" ? styles.routeBackdrop : styles.dialogBackdrop,
-        backdropClassName,
-      )}
-      onPointerDown={(event) => {
-        if (onClose && event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
-    >
-      <div
-        className={joinClassNames(
-          variant === "route" ? styles.routeSurface : styles.dialogSurface,
-          surfaceOverflow === "visible" ? styles.surfaceOverflowVisible : undefined,
-          surfaceClassName,
-        )}
-        onPointerDown={(event) => event.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={ariaLabelledBy}
-      >
-        {title && (
-          <div className={styles.header}>
-            <h2 className={styles.title} id={ariaLabelledBy}>
-              {title}
-            </h2>
-            <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
-          </div>
-        )}
-        {children}
-      </div>
-    </div>
+    <Dialog.Root>
+      <Dialog.Portal>
+        <Dialog.Overlay
+          className={joinClassNames(
+            styles.backdrop,
+            variant === "route" ? styles.routeBackdrop : styles.dialogBackdrop,
+            backdropClassName,
+          )}
+          onPointerDown={(event) => {
+            if (onClose && event.target === event.currentTarget) {
+              onClose();
+            }
+          }}
+        />
+        <Dialog.Content
+          className={joinClassNames(
+            variant === "route" ? styles.routeSurface : styles.dialogSurface,
+            surfaceOverflow === "visible" ? styles.surfaceOverflowVisible : undefined,
+            surfaceClassName,
+          )}
+          onPointerDown={(event) => event.stopPropagation()}
+          aria-labelledby={ariaLabelledBy}
+        >
+          {title && (
+            <div className={styles.header}>
+              <h2 className={styles.title} id={ariaLabelledBy}>
+                {title}
+              </h2>
+              <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
+            </div>
+          )}
+          {children}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 
   if (usePortal) {
-    return <Portal>{content}</Portal>;
+    return <Dialog.Portal>{content}</Dialog.Portal>;
   }
 
   return content;
