@@ -13,7 +13,7 @@
   padding: 8px 12px;
   gap: 10px;
   background: var(--color-page-bg, #f4f7f7);
-  border: 1px solid var(--color-border-muted);
+  border: 0.5px solid var(--color-border-muted);
   border-radius: 12px;
   font-family: var(--font-roboto);
   font-size: 16px;
@@ -66,11 +66,8 @@
 }
 
 .menu {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 0;
-  width: 100%;
-  z-index: 40;
+  width: var(--radix-select-trigger-width);
+  z-index: 10001;
 }
 
 .list {
