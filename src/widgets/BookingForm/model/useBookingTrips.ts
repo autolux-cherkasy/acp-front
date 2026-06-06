@@ -81,8 +81,11 @@ export function useBookingTrips({
 
   useEffect(() => {
     if (initialTrips.length > 0) {
-      setAllTrips(initialTrips);
-      setIsBootstrapping(false);
+      const set = () => {
+        setAllTrips(initialTrips);
+        setIsBootstrapping(false);
+      };
+      set();
       return;
     }
 
@@ -132,7 +135,10 @@ export function useBookingTrips({
 
   useEffect(() => {
     if (!selectedRouteValue) {
-      setAvailableDateKeys([]);
+      const set = () => {
+        setAvailableDateKeys([]);
+      };
+      set();
       return;
     }
 
@@ -168,13 +174,15 @@ export function useBookingTrips({
 
   useEffect(() => {
     if (!selectedRouteValue) {
-      setMatchingTrips([]);
-      setSelectedTripId("");
-      if (!isBootstrapping && routeOptions.length > 0) {
-        setStatusMessage("");
-        setIsError(false);
-      }
-
+      const set = () => {
+        setMatchingTrips([]);
+        setSelectedTripId("");
+        if (!isBootstrapping && routeOptions.length > 0) {
+          setStatusMessage("");
+          setIsError(false);
+        }
+      };
+      set();
       return;
     }
 

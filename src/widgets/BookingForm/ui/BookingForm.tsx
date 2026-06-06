@@ -73,11 +73,14 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
       return;
     }
 
-    setSelectedRouteValue((currentValue) => (
-      currentValue === preselectedRouteValue ? currentValue : preselectedRouteValue
-    ));
-    setDate(null);
-    setSeatsValue("1");
+    const set = () => {
+      setSelectedRouteValue((currentValue) => (
+        currentValue === preselectedRouteValue ? currentValue : preselectedRouteValue
+      ));
+      setDate(null);
+      setSeatsValue("1");
+    };
+    set();
   }, [preselectedRouteValue]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
