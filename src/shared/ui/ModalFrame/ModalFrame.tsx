@@ -1,10 +1,10 @@
 "use client";
 
-import type { ReactNode } from "react";
-import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import styles from "./ModalFrame.module.css";
+import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import * as Dialog from "@radix-ui/react-dialog";
+import type { ReactNode } from "react";
+import styles from "./ModalFrame.module.css";
 
 type Props = {
   children: ReactNode;
@@ -28,7 +28,6 @@ export default function ModalFrame({
   ariaLabelledBy,
   title,
   variant = "dialog",
-  usePortal = false,
   backdropClassName,
   surfaceClassName,
   surfaceOverflow = "hidden",
@@ -36,7 +35,7 @@ export default function ModalFrame({
   const { t } = useI18n();
 
   const content = (
-    <Dialog.Root>
+    <Dialog.Root open={true}>
       <Dialog.Portal>
         <Dialog.Overlay
           className={joinClassNames(
@@ -49,33 +48,30 @@ export default function ModalFrame({
               onClose();
             }
           }}
-        />
-        <Dialog.Content
-          className={joinClassNames(
-            variant === "route" ? styles.routeSurface : styles.dialogSurface,
-            surfaceOverflow === "visible" ? styles.surfaceOverflowVisible : undefined,
-            surfaceClassName,
-          )}
-          onPointerDown={(event) => event.stopPropagation()}
-          aria-labelledby={ariaLabelledBy}
         >
-          {title && (
-            <div className={styles.header}>
-              <h2 className={styles.title} id={ariaLabelledBy}>
-                {title}
-              </h2>
-              <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
-            </div>
-          )}
-          {children}
-        </Dialog.Content>
+          <Dialog.Content
+            className={joinClassNames(
+              variant === "route" ? styles.routeSurface : styles.dialogSurface,
+              surfaceOverflow === "visible" ? styles.surfaceOverflowVisible : undefined,
+              surfaceClassName,
+            )}
+            onPointerDown={(event) => event.stopPropagation()}
+            aria-labelledby={ariaLabelledBy}
+          >
+            {title && (
+              <div className={styles.header}>
+                <h2 className={styles.title} id={ariaLabelledBy}>
+                  {title}
+                </h2>
+                <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
+              </div>
+            )}
+            {children}
+          </Dialog.Content>
+        </Dialog.Overlay>
       </Dialog.Portal>
     </Dialog.Root>
   );
-
-  if (usePortal) {
-    return <Dialog.Portal>{content}</Dialog.Portal>;
-  }
 
   return content;
 }
