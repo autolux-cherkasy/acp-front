@@ -1,10 +1,10 @@
 "use client";
 
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import { useEffect, useRef, useState } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import type { SortOption } from "../../model/types";
+import dropdownStyles from "@/src/shared/ui/Dropdown/dropdown.module.css";
 import styles from "./TicketSortDropdown.module.css";
-import { Dropdown } from "@/src/shared/ui/Dropdown/Dropdown";
 
 export type TicketSortDropdownOption<T extends string> = {
   value: T;
@@ -18,7 +18,6 @@ type Props<T extends string = SortOption> = {
   value: T | "";
   onChange: (value: T) => void;
 };
-const dropdownId = "routes-sort";
 export default function TicketSortDropdown<T extends string = SortOption>({
   options,
   defaultLabel,
@@ -26,9 +25,6 @@ export default function TicketSortDropdown<T extends string = SortOption>({
   onChange,
 }: Props<T>) {
   const { t } = useI18n();
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const ignoreNextCloseRef = useRef(false);
   const defaultOptions: TicketSortDropdownOption<SortOption>[] = [
     {
       value: "date-asc",
@@ -51,71 +47,40 @@ export default function TicketSortDropdown<T extends string = SortOption>({
       label: t("dispatcherArea.tickets.sort.options.filterCancelled"),
     },
   ];
-  const sortOptions = (options ??
-    defaultOptions) as TicketSortDropdownOption<T>[];
-
-  useEffect(() => {
-    function handleOutsideClick(e: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
+  const sortOptions = (options ?? defaultOptions) as TicketSortDropdownOption<T>[];
 
   const selectedLabel =
     sortOptions.find((option) => option.value === value)?.label ??
     defaultLabel ??
     t("dispatcherArea.routes.table.sort");
 
-  const items = sortOptions.map((option) => ({
-    label: option.label,
-    onClick: () => onChange(option.value),
-  }));
-
   return (
-    <div className={styles.wrapper} ref={containerRef}>
-      <button
-        type="button"
-        className={styles.trigger}
-        onMouseDown={() => {
-          ignoreNextCloseRef.current = isOpen;
-        }}
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-      >
-        <span className={styles.label}>{selectedLabel}</span>
-        <span
-          className={[styles.chevron, isOpen && styles.chevronOpen]
-            .filter(Boolean)
-            .join(" ")}
-          aria-hidden="true"
-        />
-      </button>
+    <div className={styles.wrapper}>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger className={styles.trigger}>
+          <span className={styles.label}>{selectedLabel}</span>
+          <span className={styles.chevron} aria-hidden="true" />
+        </DropdownMenu.Trigger>
 
-      {isOpen && (
-        <Dropdown
-          id={dropdownId}
-          openId={isOpen ? dropdownId : null}
-          onToggle={(id) => {
-            if (id === null && ignoreNextCloseRef.current) {
-              ignoreNextCloseRef.current = false;
-              return;
-            }
-
-            ignoreNextCloseRef.current = false;
-            setIsOpen(id === dropdownId);
-          }}
-          items={items}
-          hideTrigger
-        />
-      )}
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            side="bottom"
+            align="end"
+            sideOffset={4}
+            className={dropdownStyles.dropdown}
+          >
+            {sortOptions.map((option) => (
+              <DropdownMenu.Item
+                key={option.value}
+                onSelect={() => onChange(option.value)}
+                className={dropdownStyles.dropdownItem}
+              >
+                {option.label}
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
     </div>
   );
 }

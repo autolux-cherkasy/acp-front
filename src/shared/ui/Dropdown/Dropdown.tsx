@@ -1,7 +1,6 @@
 "use client";
 
-import { createPortal } from "react-dom";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import styles from "./dropdown.module.css";
 
 export type DropdownItem = {
@@ -17,87 +16,37 @@ type DropdownProps = {
   hideTrigger?: boolean;
 };
 
-export function Dropdown({
-  id,
-  openId,
-  onToggle,
-  items,
-  hideTrigger,
-}: DropdownProps) {
-  const isOpen = openId === id;
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLUListElement>(null);
-
-  useLayoutEffect(() => {
-    if (!isOpen || !wrapperRef.current || !listRef.current) return;
-    const wrapperRect = wrapperRef.current.getBoundingClientRect();
-    const listHeight = listRef.current.getBoundingClientRect().height;
-    const spaceBelow = window.innerHeight - wrapperRect.bottom;
-    const right = window.innerWidth - wrapperRect.right;
-
-    listRef.current.style.right = `${right}px`;
-    if (spaceBelow < listHeight + 4) {
-      listRef.current.style.top = "auto";
-      listRef.current.style.bottom = `${window.innerHeight - wrapperRect.top + 4}px`;
-    } else {
-      listRef.current.style.bottom = "auto";
-      listRef.current.style.top = `${wrapperRect.bottom + 4}px`;
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(e.target as Node) &&
-        listRef.current &&
-        !listRef.current.contains(e.target as Node)
-      ) {
-        onToggle(null);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, onToggle]);
-
+export function Dropdown({ id, openId, onToggle, items, hideTrigger }: DropdownProps) {
   return (
-    <div ref={wrapperRef} className={styles.dropdownWrapper}>
-      {!hideTrigger && (
-        <button
-          type="button"
-          className={styles.chevronBtn}
-          onClick={() => onToggle(isOpen ? null : id)}
-        >
-          <span
-            className={`${styles.chevron} ${isOpen ? styles.chevronUp : ""}`}
-          />
-        </button>
-      )}
-
-      {isOpen &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <ul ref={listRef} className={styles.dropdown}>
-            {items.map((item) => (
-              <li key={item.label}>
-                <button
-                  type="button"
-                  className={styles.dropdownItem}
-                  onClick={() => {
-                    item.onClick();
-                    onToggle(null);
-                  }}
-                >
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>,
-          document.body,
+    <div className={styles.dropdownWrapper}>
+      <DropdownMenu.Root open={openId === id} onOpenChange={(open) => onToggle(open ? id : null)}>
+        {!hideTrigger && (
+          <DropdownMenu.Trigger className={styles.chevronBtn}>
+            <span className={styles.chevron} />
+          </DropdownMenu.Trigger>
         )}
+
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            className={styles.dropdown}
+            side="bottom"
+            align="start"
+            sideOffset={4}
+          >
+            <DropdownMenu.Group>
+              {items.map((item) => (
+                <DropdownMenu.Item
+                  key={item.label}
+                  className={styles.dropdownItem}
+                  onSelect={item.onClick}
+                >
+                  <DropdownMenu.Label>{item.label}</DropdownMenu.Label>
+                </DropdownMenu.Item>
+              ))}
+            </DropdownMenu.Group>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
     </div>
   );
 }
