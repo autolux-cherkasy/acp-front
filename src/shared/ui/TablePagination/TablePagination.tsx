@@ -22,7 +22,10 @@ export function TablePagination({
   const safeTotalPages = Math.max(totalPages, 1);
   const [visibleValues, setVisibleValues] = useState<number[]>([]);
   useEffect(() => {
-    setVisibleValues(getVisiblePages(page, safeTotalPages));
+    const set = () => {
+      setVisibleValues(getVisiblePages(page, safeTotalPages));
+    };
+    set();
   }, [page, safeTotalPages]);
 
   return (
