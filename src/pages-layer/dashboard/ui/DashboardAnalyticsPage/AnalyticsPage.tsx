@@ -9,14 +9,12 @@ import PopularRoutesCard from "@/src/widgets/AdminComp/ui/PopularRoutes/PopularR
 import pageStyles from "./AnalyticsPage.module.css";
 import styles from "./analytics.module.css";
 
-const LoadChart = dynamic(
-  () => import("@/src/widgets/AdminComp/ui/LoadChart/LoadChart"),
-  { ssr: false },
-);
-const FinanceCard = dynamic(
-  () => import("@/src/widgets/AdminComp/ui/FinanceCard/FinanceCard"),
-  { ssr: false },
-);
+const LoadChart = dynamic(() => import("@/src/widgets/AdminComp/ui/LoadChart/LoadChart"), {
+  ssr: false,
+});
+const FinanceCard = dynamic(() => import("@/src/widgets/AdminComp/ui/FinanceCard/FinanceCard"), {
+  ssr: false,
+});
 export default function AnalyticsPage() {
   const { t } = useI18n();
   const router = useRouter();
@@ -31,6 +29,7 @@ export default function AnalyticsPage() {
           text: t("dispatcherArea.analytics.allRoutes"),
           onClick: () => router.push(`${pathname}/all`),
         }}
+        onCalendarChange={() => {}}
       />
       <div className={styles.grid}>
         <NoShowReport />

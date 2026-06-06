@@ -1,5 +1,7 @@
 "use client";
 
+import { DashboardCard } from "@/src/shared";
+import type { PieLabelRenderProps } from "recharts";
 import {
   Area,
   AreaChart,
@@ -13,9 +15,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { PieLabelRenderProps } from "recharts";
-import { DashboardCard } from "@/src/shared";
-import pageStyles from "../analytics.module.css";
 import styles from "./RouteAnalyticsDetails.module.css";
 
 type TicketStatKey = "reserved" | "purchased" | "cancelled";
@@ -114,28 +113,11 @@ export default function RouteAnalyticsDetails({
       >
         <div className={styles.chartWrapper}>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={trendChartData}
-              margin={{ top: 16, right: 16, left: 4, bottom: 0 }}
-            >
+            <AreaChart data={trendChartData} margin={{ top: 28, right: 16, left: 4, bottom: 0 }}>
               <defs>
-                <linearGradient
-                  id="routeDynamicsGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-brand)"
-                    stopOpacity={0.3}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-brand)"
-                    stopOpacity={0.1}
-                  />
+                <linearGradient id="routeDynamicsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--color-brand)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--color-brand)" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -198,7 +180,7 @@ export default function RouteAnalyticsDetails({
           </div>
           <div className={styles.donutWrapper}>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 10, right: 20, bottom: 16, left: 20 }}>
+              <PieChart margin={{ top: 24, right: 20, bottom: 16, left: 20 }}>
                 <Pie
                   data={ticketStatsData}
                   dataKey="value"
@@ -217,10 +199,8 @@ export default function RouteAnalyticsDetails({
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value, _name, entry) => [
-                    value,
-                    entry.payload.label,
-                  ]}
+                  contentStyle={{ borderRadius: 12 }}
+                  formatter={(value, _name, entry) => [value, entry.payload.label]}
                 />
               </PieChart>
             </ResponsiveContainer>

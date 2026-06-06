@@ -27,14 +27,7 @@ type AllRouteRow = {
 };
 
 type TrendPoint = {
-  dayKey:
-    | "monday"
-    | "tuesday"
-    | "wednesday"
-    | "thursday"
-    | "friday"
-    | "saturday"
-    | "sunday";
+  dayKey: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
   value: number;
 };
 
@@ -233,30 +226,22 @@ export default function AllRoutesPage() {
     paginationHeight,
   } = measurements;
 
-  const selectedRoute =
-    mockAllRoutes.find((route) => route.id === selectedRouteId) ?? null;
-  const selectedRouteDetails = selectedRoute
-    ? ROUTE_ANALYTICS_DETAILS[selectedRoute.id]
-    : null;
+  const selectedRoute = mockAllRoutes.find((route) => route.id === selectedRouteId) ?? null;
+  const selectedRouteDetails = selectedRoute ? ROUTE_ANALYTICS_DETAILS[selectedRoute.id] : null;
   const hasSelection = Boolean(selectedRoute && selectedRouteDetails);
   const trendChartData =
     selectedRouteDetails?.trend.map((point) => ({
-      dayLabel: t(
-        `dispatcherArea.analytics.allRoutesPage.details.days.${point.dayKey}`,
-      ),
+      dayLabel: t(`dispatcherArea.analytics.allRoutesPage.details.days.${point.dayKey}`),
       value: point.value,
     })) ?? [];
   const ticketStatsData = selectedRouteDetails
-    ? (
-        Object.entries(selectedRouteDetails.ticketStats) as [
-          TicketStatKey,
-          number,
-        ][]
-      ).map(([key, value]) => ({
-        key,
-        value,
-        label: t(`dispatcherArea.analytics.allRoutesPage.details.stats.${key}`),
-      }))
+    ? (Object.entries(selectedRouteDetails.ticketStats) as [TicketStatKey, number][]).map(
+        ([key, value]) => ({
+          key,
+          value,
+          label: t(`dispatcherArea.analytics.allRoutesPage.details.stats.${key}`),
+        }),
+      )
     : [];
 
   return (
@@ -265,6 +250,7 @@ export default function AllRoutesPage() {
         title={t("dispatcherArea.sidebar.menu.analytics")}
         subtitle={t("dispatcherArea.analytics.subtitle")}
         onBack={() => router.back()}
+        onCalendarChange={() => {}}
       />
       <div
         ref={cardRef}
@@ -285,19 +271,13 @@ export default function AllRoutesPage() {
                     {t("dispatcherArea.analytics.allRoutesPage.columns.number")}
                   </th>
                   <th className={dashboardTableStyles.thLeft}>
-                    {t(
-                      "dispatcherArea.analytics.allRoutesPage.columns.direction",
-                    )}
+                    {t("dispatcherArea.analytics.allRoutesPage.columns.direction")}
                   </th>
                   <th className={dashboardTableStyles.th}>
-                    {t(
-                      "dispatcherArea.analytics.allRoutesPage.columns.tripsPerDay",
-                    )}
+                    {t("dispatcherArea.analytics.allRoutesPage.columns.tripsPerDay")}
                   </th>
                   <th className={dashboardTableStyles.th}>
-                    {t(
-                      "dispatcherArea.analytics.allRoutesPage.columns.ticketsSold",
-                    )}
+                    {t("dispatcherArea.analytics.allRoutesPage.columns.ticketsSold")}
                   </th>
                   <th className={dashboardTableStyles.th}>
                     {t("dispatcherArea.analytics.allRoutesPage.columns.load")}
@@ -306,9 +286,7 @@ export default function AllRoutesPage() {
                     {t("dispatcherArea.analytics.allRoutesPage.columns.income")}
                   </th>
                   <th className={dashboardTableStyles.th}>
-                    {t(
-                      "dispatcherArea.analytics.allRoutesPage.columns.redemptionRate",
-                    )}
+                    {t("dispatcherArea.analytics.allRoutesPage.columns.redemptionRate")}
                   </th>
                 </DashboardThead>
                 <tbody>
@@ -325,24 +303,14 @@ export default function AllRoutesPage() {
                         <td className={dashboardTableStyles.tdNum}>
                           {(page - 1) * rowsPerPage + index + 1}
                         </td>
-                        <td
-                          className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft}`}
-                        >
+                        <td className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft}`}>
                           {row.direction}
                         </td>
-                        <td className={dashboardTableStyles.td}>
-                          {row.tripsPerDay}
-                        </td>
-                        <td className={dashboardTableStyles.td}>
-                          {row.ticketsSold}
-                        </td>
+                        <td className={dashboardTableStyles.td}>{row.tripsPerDay}</td>
+                        <td className={dashboardTableStyles.td}>{row.ticketsSold}</td>
                         <td className={dashboardTableStyles.td}>{row.load}</td>
-                        <td className={dashboardTableStyles.td}>
-                          {row.income}
-                        </td>
-                        <td className={dashboardTableStyles.td}>
-                          {row.redemptionRate}
-                        </td>
+                        <td className={dashboardTableStyles.td}>{row.income}</td>
+                        <td className={dashboardTableStyles.td}>{row.redemptionRate}</td>
                       </DashboardTr>
                     );
                   })}
@@ -371,19 +339,13 @@ export default function AllRoutesPage() {
         </DashboardCard>
       </div>
       <div
-        className={`${styles.grid} ${
-          hasSelection ? styles.gridVisible : styles.gridHidden
-        }`}
+        className={`${styles.grid} ${hasSelection ? styles.gridVisible : styles.gridHidden}`}
         aria-hidden={!hasSelection}
       >
         <RouteAnalyticsDetails
           routeTitle={selectedRoute?.direction ?? ""}
-          statisticsTitle={t(
-            "dispatcherArea.analytics.allRoutesPage.details.statisticsTitle",
-          )}
-          trendTitle={t(
-            "dispatcherArea.analytics.allRoutesPage.details.dynamicsTitle",
-          )}
+          statisticsTitle={t("dispatcherArea.analytics.allRoutesPage.details.statisticsTitle")}
+          trendTitle={t("dispatcherArea.analytics.allRoutesPage.details.dynamicsTitle")}
           trendChartData={trendChartData}
           ticketStatsData={ticketStatsData}
         />
