@@ -6,6 +6,8 @@ import styles from "./SettingsPage.module.css";
 import { Button, DashboardCard, useI18n } from "@/src/shared";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
 import { getCompanyFields, type CompanyForm } from "./types";
+import * as Switch from "@radix-ui/react-switch";
+import { useState } from "react";
 
 const MOCK_COMPANY: CompanyForm = {
   name: "Автолюкс Черкаси-Плюс",
@@ -18,10 +20,24 @@ const MOCK_COMPANY: CompanyForm = {
   managerEmail: "petrenkos_v@gmail.com",
 };
 
+const MOCK_TABS = [
+  { name: "routes", value: true },
+  { name: "cafe", value: false },
+  { name: "fleet", value: false },
+  { name: "staff", value: false },
+] as const;
+
 const DashboardSettingsPage = () => {
   const { t } = useI18n();
-  const { register } = useForm<CompanyForm>({ defaultValues: MOCK_COMPANY });
+  const {
+    register,
+    formState: { isDirty },
+    reset,
+  } = useForm<CompanyForm>({ defaultValues: MOCK_COMPANY });
 
+  const [modules, setModules] = useState(
+    Object.fromEntries(MOCK_TABS.map((tab) => [tab.name, tab.value])),
+  );
   const fields = getCompanyFields(t);
 
   return (
@@ -63,17 +79,46 @@ const DashboardSettingsPage = () => {
             </div>
 
             <div className={styles.buttonsCont}>
-              <Button text={t("common.actions.edit")} variant="secondary" onClick={() => {}} />
-              <Button text={t("common.actions.save")} variant="primary" onClick={() => {}} />
+              <Button
+                text={t("common.actions.cancel")}
+                variant="secondary"
+                onClick={() => {
+                  reset();
+                }}
+                disabled={!isDirty}
+              />
+              <Button
+                text={t("common.actions.save")}
+                variant="primary"
+                onClick={() => {}}
+                disabled={!isDirty}
+              />
             </div>
           </div>
         </DashboardCard>
 
         <DashboardCard
           className={styles.card}
+          style={{ height: "fit-content" }}
           title={t("dispatcherArea.settingsCards.dataAccess.title")}
         >
-          <div className={styles.inputsContainer}></div>
+          <ul className={(styles.inputsContainer, styles.formSection)}>
+            {MOCK_TABS.map((tab) => (
+              <li key={tab.name} className={styles.modulesItem}>
+                <span>{t(`dispatcherArea.settingsCards.dataAccess.items.${tab.name}`)}</span>
+                <Switch.Root
+                  name={tab.name}
+                  checked={modules[tab.name]}
+                  className={styles.switchRoot}
+                  onCheckedChange={(checked) =>
+                    setModules((prev) => ({ ...prev, [tab.name]: checked }))
+                  }
+                >
+                  <Switch.Thumb className={styles.switchThumb} />
+                </Switch.Root>
+              </li>
+            ))}
+          </ul>
         </DashboardCard>
       </div>
     </div>

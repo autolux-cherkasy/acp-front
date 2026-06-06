@@ -24,6 +24,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  padding-inline: 0;
 }
 
 .phoneRow {
@@ -40,10 +41,50 @@
   padding: 12px;
   background: var(--bg, var(--color-page-bg));
   overflow: hidden;
+  margin: 0;
 }
 
 .buttonsCont {
   display: flex;
   flex-direction: row;
   gap: 24px;
+}
+
+.modulesItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.switchRoot {
+  width: 52px;
+  height: 28px;
+  background: var(--color-border-muted);
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.switchRoot[data-state="checked"] {
+  background: var(--color-success);
+}
+
+.switchThumb {
+  display: block;
+  width: 22px;
+  height: 20px;
+  background: var(--color-white);
+  border-radius: 20px;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+.switchThumb[data-state="checked"] {
+  transform: translateX(22px);
 }
