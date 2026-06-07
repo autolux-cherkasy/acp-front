@@ -43,11 +43,18 @@ export default function ModalFrame({
             variant === "route" ? styles.routeBackdrop : styles.dialogBackdrop,
             backdropClassName,
           )}
-          onPointerDown={(event) => {
-            if (onClose && event.target === event.currentTarget) {
-              onClose();
-            }
-          }}
+          // onPointerDown={(event) => {
+          //   console.log(
+          //     "overlay",
+          //     event.target,
+          //     event.currentTarget,
+          //     event.target === event.currentTarget,
+          //   );
+
+          //   if (onClose && event.target === event.currentTarget) {
+          //     onClose();
+          //   }
+          // }}
         >
           <Dialog.Content
             className={joinClassNames(
@@ -55,7 +62,11 @@ export default function ModalFrame({
               surfaceOverflow === "visible" ? styles.surfaceOverflowVisible : undefined,
               surfaceClassName,
             )}
-            onPointerDown={(event) => event.stopPropagation()}
+            onPointerDownOutside={(e) => {
+              const target = e.target as Element;
+              if (target.closest("[data-radix-popper-content-wrapper]")) return;
+              onClose?.();
+            }}
             aria-labelledby={ariaLabelledBy}
           >
             {title && (

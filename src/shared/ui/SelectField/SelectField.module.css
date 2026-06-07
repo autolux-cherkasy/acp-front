@@ -66,8 +66,9 @@
 }
 
 .menu {
-  width: var(--radix-select-trigger-width);
+  width: var(--radix-popover-trigger-width);
   z-index: 10001;
+  pointer-events: auto;
 }
 
 .list {

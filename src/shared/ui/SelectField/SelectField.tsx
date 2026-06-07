@@ -1,7 +1,7 @@
 "use client";
 
 import Icon from "@/src/shared/ui/Icon/Icon";
-import * as Select from "@radix-ui/react-select";
+import * as Popover from "@radix-ui/react-popover";
 import { useState } from "react";
 import styles from "./SelectField.module.css";
 
@@ -19,39 +19,56 @@ type Props = {
 };
 
 export default function SelectField({ value, options, onChange, placeholder, disabled }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const selectedLabel = options.find((o) => o.value === value)?.label;
 
   return (
     <div className={styles.wrapper}>
-      <Select.Root value={value} onValueChange={onChange} onOpenChange={setIsOpen}>
-        <Select.Trigger className={styles.trigger} disabled={disabled}>
-          <span className={styles.value}>
-            <Select.Value placeholder={placeholder} />
-          </span>
-          <span
-            className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""}`}
-            aria-hidden="true"
+      <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
+        <Popover.Trigger asChild>
+          <button
+            type="button"
+            className={styles.trigger}
+            disabled={disabled}
           >
-            <Icon src="/icons/down-arrow.svg" size={12} />
-          </span>
-        </Select.Trigger>
+            <span className={`${styles.value} ${!selectedLabel ? styles.placeholder : ""}`}>
+              {selectedLabel ?? placeholder}
+            </span>
+            <span
+              className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}
+              aria-hidden="true"
+            >
+              <Icon src="/icons/down-arrow.svg" size={12} />
+            </span>
+          </button>
+        </Popover.Trigger>
 
-        <Select.Portal>
-          <Select.Content position="popper" sideOffset={4} className={styles.menu}>
-            <Select.Viewport className={styles.list}>
+        <Popover.Portal>
+          <Popover.Content
+            className={styles.menu}
+            sideOffset={4}
+            align="start"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            <div className={styles.list}>
               {options.map((option) => (
-                <Select.Item
+                <div
                   key={option.value}
-                  value={option.value}
                   className={`${styles.option} ${option.value === value ? styles.optionSelected : ""}`}
+                  onPointerDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    onChange(option.value);
+                    setOpen(false);
+                  }}
                 >
-                  <Select.ItemText>{option.label}</Select.ItemText>
-                </Select.Item>
+                  {option.label}
+                </div>
               ))}
-            </Select.Viewport>
-          </Select.Content>
-        </Select.Portal>
-      </Select.Root>
+            </div>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 }
