@@ -6,10 +6,7 @@ import { useForm } from "react-hook-form";
 
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
 import { useRegisterMutation } from "@/src/features/auth/api/useAuthQueries";
-import {
-  closeAuthModal,
-  openAuthModal,
-} from "@/src/features/auth/model/auth-flow";
+import { closeAuthModal, openAuthModal } from "@/src/features/auth/model/auth-flow";
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import { useServerToast } from "@/src/shared/lib/toast";
@@ -93,8 +90,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       openAuthModal(router, resolveHref, "login", { replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
-      const { fieldErrors: nextFieldErrors, formError } =
-        mapRegisterServerError(message, t);
+      const { fieldErrors: nextFieldErrors, formError } = mapRegisterServerError(message, t);
 
       for (const [field, msg] of Object.entries(nextFieldErrors)) {
         setFieldError(field as RegisterField, { message: msg });
@@ -113,7 +109,8 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
     validate: (v) => validateRegisterField("password", { ...getValues(), password: v }, t) || true,
   });
   const confirmPasswordReg = register("confirmPassword", {
-    validate: (v) => validateRegisterField("confirmPassword", { ...getValues(), confirmPassword: v }, t) || true,
+    validate: (v) =>
+      validateRegisterField("confirmPassword", { ...getValues(), confirmPassword: v }, t) || true,
   });
 
   const isBusy = registerMutation.isPending || isGoogleLoading;
@@ -166,12 +163,8 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
             maxLength={PHONE_MAX_LENGTH}
             required
             aria-invalid={fieldErrors.phone ? "true" : "false"}
-            aria-describedby={
-              fieldErrors.phone ? "register-phone-error" : undefined
-            }
-            className={
-              fieldErrors.phone ? styles.fieldControlInvalid : undefined
-            }
+            aria-describedby={fieldErrors.phone ? "register-phone-error" : undefined}
+            className={fieldErrors.phone ? styles.fieldControlInvalid : undefined}
           />
         </FormField>
 
@@ -194,12 +187,8 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
             spellCheck={false}
             required
             aria-invalid={fieldErrors.email ? "true" : "false"}
-            aria-describedby={
-              fieldErrors.email ? "register-email-error" : undefined
-            }
-            className={
-              fieldErrors.email ? styles.fieldControlInvalid : undefined
-            }
+            aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
+            className={fieldErrors.email ? styles.fieldControlInvalid : undefined}
           />
         </FormField>
 
@@ -220,12 +209,8 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
             showPasswordLabel={t("common.password.show")}
             hidePasswordLabel={t("common.password.hide")}
             aria-invalid={fieldErrors.password ? "true" : "false"}
-            aria-describedby={
-              fieldErrors.password ? "register-password-error" : undefined
-            }
-            className={
-              fieldErrors.password ? styles.fieldControlInvalid : undefined
-            }
+            aria-describedby={fieldErrors.password ? "register-password-error" : undefined}
+            className={fieldErrors.password ? styles.fieldControlInvalid : undefined}
           />
         </FormField>
 
@@ -248,15 +233,9 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
               hidePasswordLabel={t("common.password.hide")}
               aria-invalid={fieldErrors.confirmPassword ? "true" : "false"}
               aria-describedby={
-                fieldErrors.confirmPassword
-                  ? "register-confirm-password-error"
-                  : undefined
+                fieldErrors.confirmPassword ? "register-confirm-password-error" : undefined
               }
-              className={
-                fieldErrors.confirmPassword
-                  ? styles.fieldControlInvalid
-                  : undefined
-              }
+              className={fieldErrors.confirmPassword ? styles.fieldControlInvalid : undefined}
             />
           </FormField>
 
@@ -293,9 +272,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
             <button
               className={styles.underLink}
               type="button"
-              onClick={() =>
-                openAuthModal(router, resolveHref, "login", { replace: true })
-              }
+              onClick={() => openAuthModal(router, resolveHref, "login", { replace: true })}
             >
               {t("auth.register.existingAccount")}
             </button>

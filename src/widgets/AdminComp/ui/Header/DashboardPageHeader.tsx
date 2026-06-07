@@ -1,9 +1,8 @@
 "use client";
 
 import { DashboardDateText, SharedLabel } from "@/src/shared";
-import { useClickOutside } from "@/src/shared/lib/useClickOutside";
 import Button from "@/src/shared/ui/Button/Button";
-import MiniCalendar from "@/src/widgets/MiniCalendar/MiniCalendar";
+import MiniCalendarTrigger from "@/src/widgets/MiniCalendar/MiniCalendarTrigger";
 import { useState } from "react";
 import styles from "./admin-routes-page.module.css";
 
@@ -25,12 +24,7 @@ export default function DashboardPageHeader({
   action,
   onCalendarChange,
 }: DashboardPageHeaderProps) {
-  const [chosenDate, setChosendate] = useState(new Date());
-  const {
-    isOpen: isCalendarOpen,
-    setIsOpen: setIsCalendarOpen,
-    fieldRef: wrapperRef,
-  } = useClickOutside();
+  const [chosenDate, setChosenDate] = useState(new Date());
 
   return (
     <div className={styles.headerContainer}>
@@ -60,34 +54,11 @@ export default function DashboardPageHeader({
         <div className={styles.dateContainer}>
           <DashboardDateText chosenDate={chosenDate} />
         </div>
-        {
-          <div ref={wrapperRef} className={styles.calendarWrap}>
-            <button
-              className={styles.calendarButton}
-              onClick={() => setIsCalendarOpen((prev) => !prev)}
-              aria-label="Open calendar"
-              aria-expanded={isCalendarOpen}
-              type="button"
-              disabled={!onCalendarChange}
-            >
-              <span className={styles.calendarIcon} aria-hidden="true" />
-            </button>
-            {isCalendarOpen && onCalendarChange && (
-              <div className={styles.calendarPopover}>
-                <MiniCalendar
-                  value={chosenDate ?? new Date()}
-                  onChange={(date) => {
-                    onCalendarChange(date);
-                    setChosendate(date);
-                    setIsCalendarOpen(false);
-                  }}
-                  onClose={() => setIsCalendarOpen(false)}
-                  maxDate={new Date()}
-                />
-              </div>
-            )}
-          </div>
-        }
+        <MiniCalendarTrigger
+          chosenDate={chosenDate}
+          setChosenDate={setChosenDate}
+          onCalendarChange={onCalendarChange}
+        />
       </div>
     </div>
   );
