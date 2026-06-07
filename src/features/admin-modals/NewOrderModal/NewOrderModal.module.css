@@ -37,3 +37,14 @@
 .footer {
   padding: 16px 24px 24px;
 }
+
+.calendarAnchor {
+  position: relative;
+}
+
+.calendarDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 200;
+}

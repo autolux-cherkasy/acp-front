@@ -7,6 +7,7 @@ import styles from "./TextField.module.css";
 type TextFieldProps = ComponentPropsWithoutRef<"input"> & {
   leadingAdornment?: string;
   trailingAdornment?: string;
+  onTrailingAdornmentClick?: () => void;
   className?: string;
   passwordToggle?: boolean;
   showPasswordLabel?: string;
@@ -45,6 +46,7 @@ export default function TextField({
   type,
   leadingAdornment,
   trailingAdornment,
+  onTrailingAdornmentClick,
   className,
   passwordToggle = false,
   showPasswordLabel = "Show password",
@@ -66,6 +68,16 @@ export default function TextField({
       {renderToggleIcon(
         isPasswordVisible ? "/icons/eye-open.svg" : "/icons/eye-off-light.svg",
       )}
+    </button>
+  ) : trailingAdornment && onTrailingAdornmentClick ? (
+    <button
+      type="button"
+      className={styles.toggleButton}
+      onClick={onTrailingAdornmentClick}
+      aria-label="Open picker"
+      disabled={disabled}
+    >
+      {renderAdornment(trailingAdornment)}
     </button>
   ) : trailingAdornment ? (
     renderAdornment(trailingAdornment)
