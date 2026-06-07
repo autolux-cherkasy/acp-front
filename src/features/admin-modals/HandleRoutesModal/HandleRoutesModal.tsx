@@ -8,8 +8,10 @@ import SelectField, { type SelectOption } from "@/src/shared/ui/SelectField/Sele
 import styles from "./HandleRoutesModal.module.css";
 
 type RouteFormState = {
+  route: string;
   direction: string;
   departureTime: string;
+  arrivalTime: string;
   vehicle: string;
   seats: string;
   status: string;
@@ -21,8 +23,10 @@ type HandleRoutesModalProps = {
   onSubmit: (data: RouteFormState) => void;
   onDelete?: () => void;
   initialData?: Partial<RouteFormState>;
-  vehicleOptions: SelectOption[];
-  statusOptions: SelectOption[];
+  routeOptions?: SelectOption[];
+  timeOptions?: SelectOption[];
+  vehicleOptions?: SelectOption[];
+  statusOptions?: SelectOption[];
 };
 
 export default function HandleRoutesModal({
@@ -31,15 +35,19 @@ export default function HandleRoutesModal({
   onSubmit,
   onDelete,
   initialData,
-  vehicleOptions,
-  statusOptions,
+  routeOptions = [],
+  timeOptions = [],
+  vehicleOptions = [],
+  statusOptions = [],
 }: HandleRoutesModalProps) {
   const { t } = useI18n();
 
   const { register, handleSubmit, control } = useForm<RouteFormState>({
     defaultValues: {
+      route: initialData?.route ?? "",
       direction: initialData?.direction ?? "",
       departureTime: initialData?.departureTime ?? "",
+      arrivalTime: initialData?.arrivalTime ?? "",
       vehicle: initialData?.vehicle ?? "",
       seats: initialData?.seats ?? "",
       status: initialData?.status ?? "",
@@ -60,39 +68,76 @@ export default function HandleRoutesModal({
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
     >
+      <Controller
+        control={control}
+        name="route"
+        render={({ field }) => (
+          <SelectField
+            value={field.value}
+            options={routeOptions}
+            onChange={field.onChange}
+            placeholder={t("dispatcherArea.routes.table.columns.direction")}
+          />
+        )}
+      />
+
       <InputWithLabel
-        label={t("dispatcherArea.routes.table.columns.direction")}
+        label={t("dispatcherArea.routes.modal.routeLabel")}
         placeholder={t("dispatcherArea.routes.modal.directionPlaceholder")}
         {...register("direction")}
       />
 
       <div className={styles.row}>
+        <div className={styles.fieldWithLabel}>
+          <span className={styles.fieldLabel}>
+            {t("dispatcherArea.tickets.modal.departureTime")}
+          </span>
+          <Controller
+            control={control}
+            name="departureTime"
+            render={({ field }) => (
+              <SelectField
+                value={field.value}
+                options={timeOptions}
+                onChange={field.onChange}
+                placeholder={t("bookingForm.time.placeholder")}
+              />
+            )}
+          />
+        </div>
         <InputWithLabel
-          label={t("dispatcherArea.tickets.modal.departureTime")}
+          label={t("dispatcherArea.routes.modal.arrivalTime")}
           placeholder="00:00"
           trailingAdornment="/icons/Footer/clock.svg"
-          {...register("departureTime")}
-        />
-        <Controller
-          control={control}
-          name="vehicle"
-          render={({ field }) => (
-            <SelectField
-              value={field.value}
-              options={vehicleOptions}
-              onChange={field.onChange}
-              placeholder={t("dispatcherArea.routes.table.columns.bus")}
-            />
-          )}
+          {...register("arrivalTime")}
         />
       </div>
 
       <div className={styles.row}>
+        <div className={styles.fieldWithLabel}>
+          <span className={styles.fieldLabel}>{t("dispatcherArea.routes.table.columns.bus")}</span>
+          <Controller
+            control={control}
+            name="vehicle"
+            render={({ field }) => (
+              <SelectField
+                value={field.value}
+                options={vehicleOptions}
+                onChange={field.onChange}
+                placeholder={t("dispatcherArea.routes.table.columns.bus")}
+              />
+            )}
+          />
+        </div>
         <InputWithLabel
           label={t("dispatcherArea.routes.modal.seatsLabel")}
           placeholder={t("dispatcherArea.routes.modal.seatsPlaceholder")}
           {...register("seats")}
         />
+      </div>
+
+      <div className={styles.fieldWithLabel}>
+        <span className={styles.fieldLabel}>{t("dispatcherArea.routes.table.columns.status")}</span>
         <Controller
           control={control}
           name="status"

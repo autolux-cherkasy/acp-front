@@ -4,3 +4,16 @@
   gap: 12px;
   align-items: end;
 }
+
+.fieldWithLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--DarkSlateGray, #226078);
+}

@@ -598,7 +598,9 @@
       "modal": {
         "newTitle": "Новий рейс",
         "editTitle": "Редагувати рейс",
+        "routeLabel": "Рейс",
         "directionPlaceholder": "м.Місто - м.Місто",
+        "arrivalTime": "Час прибуття",
         "seatsLabel": "Місця: зайнято/вільні",
         "seatsPlaceholder": "0/0"
       },

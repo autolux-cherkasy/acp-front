@@ -602,9 +602,11 @@
       "subtitle": "Route logistics management.",
       "addRoute": "Add trip",
       "modal": {
-        "newTitle": "New route",
-        "editTitle": "Edit route",
+        "newTitle": "New trip",
+        "editTitle": "Edit trip",
+        "routeLabel": "Trip",
         "directionPlaceholder": "City - City",
+        "arrivalTime": "Arrival time",
         "seatsLabel": "Seats: occupied/free",
         "seatsPlaceholder": "0/0"
       },
