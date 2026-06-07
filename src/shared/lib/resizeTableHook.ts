@@ -29,7 +29,6 @@ export const useResizeTableHook = <T>({
   const theadRef = useRef<HTMLTableRowElement | null>(null);
   const firstRowRef = useRef<HTMLTableRowElement | null>(null);
   const paginationRef = useRef<HTMLDivElement | null>(null);
-  const viewportHeightRef = useRef(0);
   const [measurements, setMeasurements] = useState<TableMeasurements>({
     cardHeight: 0,
     headerHeight: 0,
@@ -75,20 +74,17 @@ export const useResizeTableHook = <T>({
       });
     };
 
-    viewportHeightRef.current = window.innerHeight;
     measureTableLayout(true);
 
-    const handleWindowResize = () => {
-      const nextViewportHeight = window.innerHeight;
-      const hasHeightChanged = nextViewportHeight !== viewportHeightRef.current;
+    const observer = new ResizeObserver(() => {
+      measureTableLayout(true);
+    });
 
-      viewportHeightRef.current = nextViewportHeight;
-      measureTableLayout(hasHeightChanged);
-    };
+    if (tableAreaRef.current) {
+      observer.observe(tableAreaRef.current);
+    }
 
-    window.addEventListener("resize", handleWindowResize);
-
-    return () => window.removeEventListener("resize", handleWindowResize);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {

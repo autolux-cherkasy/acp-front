@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
 import { DashboardDateText, SharedLabel } from "@/src/shared";
+import { useClickOutside } from "@/src/shared/lib/useClickOutside";
 import Button from "@/src/shared/ui/Button/Button";
 import MiniCalendar from "@/src/widgets/MiniCalendar/MiniCalendar";
+import { useState } from "react";
 import styles from "./admin-routes-page.module.css";
 
 type DashboardPageHeaderProps = {
@@ -14,7 +15,6 @@ type DashboardPageHeaderProps = {
     text: string;
     onClick: () => void;
   };
-  calendarValue?: Date | null;
   onCalendarChange?: (date: Date) => void;
 };
 
@@ -23,11 +23,14 @@ export default function DashboardPageHeader({
   subtitle,
   onBack,
   action,
-  calendarValue,
   onCalendarChange,
 }: DashboardPageHeaderProps) {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [chosenDate, setChosendate] = useState(new Date());
+  const {
+    isOpen: isCalendarOpen,
+    setIsOpen: setIsCalendarOpen,
+    fieldRef: wrapperRef,
+  } = useClickOutside();
 
   return (
     <div className={styles.headerContainer}>
@@ -55,9 +58,9 @@ export default function DashboardPageHeader({
           </div>
         )}
         <div className={styles.dateContainer}>
-          <DashboardDateText />
+          <DashboardDateText chosenDate={chosenDate} />
         </div>
-        {onCalendarChange && (
+        {
           <div ref={wrapperRef} className={styles.calendarWrap}>
             <button
               className={styles.calendarButton}
@@ -65,23 +68,26 @@ export default function DashboardPageHeader({
               aria-label="Open calendar"
               aria-expanded={isCalendarOpen}
               type="button"
+              disabled={!onCalendarChange}
             >
               <span className={styles.calendarIcon} aria-hidden="true" />
             </button>
-            {isCalendarOpen && (
+            {isCalendarOpen && onCalendarChange && (
               <div className={styles.calendarPopover}>
                 <MiniCalendar
-                  value={calendarValue ?? new Date()}
+                  value={chosenDate ?? new Date()}
                   onChange={(date) => {
                     onCalendarChange(date);
+                    setChosendate(date);
                     setIsCalendarOpen(false);
                   }}
                   onClose={() => setIsCalendarOpen(false)}
+                  maxDate={new Date()}
                 />
               </div>
             )}
           </div>
-        )}
+        }
       </div>
     </div>
   );

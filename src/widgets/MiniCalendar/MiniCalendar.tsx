@@ -8,6 +8,7 @@ type Props = {
   onChange: (d: Date) => void;
   onClose: () => void;
   minDate?: Date;
+  maxDate?: Date;
   availableDates?: string[];
 
   // NEW: локализация (опционально)
@@ -16,8 +17,18 @@ type Props = {
 };
 
 const DEFAULT_MONTHS = [
-  "Січень","Лютий","Березень","Квітень","Травень","Червень",
-  "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень",
+  "Січень",
+  "Лютий",
+  "Березень",
+  "Квітень",
+  "Травень",
+  "Червень",
+  "Липень",
+  "Серпень",
+  "Вересень",
+  "Жовтень",
+  "Листопад",
+  "Грудень",
 ];
 
 const DEFAULT_WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
@@ -52,6 +63,7 @@ export default function MiniCalendar({
   onChange,
   onClose,
   minDate,
+  maxDate,
   availableDates,
   months,
   weekdays,
@@ -60,6 +72,7 @@ export default function MiniCalendar({
   const locWeekdays = weekdays && weekdays.length === 7 ? weekdays : DEFAULT_WEEKDAYS;
 
   const normalizedMinDate = useMemo(() => (minDate ? startOfDay(minDate) : null), [minDate]);
+  const normalizedMaxDate = useMemo(() => (maxDate ? startOfDay(maxDate) : null), [maxDate]);
   const availableDateSet = useMemo(() => new Set(availableDates ?? []), [availableDates]);
   const [cursor, setCursor] = useState<Date>(() => value ?? normalizedMinDate ?? new Date());
 
@@ -115,13 +128,11 @@ export default function MiniCalendar({
     a.getDate() === b.getDate();
 
   const selected = value;
-  const canGoToPreviousMonth = normalizedMinDate == null || (
+  const canGoToPreviousMonth =
+    normalizedMinDate == null ||
     cursor.getFullYear() > normalizedMinDate.getFullYear() ||
-    (
-      cursor.getFullYear() === normalizedMinDate.getFullYear() &&
-      cursor.getMonth() > normalizedMinDate.getMonth()
-    )
-  );
+    (cursor.getFullYear() === normalizedMinDate.getFullYear() &&
+      cursor.getMonth() > normalizedMinDate.getMonth());
 
   return (
     <div className={styles.wrap} role="dialog" aria-label="Calendar">
@@ -166,7 +177,9 @@ export default function MiniCalendar({
       <div className={styles.grid}>
         {days.map((cell, idx) => {
           const isWeekend = idx % 7 === 5 || idx % 7 === 6;
-          const isDisabled = normalizedMinDate != null && startOfDay(cell.date) < normalizedMinDate;
+          const isDisabled =
+            (normalizedMinDate != null && startOfDay(cell.date) < normalizedMinDate) ||
+            (normalizedMaxDate != null && startOfDay(cell.date) > normalizedMaxDate);
           const isSelected = !isDisabled && selected ? isSameDay(cell.date, selected) : false;
           const isAvailable = !isDisabled && availableDateSet.has(toDateKey(cell.date));
 
