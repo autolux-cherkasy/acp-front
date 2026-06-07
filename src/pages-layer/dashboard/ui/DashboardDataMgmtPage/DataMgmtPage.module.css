@@ -1,0 +1,14 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+  min-height: 0;
+}
+
+.header {
+  gap: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
