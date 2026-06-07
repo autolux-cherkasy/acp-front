@@ -1,0 +1,45 @@
+.container {
+  position: relative;
+  display: inline-flex;
+  background: var(--DarkSlateGray, #226078);
+  gap: 8px;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.pill {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  border-radius: 8px;
+  background: #fff;
+  pointer-events: none;
+  transition:
+    left 220ms ease,
+    width 220ms ease;
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--light-bg);
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 220ms ease;
+}
+
+.tabActive {
+  color: var(--DarkSlateGray, #226078);
+  font-weight: 500;
+}
+.label {
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 144%;
+  vertical-align: middle;
+}
