@@ -18,9 +18,7 @@ type RouteFormState = {
   status: string;
 };
 
-type ModalPayload =
-  | { mode: "create" }
-  | { mode: "edit"; initialData: Partial<RouteFormState> };
+type ModalPayload = { mode: "create" } | { mode: "edit"; initialData: Partial<RouteFormState> };
 
 const MOCK_VEHICLE_OPTIONS: SelectOption[] = [
   { value: "СА 5374 СО", label: "СА 5374 СО" },
@@ -66,6 +64,7 @@ export default function RoutesPageClient({ rows, stats }: RoutesPageClientProps)
           text: t("dispatcherArea.routes.addRoute"),
           onClick: () => disclosure.open({ mode: "create" }),
         }}
+        onCalendarChange={() => {}}
       />
       <RoutesStats {...stats} />
       <RoutesTable
@@ -80,9 +79,7 @@ export default function RoutesPageClient({ rows, stats }: RoutesPageClientProps)
       {disclosure.isOpen && disclosure.data && (
         <HandleRoutesModal
           mode={disclosure.data.mode}
-          initialData={
-            disclosure.data.mode === "edit" ? disclosure.data.initialData : undefined
-          }
+          initialData={disclosure.data.mode === "edit" ? disclosure.data.initialData : undefined}
           onClose={disclosure.close}
           onSubmit={(data) => {
             console.log("submit", data);

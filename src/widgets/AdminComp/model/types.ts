@@ -5,6 +5,7 @@ import type { TripStatus } from "@/src/entities/trip";
 export type RouteRow = {
   id: string;
   direction: string;
+  date: string | null;
   departureTime: string | null;
   arrivalTime: string | null;
   busNumber: string | null;

@@ -152,9 +152,12 @@ export default function RoutesTable({
                         {row.direction}
                       </td>
                       <td className={dashboardTableStyles.td}>
-                        {row.departureTime && row.arrivalTime
-                          ? `${row.departureTime} - ${row.arrivalTime}`
-                          : "Ã¢â‚¬â€"}
+                        {row.departureTime && row.arrivalTime ? (
+                          <>
+                            <div>{row.date ?? "—"}</div>
+                            <div>{row.departureTime} - {row.arrivalTime}</div>
+                          </>
+                        ) : "—"}
                       </td>
                       <td className={dashboardTableStyles.td}>
                         {row.busNumber ?? "Ã¢â‚¬â€"}

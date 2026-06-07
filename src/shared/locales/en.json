@@ -600,7 +600,7 @@
     },
     "routes": {
       "subtitle": "Route logistics management.",
-      "addRoute": "Add route",
+      "addRoute": "Add trip",
       "modal": {
         "newTitle": "New route",
         "editTitle": "Edit route",
@@ -616,11 +616,11 @@
         "cancelled": "Cancelled"
       },
       "table": {
-        "title": "Routes",
+        "title": "Trips",
         "sort": "Sort",
         "columns": {
           "number": "#",
-          "direction": "Direction",
+          "direction": "Trip",
           "time": "Time",
           "bus": "Bus",
           "seats": "Seats",
@@ -648,10 +648,10 @@
       "goBackAria": "Go back",
       "calendarAria": "Open calendar",
       "allRoutesPage": {
-        "title": "Routes",
+        "title": "Trips",
         "columns": {
           "number": "#",
-          "direction": "Direction",
+          "direction": "Trip",
           "tripsPerDay": "Trips / day",
           "ticketsSold": "Tickets sold",
           "load": "Load",

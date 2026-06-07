@@ -5,6 +5,7 @@ import styles from "../ui/admin-routes-table.module.css";
 export const MOCK_ROWS: RouteRow[] = Array.from({ length: 10 }, (_, i) => ({
   id: String(i + 1),
   direction: "м.Черкаси - м.Київ (ст.м.Харківська)",
+  date: "03.07.2026",
   departureTime: "05:30",
   arrivalTime: "08:30",
   busNumber: "СА 5374 СО",

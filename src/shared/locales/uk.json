@@ -594,7 +594,7 @@
     },
     "routes": {
       "subtitle": "Керування логістикою маршрутів.",
-      "addRoute": "Додати маршрут",
+      "addRoute": "Додати рейс",
       "modal": {
         "newTitle": "Новий рейс",
         "editTitle": "Редагувати рейс",
@@ -610,11 +610,11 @@
         "cancelled": "Скасовано"
       },
       "table": {
-        "title": "Маршрути",
+        "title": "Рейси",
         "sort": "Сортувати",
         "columns": {
           "number": "№",
-          "direction": "Напрямок",
+          "direction": "Рейс",
           "time": "Час",
           "bus": "Автобус",
           "seats": "Місця",
@@ -642,10 +642,10 @@
       "goBackAria": "Назад",
       "calendarAria": "Відкрити календар",
       "allRoutesPage": {
-        "title": "Маршрути",
+        "title": "Рейси",
         "columns": {
           "number": "№",
-          "direction": "Напрямок",
+          "direction": "Рейс",
           "tripsPerDay": "Рейсів / день",
           "ticketsSold": "Продано квитків",
           "load": "Завантаженість",
