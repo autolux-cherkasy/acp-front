@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Notification from "@/src/shared/ui/Notification/Notification";
 
-import styles from "../BookingForm.module.css";
+import { useClickOutside } from "@/src/shared/lib/useClickOutside";
 import { SEAT_OPTIONS } from "../../model/types";
+import styles from "../BookingForm.module.css";
 
 type SeatsSelectProps = {
   value: string;
@@ -17,43 +18,8 @@ type SeatsSelectProps = {
 
 export default function SeatsSelect({ value, placeholder, onChange }: SeatsSelectProps) {
   const { t } = useI18n();
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen, fieldRef: dropdownRef } = useClickOutside();
   const [toastMessage, setToastMessage] = useState("");
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      const target = event.target;
-
-      if (!(target instanceof Node)) {
-        return;
-      }
-
-      if (!dropdownRef.current?.contains(target)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("touchstart", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("touchstart", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen]);
 
   useEffect(() => {
     if (!toastMessage) {

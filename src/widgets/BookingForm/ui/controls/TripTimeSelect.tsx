@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 
 import type { Trip } from "@/src/entities/trip";
 
-import styles from "../BookingForm.module.css";
+import { useClickOutside } from "@/src/shared/lib/useClickOutside";
 import { formatTripTime } from "../../lib/bookingForm.utils";
+import styles from "../BookingForm.module.css";
 
 type TripTimeSelectProps = {
   value: string;
@@ -23,47 +24,13 @@ export default function TripTimeSelect({
   disabled,
   onChange,
 }: TripTimeSelectProps) {
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen, fieldRef: dropdownRef } = useClickOutside();
+
   const selectedOption = useMemo(
     () => options.find((trip) => trip.id === value) ?? null,
     [options, value],
   );
   const useCompactGrid = options.length > 2;
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      const target = event.target;
-
-      if (!(target instanceof Node)) {
-        return;
-      }
-
-      if (!dropdownRef.current?.contains(target)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("touchstart", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("touchstart", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen]);
 
   return (
     <div className={styles.timeDropdown} ref={dropdownRef}>
