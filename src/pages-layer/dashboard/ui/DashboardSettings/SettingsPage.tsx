@@ -22,9 +22,9 @@ const MOCK_COMPANY: CompanyForm = {
 
 const MOCK_TABS = [
   { name: "routes", value: true },
-  { name: "cafe", value: false },
   { name: "fleet", value: false },
   { name: "staff", value: false },
+  { name: "cafe", value: false },
 ] as const;
 
 const DashboardSettingsPage = () => {
@@ -105,7 +105,7 @@ const DashboardSettingsPage = () => {
           <ul className={(styles.inputsContainer, styles.formSection)}>
             {MOCK_TABS.map((tab) => (
               <li key={tab.name} className={styles.modulesItem}>
-                <span>{t(`dispatcherArea.settingsCards.dataAccess.items.${tab.name}`)}</span>
+                <span>{t(`dispatcherArea.settingsCards.dataMgmt.tabs.${tab.name}`)}</span>
                 <Switch.Root
                   name={tab.name}
                   checked={modules[tab.name]}

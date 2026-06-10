@@ -15,19 +15,6 @@
   justify-content: center;
 }
 
-.chevron {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid var(--color-brand);
-  border-bottom: 2px solid var(--color-brand);
-  transform: rotate(45deg) translateY(-3px);
-  transition: transform 150ms ease;
-}
-
-.chevronBtn[data-state="open"] .chevron {
-  transform: rotate(180deg);
-}
 
 .dropdown {
   z-index: 1000;

@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import ChevronIcon from "@/src/shared/ui/ChevronIcon/ChevronIcon";
 import type { SortOption } from "../../model/types";
 import dropdownStyles from "@/src/shared/ui/Dropdown/dropdown.module.css";
 import styles from "./TicketSortDropdown.module.css";
@@ -25,6 +27,7 @@ export default function TicketSortDropdown<T extends string = SortOption>({
   onChange,
 }: Props<T>) {
   const { t } = useI18n();
+  const [open, setOpen] = useState(false);
   const defaultOptions: TicketSortDropdownOption<SortOption>[] = [
     {
       value: "date-asc",
@@ -56,10 +59,10 @@ export default function TicketSortDropdown<T extends string = SortOption>({
 
   return (
     <div className={styles.wrapper}>
-      <DropdownMenu.Root>
+      <DropdownMenu.Root open={open} onOpenChange={setOpen}>
         <DropdownMenu.Trigger className={styles.trigger}>
           <span className={styles.label}>{selectedLabel}</span>
-          <span className={styles.chevron} aria-hidden="true" />
+          <ChevronIcon open={open} />
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Portal>

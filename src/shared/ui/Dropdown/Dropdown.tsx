@@ -1,6 +1,7 @@
 "use client";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import ChevronIcon from "@/src/shared/ui/ChevronIcon/ChevronIcon";
 import styles from "./dropdown.module.css";
 
 export type DropdownItem = {
@@ -22,7 +23,7 @@ export function Dropdown({ id, openId, onToggle, items, hideTrigger }: DropdownP
       <DropdownMenu.Root open={openId === id} onOpenChange={(open) => onToggle(open ? id : null)}>
         {!hideTrigger && (
           <DropdownMenu.Trigger className={styles.chevronBtn}>
-            <span className={styles.chevron} />
+            <ChevronIcon open={openId === id} />
           </DropdownMenu.Trigger>
         )}
 

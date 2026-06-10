@@ -50,21 +50,6 @@
   color: var(--color-border-muted);
 }
 
-.chevron {
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  color: var(--color-brand);
-  transition: transform 0.15s ease;
-}
-
-.chevronOpen {
-  transform: rotate(180deg);
-}
-
 .menu {
   width: var(--radix-popover-trigger-width);
   z-index: 10001;

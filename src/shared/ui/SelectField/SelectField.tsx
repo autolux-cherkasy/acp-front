@@ -1,7 +1,7 @@
 "use client";
 
-import Icon from "@/src/shared/ui/Icon/Icon";
 import * as Popover from "@radix-ui/react-popover";
+import ChevronIcon from "@/src/shared/ui/ChevronIcon/ChevronIcon";
 import { useState } from "react";
 import styles from "./SelectField.module.css";
 
@@ -35,12 +35,7 @@ export default function SelectField({ value, options, onChange, placeholder, dis
             <span className={`${styles.value} ${!selectedLabel ? styles.placeholder : ""}`}>
               {selectedLabel ?? placeholder}
             </span>
-            <span
-              className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}
-              aria-hidden="true"
-            >
-              <Icon src="/icons/down-arrow.svg" size={12} />
-            </span>
+            <ChevronIcon open={open} />
           </button>
         </Popover.Trigger>
 

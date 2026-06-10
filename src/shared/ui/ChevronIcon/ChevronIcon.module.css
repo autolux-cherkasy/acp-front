@@ -1,0 +1,14 @@
+.chevron {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--color-brand);
+  border-bottom: 2px solid var(--color-brand);
+  transform: rotate(45deg) translateY(-3px);
+  transition: transform 150ms ease;
+}
+
+.open {
+  transform: rotate(-135deg) translateY(-3px);
+}

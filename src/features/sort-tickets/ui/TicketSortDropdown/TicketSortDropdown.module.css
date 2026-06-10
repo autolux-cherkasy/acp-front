@@ -30,18 +30,3 @@
   flex: 1;
   text-align: left;
 }
-
-.chevron {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  flex-shrink: 0;
-  border-right: 2px solid var(--color-brand);
-  border-bottom: 2px solid var(--color-brand);
-  transform: rotate(45deg) translateY(-3px);
-  transition: transform 150ms ease;
-}
-
-.chevronOpen {
-  transform: rotate(-135deg) translateY(-3px);
-}
