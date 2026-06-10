@@ -1,0 +1,119 @@
+.thFirst {
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tdFirst {
+  width: 100%;
+}
+
+.tdCenter {
+  text-align: center;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--color-brand);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.addBtn:hover {
+  background: var(--color-surface-soft);
+}
+
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--DarkSlateGray, #226078);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+}
+
+.editBtn:hover {
+  background: var(--color-surface-soft);
+}
+
+.tdLeft {
+  text-align: left;
+}
+
+/* ── table-level overrides ───────────────────────── */
+.dataTable {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: transparent !important;
+}
+
+.dataTable thead th {
+  text-align: left !important;
+  background: var(--color-page-bg);
+}
+
+.dataTable thead th:first-child,
+.dataTable thead th:last-child {
+  text-align: center !important;
+}
+
+/* outer corners only */
+.dataTable thead th:first-child {
+  border-top-left-radius: 12px;
+}
+.dataTable thead th:last-child {
+  border-top-right-radius: 12px;
+}
+.dataRow:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+.dataRow:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* separator only before edit column in header */
+.thEditSeparator {
+  border-left: 1px solid var(--color-border-muted);
+}
+
+/* ── data rows ───────────────────────────────────── */
+.dataRow td {
+  background: var(--color-page-bg);
+  height: 40px;
+  /* min-width: 100px; */
+  padding: 0 12px !important;
+  white-space: nowrap;
+  vertical-align: middle !important;
+  border-bottom: 0.5px solid var(--color-border-muted) !important;
+  text-align: left;
+}
+
+/* keep number and edit centered */
+.dataRow td.tdCenter {
+  text-align: center;
+}
+.contentRow {
+  min-width: 200px;
+}
+/* separator between every pair of columns */
+.dataRow td + td {
+  border-left: 0.5px solid var(--color-border-muted);
+}
+
+@media (max-width: 1300px) {
+  .contentRow {
+    min-width: 100px;
+  }
+}
