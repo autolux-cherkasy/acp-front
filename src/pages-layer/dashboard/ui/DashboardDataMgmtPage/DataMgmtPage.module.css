@@ -1,8 +1,13 @@
 .mainContainer {
   display: flex;
   flex-direction: column;
-
+  height: 100%;
   gap: 24px;
+  min-height: 0;
+}
+
+.card {
+  flex: 1;
   min-height: 0;
 }
 
@@ -20,6 +25,23 @@
   flex-direction: column;
   border-radius: 12px;
   gap: 24px;
+  overflow-y: auto;
+}
+.sections::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sections::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sections::-webkit-scrollbar-thumb {
+  background: var(--LightSlateGray, var(--color-border-muted));
+  border-radius: 3px;
+}
+
+.sections::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand);
 }
 
 .section {

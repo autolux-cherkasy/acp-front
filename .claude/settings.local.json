@@ -17,7 +17,11 @@
       "Bash(node -e \"const { PrismaClient } = require\\('@prisma/client'\\); const p = new PrismaClient\\(\\); console.log\\('busNumber' in p.trip.fields ? 'busNumber EXISTS in client' : 'busNumber MISSING from client'\\)\")",
       "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\afnes\\\\busStation\\\\acp-front\\\\app\")",
       "Bash(Select-Object FullName)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(Get-ChildItem -Recurse -Depth 2)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\afnes\\\\busStation\\\\acp-front\" -Recurse -Directory)",
+      "Bash(Get-ChildItem *)",
+      "Bash(Test-Path *)"
     ]
   }
 }

@@ -107,6 +107,7 @@ const DataMgmtPage = () => {
       </div>
 
       <DashboardCard
+        className={styles.card}
         title={tabs.find((i) => i.value === tab)?.label}
         classNameHeader={styles.tableHeader}
         headerAction={

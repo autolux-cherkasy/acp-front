@@ -25,7 +25,12 @@
   cursor: pointer;
   padding: 0;
 }
-
+.dataTable .dataRow td {
+  text-align: left;
+}
+.dataTable .dataRow td.tdCenter {
+  text-align: center;
+}
 .addBtn:hover {
   background: var(--color-surface-soft);
 }
