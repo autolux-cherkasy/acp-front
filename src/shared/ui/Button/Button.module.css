@@ -36,6 +36,11 @@
   align-self: stretch;
 }
 
+.fit {
+  width: fit-content;
+  min-width: unset;
+}
+
 .primary {
   background: var(--color-accent);
   color: var(--color-text-strong);

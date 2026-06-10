@@ -112,7 +112,7 @@ const DataMgmtPage = () => {
         headerAction={
           tabs.find((i) => i.value === tab)?.hasHeaderAction && (
             <Button
-              fullWidth={false}
+              size="fit"
               variant="secondary"
               text={t(`dispatcherArea.dataMgmt.actions.${tab}`)}
             ></Button>
