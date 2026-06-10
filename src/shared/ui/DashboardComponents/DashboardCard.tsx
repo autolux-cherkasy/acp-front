@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode, Ref } from "react";
+import type { CSSProperties, HTMLAttributes, ReactNode, Ref } from "react";
 import SharedLabel from "../SharedLabel/SharedLabel";
 import styles from "./DashboardCard.module.css";
 
@@ -8,6 +8,7 @@ type DashboardCardProps = HTMLAttributes<HTMLDivElement> & {
   subtitle?: string;
   headerAction?: ReactNode;
   headerRef?: Ref<HTMLDivElement>;
+  classNameHeader?: string;
 };
 
 export default function DashboardCard({
@@ -16,6 +17,7 @@ export default function DashboardCard({
   title,
   subtitle,
   headerAction,
+  classNameHeader = "",
   headerRef,
   ...props
 }: DashboardCardProps) {
@@ -24,13 +26,11 @@ export default function DashboardCard({
   return (
     <div className={`${styles.card} ${className}`} {...props}>
       {hasHeader && (
-        <div ref={headerRef} className={styles.cardHeader}>
+        <div ref={headerRef} className={`${styles.cardHeader} ${classNameHeader}`}>
           {title && (
             <div className={styles.cardTitleGroup}>
               <SharedLabel variant="dashboardCardTitle">{title}</SharedLabel>
-              {subtitle && (
-                <SharedLabel variant="dashboardCardSubtitle">{subtitle}</SharedLabel>
-              )}
+              {subtitle && <SharedLabel variant="dashboardCardSubtitle">{subtitle}</SharedLabel>}
             </div>
           )}
           {headerAction}

@@ -806,6 +806,18 @@
           "staff": "Staff"
         }
       }
+    },
+    "dataMgmt": {
+      "sections": {
+        "routes": "Routes",
+        "cafe": "Menu",
+        "fleet": "Fleet",
+        "staff": "Staff"
+      },
+      "actions": {
+        "routes": "Add route",
+        "cafe": "Add menu category"
+      }
     }
   }
 }
