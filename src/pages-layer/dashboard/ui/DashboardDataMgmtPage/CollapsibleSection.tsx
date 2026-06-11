@@ -14,6 +14,7 @@ type CollapsiblesectionProps = {
   onEditSection?: () => void;
   onAddRow: () => void;
   onEditRow: (index: number) => void;
+  initialOpenState?: boolean;
 };
 const CollapsibleSection = ({
   section,
@@ -21,8 +22,9 @@ const CollapsibleSection = ({
   onAddRow,
   onEditRow,
   onEditSection,
+  initialOpenState,
 }: CollapsiblesectionProps) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialOpenState ?? false);
   const { t } = useI18n();
 
   const handleToggle = () => {

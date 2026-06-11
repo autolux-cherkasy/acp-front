@@ -11,17 +11,44 @@ import CollapsibleSection from "./CollapsibleSection";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import RouteModal from "@/src/features/admin-modals/RouteModal/RouteModal";
 import DirectionModal from "@/src/features/admin-modals/DirectionModal/DirectionModal";
+import CafeDishModal from "@/src/features/admin-modals/CafeDishModal/CafeDishModal";
 
 const DataMgmtPage = () => {
   const [tab, setTab] = useState("routes");
   const { t } = useI18n();
   const [sections, setSections] = useState(MOCK_DATA_BY_TAB.routes.sections);
   const sectionModal = useDisclosure<{ mode: "create" } | { mode: "edit"; sectionIndex: number }>();
+  const categoryOptions = sections.map((s) => ({ value: s.title, label: s.title }));
   const rowModal = useDisclosure<
     | { mode: "create"; sectionIndex: number }
     | { mode: "edit"; sectionIndex: number; rowIndex: number }
   >();
 
+  const sectionModalByTab: Partial<
+    Record<
+      string,
+      {
+        icon?: string;
+        titles?: { create: string; edit: string };
+        labels?: { create: string; edit: string };
+        placeholder?: string;
+      }
+    >
+  > = {
+    routes: {},
+    cafe: {
+      icon: "/icons/cafe/coffee-cup.svg",
+      titles: {
+        create: t("dispatcherArea.dataMgmt.cafeCategoryModal.newTitle"),
+        edit: t("dispatcherArea.dataMgmt.cafeCategoryModal.editTitle"),
+      },
+      labels: {
+        create: t("dispatcherArea.dataMgmt.cafeCategoryModal.label"),
+        edit: t("dispatcherArea.dataMgmt.cafeCategoryModal.label"),
+      },
+      placeholder: t("dispatcherArea.dataMgmt.cafeCategoryModal.placeholder"),
+    },
+  };
   const { query, setQuery, filtered } = useSearch(sections, (section, q) => {
     const lq = q.toLowerCase();
 
@@ -81,7 +108,6 @@ const DataMgmtPage = () => {
         </div>
         <MiniCalendarTrigger />
       </div>
-
       <DashboardCard
         className={styles.card}
         title={tabs.find((i) => i.value === tab)?.label}
@@ -108,8 +134,9 @@ const DataMgmtPage = () => {
                 section={section}
                 tab={tab}
                 index={index}
+                initialOpenState={tab === "staff" || tab === "fleet" ? true : false}
                 onEditSection={
-                  tab === "routes"
+                  tab === "routes" || tab === "cafe"
                     ? () => sectionModal.open({ mode: "edit", sectionIndex: index })
                     : undefined
                 }
@@ -122,7 +149,7 @@ const DataMgmtPage = () => {
           ))}
         </div>
       </DashboardCard>
-      {sectionModal.isOpen && tab === "routes" && (
+      {sectionModal.isOpen && sectionModalByTab[tab] !== undefined && (
         <RouteModal
           mode={sectionModal.data!.mode}
           onClose={sectionModal.close}
@@ -132,6 +159,7 @@ const DataMgmtPage = () => {
               ? { name: sections[sectionModal.data!.sectionIndex].title }
               : undefined
           }
+          {...sectionModalByTab[tab]}
         />
       )}
       {rowModal.isOpen && tab === "routes" && (
@@ -146,7 +174,22 @@ const DataMgmtPage = () => {
           }
         />
       )}
-      {/* {rowModal.isOpen && tab === "fleet"  && <FleetModal ... />} */}
+      {rowModal.isOpen && tab === "cafe" && (
+        <CafeDishModal
+          mode={rowModal.data!.mode}
+          onClose={rowModal.close}
+          onSubmit={rowModal.close}
+          categoryOptions={categoryOptions}
+          initialCategory={
+            rowModal.data!.mode === "edit" ? sections[rowModal.data!.sectionIndex].title : undefined
+          }
+          initialData={
+            rowModal.data!.mode === "edit"
+              ? sections[rowModal.data!.sectionIndex].rows?.[rowModal.data!.rowIndex]
+              : undefined
+          }
+        />
+      )}{" "}
     </div>
   );
 };

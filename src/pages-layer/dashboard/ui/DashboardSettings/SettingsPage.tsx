@@ -105,7 +105,7 @@ const DashboardSettingsPage = () => {
           <ul className={(styles.inputsContainer, styles.formSection)}>
             {MOCK_TABS.map((tab) => (
               <li key={tab.name} className={styles.modulesItem}>
-                <span>{t(`dispatcherArea.settingsCards.dataMgmt.tabs.${tab.name}`)}</span>
+                <span>{t(`dispatcherArea.dataMgmt.tabs.${tab.name}`)}</span>
                 <Switch.Root
                   name={tab.name}
                   checked={modules[tab.name]}
