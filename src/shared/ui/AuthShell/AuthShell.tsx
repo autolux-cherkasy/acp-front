@@ -73,11 +73,7 @@ export default function AuthShell({
       style={{ backgroundImage: `url('${backgroundImage}')` }}
     >
       <ModalCloseButton
-        className={joinClassNames(
-          styles.close,
-          styles.desktopClose,
-          closeClassName,
-        )}
+        className={joinClassNames(styles.close, styles.desktopClose, closeClassName)}
         ariaLabel={closeLabel}
         onClose={onClose}
       />
@@ -102,21 +98,12 @@ export default function AuthShell({
                 priority
               />
               <ModalCloseButton
-                className={joinClassNames(
-                  styles.close,
-                  styles.mobileClose,
-                  closeClassName,
-                )}
+                className={joinClassNames(styles.close, closeClassName, styles.mobileClose)}
                 ariaLabel={closeLabel}
                 onClose={onClose}
               />
             </div>
-            <p
-              className={joinClassNames(
-                styles.brandDesc,
-                brandDescriptionClassName,
-              )}
-            >
+            <p className={joinClassNames(styles.brandDesc, brandDescriptionClassName)}>
               {brandDescription}
             </p>
           </div>

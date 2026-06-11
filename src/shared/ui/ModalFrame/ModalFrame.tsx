@@ -43,18 +43,6 @@ export default function ModalFrame({
             variant === "route" ? styles.routeBackdrop : styles.dialogBackdrop,
             backdropClassName,
           )}
-          // onPointerDown={(event) => {
-          //   console.log(
-          //     "overlay",
-          //     event.target,
-          //     event.currentTarget,
-          //     event.target === event.currentTarget,
-          //   );
-
-          //   if (onClose && event.target === event.currentTarget) {
-          //     onClose();
-          //   }
-          // }}
         >
           <Dialog.Content
             className={joinClassNames(

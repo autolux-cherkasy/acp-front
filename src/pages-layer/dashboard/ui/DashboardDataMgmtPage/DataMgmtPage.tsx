@@ -8,11 +8,19 @@ import { useEffect, useState } from "react";
 import styles from "./DataMgmtPage.module.css";
 import { DataSection, MOCK_DATA_BY_TAB } from "./mockData";
 import CollapsibleSection from "./CollapsibleSection";
+import { useDisclosure } from "@/src/shared/lib/useDisclosure";
+import RouteModal from "@/src/features/admin-modals/RouteModal/RouteModal";
+import DirectionModal from "@/src/features/admin-modals/DirectionModal/DirectionModal";
 
 const DataMgmtPage = () => {
   const [tab, setTab] = useState("routes");
   const { t } = useI18n();
   const [sections, setSections] = useState(MOCK_DATA_BY_TAB.routes.sections);
+  const sectionModal = useDisclosure<{ mode: "create" } | { mode: "edit"; sectionIndex: number }>();
+  const rowModal = useDisclosure<
+    | { mode: "create"; sectionIndex: number }
+    | { mode: "edit"; sectionIndex: number; rowIndex: number }
+  >();
 
   const { query, setQuery, filtered } = useSearch(sections, (section, q) => {
     const lq = q.toLowerCase();
@@ -82,6 +90,11 @@ const DataMgmtPage = () => {
           tabs.find((i) => i.value === tab)?.hasHeaderAction && (
             <Button
               size="fit"
+              onClick={
+                tab === "routes" || tab === "cafe"
+                  ? () => sectionModal.open({ mode: "create" })
+                  : undefined
+              }
               variant="secondary"
               text={t(`dispatcherArea.dataMgmt.actions.${tab}`)}
             ></Button>
@@ -91,11 +104,49 @@ const DataMgmtPage = () => {
         <div className={styles.sections}>
           {filtered.map((section: DataSection, index: number) => (
             <div key={`${tab}-${index}`}>
-              <CollapsibleSection section={section} tab={tab} index={index} />
+              <CollapsibleSection
+                section={section}
+                tab={tab}
+                index={index}
+                onEditSection={
+                  tab === "routes"
+                    ? () => sectionModal.open({ mode: "edit", sectionIndex: index })
+                    : undefined
+                }
+                onAddRow={() => rowModal.open({ mode: "create", sectionIndex: index })}
+                onEditRow={(rowIndex) =>
+                  rowModal.open({ mode: "edit", sectionIndex: index, rowIndex })
+                }
+              />
             </div>
           ))}
         </div>
       </DashboardCard>
+      {sectionModal.isOpen && tab === "routes" && (
+        <RouteModal
+          mode={sectionModal.data!.mode}
+          onClose={sectionModal.close}
+          onSubmit={sectionModal.close}
+          initialData={
+            sectionModal.data!.mode === "edit"
+              ? { name: sections[sectionModal.data!.sectionIndex].title }
+              : undefined
+          }
+        />
+      )}
+      {rowModal.isOpen && tab === "routes" && (
+        <DirectionModal
+          mode={rowModal.data!.mode}
+          onClose={rowModal.close}
+          onSubmit={rowModal.close}
+          initialData={
+            rowModal.data!.mode === "edit"
+              ? { place: sections[rowModal.data!.sectionIndex].rows?.[rowModal.data!.rowIndex][0] }
+              : undefined
+          }
+        />
+      )}
+      {/* {rowModal.isOpen && tab === "fleet"  && <FleetModal ... />} */}
     </div>
   );
 };

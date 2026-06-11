@@ -1,18 +1,27 @@
 "use client";
 import { useI18n } from "@/src/shared";
-import { DataSection } from "./mockData";
-import { useState } from "react";
-import styles from "./DataMgmtPage.module.css";
-import Icon from "@/src/shared/ui/Icon/Icon";
 import ChevronIcon from "@/src/shared/ui/ChevronIcon/ChevronIcon";
 import DataTable from "@/src/shared/ui/DataTable/DataTable";
+import Icon from "@/src/shared/ui/Icon/Icon";
+import { useState } from "react";
+import styles from "./DataMgmtPage.module.css";
+import { DataSection } from "./mockData";
 
 type CollapsiblesectionProps = {
   section: DataSection;
   tab: string;
   index: number;
+  onEditSection?: () => void;
+  onAddRow: () => void;
+  onEditRow: (index: number) => void;
 };
-const CollapsibleSection = ({ section, tab }: CollapsiblesectionProps) => {
+const CollapsibleSection = ({
+  section,
+  tab,
+  onAddRow,
+  onEditRow,
+  onEditSection,
+}: CollapsiblesectionProps) => {
   const [open, setOpen] = useState(false);
   const { t } = useI18n();
 
@@ -25,16 +34,19 @@ const CollapsibleSection = ({ section, tab }: CollapsiblesectionProps) => {
         <div className={styles.section} onClick={handleToggle}>
           {section.title}
           <div className={styles.buttons}>
-            <button
-              type="button"
-              className={styles.editBtn}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              aria-label={t("common.actions.edit")}
-            >
-              <Icon src="/icons/pencil-edit.svg" size={19} />
-            </button>
+            {onEditSection && (
+              <button
+                type="button"
+                className={styles.editBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditSection();
+                }}
+                aria-label={t("common.actions.edit")}
+              >
+                <Icon src="/icons/pencil-edit.svg" size={19} />
+              </button>
+            )}
             <ChevronIcon open={open} className={styles.chevron} />
           </div>
         </div>
@@ -42,8 +54,8 @@ const CollapsibleSection = ({ section, tab }: CollapsiblesectionProps) => {
           <DataTable
             rows={section.rows ?? []}
             columns={section.columns ?? []}
-            onAdd={() => {}}
-            onEdit={() => {}}
+            onAdd={onAddRow}
+            onEdit={onEditRow}
           />
         )}
       </div>
