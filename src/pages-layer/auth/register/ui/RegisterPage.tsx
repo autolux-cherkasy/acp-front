@@ -252,6 +252,7 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
               }
               variant="primary"
               type="submit"
+              size="full"
               disabled={isBusy}
               onClick={() => {}}
             />

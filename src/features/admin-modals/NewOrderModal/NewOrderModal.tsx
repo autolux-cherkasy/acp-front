@@ -165,11 +165,13 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
           <Button
             text={t("dispatcherArea.tickets.statuses.bookedShort")}
             variant={status === "booked" ? "yellow" : "outlined"}
+            size="full"
             onClick={() => setValue("status", "booked")}
           />
           <Button
             text={t("dispatcherArea.tickets.statuses.paid")}
             variant={status === "paid" ? "success" : "outlined"}
+            size="full"
             onClick={() => setValue("status", "paid")}
           />
         </div>
@@ -185,6 +187,7 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
         <Button
           text={t("dispatcherArea.tickets.actions.saveChanges")}
           variant="secondary"
+          size="full"
           onClick={onClose}
         />
       </div>

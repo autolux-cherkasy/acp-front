@@ -8,7 +8,7 @@ export default function Button({
   leftIcon = null,
   rightIcon = null,
   fullWidth = true,
-  size,
+  size = "",
   disabled = false,
 }) {
   const variantMap = {

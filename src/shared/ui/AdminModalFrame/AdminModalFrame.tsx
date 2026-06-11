@@ -58,12 +58,13 @@ export default function AdminModalFrame({
 
       <div className={[styles.footer, styles[mode]].join(" ")}>
         {mode === "edit" && (
-          <Button text={t("common.actions.delete")} variant="danger" onClick={onDelete} />
+          <Button text={t("common.actions.delete")} variant="danger" size="full" onClick={onDelete} />
         )}
-        <Button text={t("common.actions.cancel")} variant="outlined" onClick={onClose} />
+        <Button text={t("common.actions.cancel")} variant="outlined" size="full" onClick={onClose} />
         <Button
           text={mode === "create" ? t("common.actions.add") : t("common.actions.save")}
           variant="success"
+          size="full"
           onClick={onSubmit}
         />
       </div>

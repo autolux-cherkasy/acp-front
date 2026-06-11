@@ -112,6 +112,7 @@ export default function ForgotPasswordPage({
               }
               variant="primary"
               type="submit"
+              size="full"
               disabled={isBusy}
               onClick={() => {}}
             />
@@ -132,6 +133,7 @@ export default function ForgotPasswordPage({
                 text={loginButtonText}
                 variant="secondary"
                 type="button"
+                size="full"
                 disabled={isBusy}
                 onClick={() =>
                   openAuthModal(router, resolveHref, "login", { replace: true })

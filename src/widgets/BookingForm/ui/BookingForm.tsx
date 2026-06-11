@@ -204,6 +204,7 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
           <Button
             text={isBusy ? t("bookingForm.buttons.loading") : t("bookingForm.buttons.continue")}
             type="submit"
+            size="full"
             disabled={isBusy || !selectedTrip}
             onClick={() => {}}
           />

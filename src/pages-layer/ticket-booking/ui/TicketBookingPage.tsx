@@ -375,7 +375,7 @@ export default function TicketBookingPage({
                 <div className={styles.actions}>
                   <Button
                     text={t("ticketBooking.form.pay")}
-                    fullWidth={false}
+                    size="md"
                     onClick={() => {
                       void validatePassengerForm();
                     }}
@@ -383,7 +383,7 @@ export default function TicketBookingPage({
                   <Button
                     text={t("ticketBooking.form.reserve")}
                     variant="secondary"
-                    fullWidth={false}
+                    size="md"
                     onClick={() => {
                       void validatePassengerForm();
                     }}

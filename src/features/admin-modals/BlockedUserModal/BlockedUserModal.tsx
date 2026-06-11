@@ -107,8 +107,8 @@ export default function BlockedUserModal({ userId, onClose, onUnblock }: Props) 
         </div>
 
         <div className={styles.actions}>
-          <Button text="Розблокувати" variant="success" onClick={onUnblock} />
-          <Button text="Скасувати" variant="danger" onClick={onClose} />
+          <Button text="Розблокувати" variant="success" size="full" onClick={onUnblock} />
+          <Button text="Скасувати" variant="danger" size="full" onClick={onClose} />
         </div>
       </div>
     </ModalFrame>

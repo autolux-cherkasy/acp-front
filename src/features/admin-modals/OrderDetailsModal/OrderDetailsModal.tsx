@@ -98,12 +98,14 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
           <Button
             text={t("dispatcherArea.tickets.actions.buy")}
             variant="success"
+            size="full"
             onClick={() => {}}
           />
-          <Button text={t("ticketBooking.form.reserve")} variant="yellow" onClick={() => {}} />
+          <Button text={t("ticketBooking.form.reserve")} variant="yellow" size="full" onClick={() => {}} />
           <Button
             text={t("dispatcherArea.routes.table.statuses.edit")}
             variant="outlined"
+            size="full"
             onClick={() => {
               onEdit?.();
               onClose();
@@ -112,6 +114,7 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
           <Button
             text={t("dispatcherArea.tickets.actions.cancel")}
             variant="danger"
+            size="full"
             onClick={onClose}
           />
         </div>

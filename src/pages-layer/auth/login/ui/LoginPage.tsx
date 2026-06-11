@@ -147,6 +147,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
             }
             variant="primary"
             type="submit"
+            size="full"
             disabled={isBusy}
             onClick={() => {}}
           />
@@ -155,6 +156,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
             text={t("auth.login.register")}
             variant="secondary"
             type="button"
+            size="full"
             disabled={isBusy}
             onClick={() =>
               openAuthModal(router, resolveHref, "register", { replace: true })

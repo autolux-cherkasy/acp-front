@@ -464,6 +464,7 @@ export default function ProfilePage() {
             <Button
               type="submit"
               variant="primary"
+              size="full"
               text={
                 isLoading
                   ? t("profile.page.actions.loading")

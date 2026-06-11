@@ -93,6 +93,7 @@ export default function ResetPasswordPage({
             text={t("auth.resetPassword.loginAction")}
             variant="primary"
             type="button"
+            size="full"
             onClick={() =>
               openAuthModal(router, resolveHref, "login", { replace: true })
             }
@@ -153,6 +154,7 @@ export default function ResetPasswordPage({
               }
               variant="primary"
               type="submit"
+              size="full"
               disabled={resetPasswordMutation.isPending || !hasToken}
               onClick={() => {}}
             />

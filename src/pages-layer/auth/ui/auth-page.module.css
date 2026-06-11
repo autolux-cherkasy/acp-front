@@ -427,11 +427,7 @@
   padding: 18px 18px 16px;
   border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(
-    180deg,
-    rgba(252, 254, 254, 0.96) 0%,
-    rgba(244, 247, 247, 0.98) 100%
-  );
+  background: linear-gradient(180deg, rgba(252, 254, 254, 0.96) 0%, rgba(244, 247, 247, 0.98) 100%);
   border: 1px solid rgba(201, 228, 231, 0.9);
   display: flex;
   flex-direction: column;
@@ -615,6 +611,9 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .passwordBlock {

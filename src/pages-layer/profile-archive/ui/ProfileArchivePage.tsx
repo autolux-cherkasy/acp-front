@@ -160,12 +160,14 @@ export default function ProfileArchivePage() {
                       <Button
                         text={t("profile.archive.pay")}
                         variant="primary"
+                        size="full"
                         disabled={isActionDisabled}
                         onClick={() => {}}
                       />
                       <Button
                         text={t("profile.archive.cancel")}
                         variant="secondary"
+                        size="full"
                         disabled={isActionDisabled}
                         onClick={() => {}}
                       />
