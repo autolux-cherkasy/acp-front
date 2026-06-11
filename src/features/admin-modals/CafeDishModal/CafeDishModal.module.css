@@ -1,0 +1,15 @@
+.fieldWithLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--DarkSlateGray, #226078);
+}
+
+.priceField {
+  max-width: 180px;
+}

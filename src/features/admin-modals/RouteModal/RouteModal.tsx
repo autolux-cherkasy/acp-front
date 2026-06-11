@@ -15,6 +15,10 @@ type RouteModalProps = {
   onSubmit: (data: RouteFormState) => void;
   onDelete?: () => void;
   initialData?: Partial<RouteFormState>;
+  icon?: string;
+  titles?: { create: string; edit: string };
+  labels?: { create: string; edit: string };
+  placeholder?: string;
 };
 
 export default function RouteModal({
@@ -23,6 +27,10 @@ export default function RouteModal({
   onSubmit,
   onDelete,
   initialData,
+  icon = "/icons/workspace/sidebar/routes.svg",
+  titles,
+  labels,
+  placeholder,
 }: RouteModalProps) {
   const { t } = useI18n();
 
@@ -34,26 +42,26 @@ export default function RouteModal({
 
   const title =
     mode === "create"
-      ? t("dispatcherArea.dataMgmt.routeModal.newTitle")
-      : t("dispatcherArea.dataMgmt.routeModal.editTitle");
+      ? (titles?.create ?? t("dispatcherArea.dataMgmt.routeModal.newTitle"))
+      : (titles?.edit ?? t("dispatcherArea.dataMgmt.routeModal.editTitle"));
 
   const label =
     mode === "create"
-      ? t("dispatcherArea.dataMgmt.routeModal.addLabel")
-      : t("dispatcherArea.dataMgmt.routeModal.editLabel");
+      ? (labels?.create ?? t("dispatcherArea.dataMgmt.routeModal.addLabel"))
+      : (labels?.edit ?? t("dispatcherArea.dataMgmt.routeModal.editLabel"));
 
   return (
     <AdminModalFrame
       mode={mode}
       title={title}
-      icon="/icons/workspace/sidebar/routes.svg"
+      icon={icon}
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
     >
       <InputWithLabel
         label={label}
-        placeholder={t("dispatcherArea.dataMgmt.routeModal.placeholder")}
+        placeholder={placeholder ?? t("dispatcherArea.dataMgmt.routeModal.placeholder")}
         {...register("name")}
       />
     </AdminModalFrame>

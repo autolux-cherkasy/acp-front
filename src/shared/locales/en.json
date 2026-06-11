@@ -837,6 +837,22 @@
         "addLabel": "Add new route",
         "editLabel": "Route",
         "placeholder": "Route"
+      },
+      "cafeCategoryModal": {
+        "newTitle": "Add menu category",
+        "editTitle": "Edit menu category",
+        "label": "Menu category",
+        "placeholder": "Category"
+      },
+      "cafeDishModal": {
+        "newTitle": "New dish",
+        "editTitle": "Edit dish",
+        "categoryLabel": "Menu category",
+        "categoryPlaceholder": "Category",
+        "nameLabel": "Name",
+        "namePlaceholder": "Dish",
+        "priceLabel": "Price",
+        "pricePlaceholder": "0 ₴"
       }
     }
   }

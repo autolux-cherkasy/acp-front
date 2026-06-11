@@ -841,6 +841,22 @@
         "addLabel": "Додати новий маршрут",
         "editLabel": "Маршрут",
         "placeholder": "Маршрут"
+      },
+      "cafeCategoryModal": {
+        "newTitle": "Додати категорія меню",
+        "editTitle": "Редагувати категорію меню",
+        "label": "Категорія меню",
+        "placeholder": "Категорія"
+      },
+      "cafeDishModal": {
+        "newTitle": "Нова страва",
+        "editTitle": "Редагувати страву",
+        "categoryLabel": "Категорія меню",
+        "categoryPlaceholder": "Категорія",
+        "nameLabel": "Назва",
+        "namePlaceholder": "Страва",
+        "priceLabel": "Ціна",
+        "pricePlaceholder": "0 ₴"
       }
     }
   }
