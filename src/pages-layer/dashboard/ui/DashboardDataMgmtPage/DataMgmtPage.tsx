@@ -1,46 +1,14 @@
 "use client";
 import { TicketSearchInput } from "@/src/features/search-tickets";
-import styles from "./DataMgmtPage.module.css";
-import TabSwitch from "@/src/shared/ui/TabSwitch/TabSwitch";
-import { useEffect, useState } from "react";
 import { Button, DashboardCard, DashboardDateText, useI18n } from "@/src/shared";
-import MiniCalendarTrigger from "@/src/widgets/MiniCalendar/MiniCalendarTrigger";
-import { DataSection, MOCK_DATA_BY_TAB } from "./mockData";
 import { useSearch } from "@/src/shared/lib/useSearch";
-import DataTable from "@/src/shared/ui/DataTable/DataTable";
-import ChevronIcon from "@/src/shared/ui/ChevronIcon/ChevronIcon";
+import TabSwitch from "@/src/shared/ui/TabSwitch/TabSwitch";
+import MiniCalendarTrigger from "@/src/widgets/MiniCalendar/MiniCalendarTrigger";
+import { useEffect, useState } from "react";
+import styles from "./DataMgmtPage.module.css";
+import { DataSection, MOCK_DATA_BY_TAB } from "./mockData";
+import CollapsibleSection from "./CollapsibleSection";
 
-type CollapsiblesectionProps = {
-  section: DataSection;
-  tab: string;
-  index: number;
-};
-const Collapsiblesection = ({ section, tab }: CollapsiblesectionProps) => {
-  const { t } = useI18n();
-  const [open, setOpen] = useState(false);
-
-  const handleToggle = () => {
-    setOpen((prev) => !prev);
-  };
-  return (
-    <>
-      <div>
-        <div className={styles.section} onClick={handleToggle}>
-          {section.title}
-          <ChevronIcon open={open} className={styles.chevron} />
-        </div>
-        {open && (
-          <DataTable
-            rows={section.rows ?? []}
-            columns={section.columns ?? []}
-            onAdd={() => {}}
-            onEdit={() => {}}
-          />
-        )}
-      </div>
-    </>
-  );
-};
 const DataMgmtPage = () => {
   const [tab, setTab] = useState("routes");
   const { t } = useI18n();
@@ -123,7 +91,7 @@ const DataMgmtPage = () => {
         <div className={styles.sections}>
           {filtered.map((section: DataSection, index: number) => (
             <div key={`${tab}-${index}`}>
-              <Collapsiblesection section={section} tab={tab} index={index} />
+              <CollapsibleSection section={section} tab={tab} index={index} />
             </div>
           ))}
         </div>

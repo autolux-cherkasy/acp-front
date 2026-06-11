@@ -33,6 +33,7 @@
 }
 .addBtn:hover {
   background: var(--color-surface-soft);
+  scale: 1.2;
 }
 
 .editBtn {
@@ -48,9 +49,9 @@
   border-radius: 4px;
   padding: 0;
 }
-
 .editBtn:hover {
-  background: var(--color-surface-soft);
+  color: #124b5b;
+  scale: 1.05;
 }
 
 .tdLeft {
@@ -103,6 +104,9 @@
   vertical-align: middle !important;
   border-bottom: 0.5px solid var(--color-border-muted) !important;
   text-align: left;
+}
+.dataRow:hover td {
+  background-color: var(--color-surface-soft);
 }
 
 /* keep number and edit centered */

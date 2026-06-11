@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Icon from "@/src/shared/ui/Icon/Icon";
 import {
   DashboardTable,
   DashboardThead,
@@ -35,13 +35,7 @@ export default function DataTable({ columns, rows, onEdit, onAdd }: Props) {
         ))}
         <th className={`${dashboardTableStyles.thAction} ${styles.thEditSeparator}`}>
           <button type="button" className={styles.addBtn} onClick={onAdd}>
-            <Image
-              src="/icons/plus-solid.svg"
-              width={24}
-              height={24}
-              alt=""
-              aria-label={t("common.actions.add")}
-            />
+            <Icon src="/icons/plus-solid.svg" size={24} />
           </button>
         </th>
       </DashboardThead>
@@ -71,13 +65,7 @@ export default function DataTable({ columns, rows, onEdit, onAdd }: Props) {
                 onClick={() => onEdit(rowIdx)}
                 aria-label={t("common.actions.edit")}
               >
-                <Image
-                  src="/icons/pencil-edit.svg"
-                  width={19}
-                  height={19}
-                  alt=""
-                  aria-hidden="true"
-                />
+                <Icon src="/icons/pencil-edit.svg" size={19} />
               </button>
             </td>
           </DashboardTr>

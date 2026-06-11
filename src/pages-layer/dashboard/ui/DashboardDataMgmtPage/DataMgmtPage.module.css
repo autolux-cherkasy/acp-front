@@ -20,6 +20,31 @@
 .tableHeader {
   height: 44px;
 }
+.buttons {
+  display: flex;
+  gap: 20px;
+}
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--DarkSlateGray, #226078);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease,
+    scale 150ms ease;
+}
+.editBtn:hover {
+  color: #124b5b;
+  scale: 1.05;
+}
 .sections {
   display: flex;
   flex-direction: column;
@@ -67,4 +92,6 @@
 }
 .chevron {
   margin: 5px;
+}
+.chevron:hover {
 }

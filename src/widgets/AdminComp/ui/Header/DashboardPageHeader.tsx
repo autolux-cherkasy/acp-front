@@ -47,7 +47,7 @@ export default function DashboardPageHeader({
               text={action.text}
               onClick={action.onClick}
               variant="secondary"
-              fullWidth={false}
+              size="md"
             />
           </div>
         )}
