@@ -14,16 +14,14 @@ import { useEffect, useMemo } from "react";
 
 import { getRoleLandingPath, hasRequiredRole } from "../model/roles";
 import styles from "./RoleAccessGate.module.css";
+import Loader from "@/src/shared/ui/Loader/Loader";
 
 type RoleAccessGateProps = {
   allowedRoles: readonly UserRole[];
   children: React.ReactNode;
 };
 
-export default function RoleAccessGate({
-  allowedRoles,
-  children,
-}: RoleAccessGateProps) {
+export default function RoleAccessGate({ allowedRoles, children }: RoleAccessGateProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -67,24 +65,10 @@ export default function RoleAccessGate({
     router,
   ]);
 
-  if (isLoading) {
+  if (isLoading || !isAuthenticated) {
     return (
       <section className={styles.state}>
-        <div className={styles.card}>
-          <h1 className={styles.title}>{t("accessControl.loadingTitle")}</h1>
-          <p className={styles.description}>{t("accessControl.loadingDescription")}</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <section className={styles.state}>
-        <div className={styles.card}>
-          <h1 className={styles.title}>{t("accessControl.loginRequiredTitle")}</h1>
-          <p className={styles.description}>{t("accessControl.loginRequiredDescription")}</p>
-        </div>
+        <Loader text={t("common.loading")} />
       </section>
     );
   }

@@ -300,7 +300,8 @@
     "password": {
       "show": "Показати пароль",
       "hide": "Сховати пароль"
-    }
+    },
+    "loading": "Завантаження..."
   },
   "accessControl": {
     "loadingTitle": "Готуємо робочу зону",
@@ -821,6 +822,25 @@
       "actions": {
         "routes": "Додати маршрут",
         "cafe": "Додати категорію меню"
+      },
+      "directionModal": {
+        "newTitle": "Новий напрямок",
+        "editTitle": "Редагувати напрямок",
+        "routeLabel": "Маршрут",
+        "routePlaceholder": "Маршрут",
+        "placeLabel": "Місто відправлення/місто прибуття",
+        "placePlaceholder": "Місто - Місто",
+        "departureTime": "Час відправлення",
+        "arrivalTime": "Час прибуття",
+        "priceLabel": "Ціна",
+        "pricePlaceholder": "0 ₴"
+      },
+      "routeModal": {
+        "newTitle": "Новий маршрут",
+        "editTitle": "Редагувати маршрут",
+        "addLabel": "Додати новий маршрут",
+        "editLabel": "Маршрут",
+        "placeholder": "Маршрут"
       }
     }
   }

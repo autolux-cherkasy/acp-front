@@ -302,7 +302,8 @@
     "password": {
       "show": "Show password",
       "hide": "Hide password"
-    }
+    },
+    "loading": "Loading..."
   },
   "accessControl": {
     "loadingTitle": "Preparing workspace",
@@ -817,6 +818,25 @@
       "actions": {
         "routes": "Add route",
         "cafe": "Add menu category"
+      },
+      "directionModal": {
+        "newTitle": "New direction",
+        "editTitle": "Edit direction",
+        "routeLabel": "Route",
+        "routePlaceholder": "Route",
+        "placeLabel": "Departure city / arrival city",
+        "placePlaceholder": "City - City",
+        "departureTime": "Departure time",
+        "arrivalTime": "Arrival time",
+        "priceLabel": "Price",
+        "pricePlaceholder": "0 ₴"
+      },
+      "routeModal": {
+        "newTitle": "New route",
+        "editTitle": "Edit route",
+        "addLabel": "Add new route",
+        "editLabel": "Route",
+        "placeholder": "Route"
       }
     }
   }
