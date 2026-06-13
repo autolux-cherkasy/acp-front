@@ -8,6 +8,7 @@ import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { DecorativeBorder } from "@/src/shared/ui/DecorativeBorder/DecorativeBorder";
 import styles from "./cafe-page.module.css";
 import { CafeCategoryResponse, CafeMenuResponse } from "@/src/entities/cafe/types";
+import CafePageSkeleton from "./CafePageSkeleton";
 
 function MenuGroup({
   category,
@@ -48,7 +49,8 @@ function MenuGroup({
 export default function CafePage() {
   const { locale, t } = useI18n();
   const { data: cafeData, isLoading } = useCafeQuery();
-  console.log(cafeData);
+
+  if (isLoading) return <CafePageSkeleton />;
 
   const renderCard = (menu: CafeMenuResponse) => {
     const cardSideClass =
