@@ -1,16 +1,19 @@
 export type CafeItemResponse = {
   id: string;
   name: string;
-  description: string | null;
   price: number;
   displayOrder: number;
 };
 
+export type CafeItemGroup = {
+  note: string | null;
+  items: CafeItemResponse[];
+};
 export type CafeCategoryResponse = {
   id: string;
   name: string;
   displayOrder: number;
-  items: CafeItemResponse[];
+  groups: CafeItemGroup[];
 };
 
 export type CafeMenuResponse = {

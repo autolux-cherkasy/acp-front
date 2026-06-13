@@ -525,6 +525,12 @@
       }
     }
   },
+  "cafe": {
+    "pageTitle": "Coffee Station",
+    "menuAria": "Cafe menu",
+    "storyAria": "Cafe description",
+    "description": "\"Coffee Station\" is a cozy cafe at the bus station where the aroma of strong coffee welcomes every guest. It is a comfortable place for travelers waiting for their route or anyone who wants to enjoy a tasty drink. The menu features a variety of coffee drinks, tea, fresh hot dogs, and sweets for a pleasant snack."
+  },
   "dispatcherArea": {
     "eyebrow": "DISPATCHER WORKSPACE",
     "title": "Dispatcher panel",

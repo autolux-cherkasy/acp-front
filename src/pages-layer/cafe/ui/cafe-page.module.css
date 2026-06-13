@@ -40,7 +40,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 24px;
 }
 
@@ -49,7 +49,7 @@
   width: 1078px;
   max-width: 100%;
   box-sizing: border-box;
-  min-height: 439px;
+  /* min-height: 439px; */
   isolation: isolate;
   overflow: visible;
 }
@@ -123,10 +123,12 @@
   flex: none;
 }
 
-.cardCoffee .slot,
-.cardSummer .slot,
-.cardHotdog .slot {
+.cardSplit .slot {
   min-height: 381px;
+}
+
+.cardSingle .slot {
+  min-height: 300px;
 }
 
 .cardContent {
@@ -137,31 +139,33 @@
   align-items: start;
 }
 
-.cardCoffee .cardContentSplit {
-  grid-template-columns: 292px 298px;
-  width: 590px;
+.cardSplit {
+  align-items: start;
+}
+
+.cardContentSplit {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  width: 100%;
   max-width: 590px;
   align-items: start;
 }
 
-.cardContentSingle {
+.cardSingle .cardContentSingle {
   grid-template-columns: 1fr;
   justify-items: center;
   width: 100%;
 }
 
 .sideColumn {
-  width: 298px;
-  max-width: 100%;
-  min-height: 381px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 10px;
 }
 
 .menuGroup {
   min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -170,36 +174,15 @@
   box-sizing: border-box;
 }
 
-.sectionCoffee {
-  width: 292px;
-  max-width: 100%;
-  min-height: 387px;
+.cardSplit > .menuGroup:first-child,
+.cardSplit .sideColumn > .menuGroup {
+  width: 100%;
 }
 
-.sectionAddons {
-  width: 298px;
-  max-width: 100%;
-  min-height: 170px;
-}
-
-.sectionTea {
-  width: 298px;
-  max-width: 100%;
-  min-height: 108px;
-}
-
-.sectionSummer,
-.cardSummer .singleGroup {
+.cardSingle .singleGroup {
   width: 344px;
   max-width: 100%;
   min-height: 201px;
-}
-
-.sectionHotdog,
-.cardHotdog .singleGroup {
-  width: 344px;
-  max-width: 100%;
-  min-height: 170px;
 }
 
 .groupTitle {
@@ -273,13 +256,15 @@
 }
 
 .story {
-  width: 100%;
   min-height: 104px;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
+  margin-bottom: 50px;
+  width: 1078px; /* або max-width: 1078px */
+  max-width: 100%;
 }
 
 .storyText {
@@ -323,16 +308,8 @@
     padding: 0;
   }
 
-  .cardCoffee {
+  .cardSplit {
     min-height: 668px;
-  }
-
-  .cardSummer {
-    min-height: 482px;
-  }
-
-  .cardHotdog {
-    min-height: 451px;
   }
 
   .cardFrame {
@@ -368,61 +345,31 @@
     max-width: 590px;
   }
 
-  .cardCoffee .cardContentSplit {
-    grid-template-columns: 292px 298px;
-    width: 590px;
-    max-width: 590px;
-  }
-
   .groupTitle {
     font-size: 18px;
     line-height: 132%;
     text-align: center;
   }
 
-  .sectionCoffee {
-    width: 292px;
-    min-height: 387px;
-  }
-
-  .sideColumn {
-    width: 298px;
-    min-height: 381px;
-    gap: 10px;
-  }
-
-  .sectionAddons {
-    width: 298px;
-    min-height: 170px;
-  }
-
-  .sectionTea {
-    width: 298px;
-    min-height: 108px;
-  }
-
-  .sectionSummer,
-  .cardSummer .singleGroup {
+  .cardSingle .singleGroup {
     width: 298px;
     min-height: 195px;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 16px;
+    gap: 16px;
+    box-sizing: border-box;
   }
 
-  .sectionHotdog,
-  .cardHotdog .singleGroup {
-    width: 344px;
-    min-height: 164px;
-  }
-
-  .cardCoffee .slot {
+  .cardSplit .slot {
     min-height: 381px;
   }
 
-  .cardSummer .slot {
+  .cardSingle .slot {
     min-height: 195px;
-  }
-
-  .cardHotdog .slot {
-    min-height: 164px;
   }
 
   .story {
@@ -472,16 +419,12 @@
     --decorative-border-padding-mobile: 174px 0 24px;
   }
 
-  .cardCoffee {
+  .cardSplit {
     min-height: 853px;
   }
 
-  .cardSummer {
+  .cardSingle {
     min-height: 385px;
-  }
-
-  .cardHotdog {
-    min-height: 354px;
   }
 
   .photoWrap {
@@ -495,13 +438,13 @@
     max-width: 344px;
   }
 
-  .cardCoffee .cardContentSplit,
-  .cardContentSingle {
+  .cardContentSplit,
+  .cardSingle .cardContentSingle {
     width: 100%;
     max-width: 344px;
   }
 
-  .cardCoffee .cardContentSplit {
+  .cardContentSplit {
     grid-template-columns: 1fr;
     gap: 16px;
     height: auto;
@@ -527,37 +470,28 @@
     padding: 0 16px;
   }
 
-  .sectionCoffee,
-  .sectionAddons,
-  .sectionTea,
-  .sectionSummer,
-  .sectionHotdog,
-  .cardSummer .singleGroup,
-  .cardHotdog .singleGroup {
+  .cardSplit > .menuGroup:first-child,
+  .cardSplit .sideColumn > .menuGroup:first-child,
+  .cardSplit .sideColumn > .menuGroup:last-child,
+  .cardSingle .singleGroup {
     width: 100%;
     max-width: 344px;
   }
 
-  .sectionCoffee {
+  .cardSplit > .menuGroup:first-child {
     min-height: 373px;
   }
 
-  .sectionAddons {
+  .cardSplit .sideColumn > .menuGroup:first-child {
     min-height: 156px;
   }
 
-  .sectionTea {
+  .cardSplit .sideColumn > .menuGroup:last-child {
     min-height: 94px;
   }
 
-  .sectionSummer,
-  .cardSummer .singleGroup {
+  .cardSingle .singleGroup {
     min-height: 187px;
-  }
-
-  .sectionHotdog,
-  .cardHotdog .singleGroup {
-    min-height: 156px;
   }
 
   .groupTitle {
@@ -597,16 +531,12 @@
     min-width: 16px;
   }
 
-  .cardCoffee .slot {
+  .cardSplit .slot {
     min-height: 655px;
   }
 
-  .cardSummer .slot {
+  .cardSingle .slot {
     min-height: 187px;
-  }
-
-  .cardHotdog .slot {
-    min-height: 156px;
   }
 
   .story {
