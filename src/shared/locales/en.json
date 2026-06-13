@@ -854,6 +854,7 @@
         "newTitle": "New dish",
         "editTitle": "Edit dish",
         "categoryLabel": "Menu category",
+        "subcategoryLabel": "Subcategory",
         "categoryPlaceholder": "Category",
         "nameLabel": "Name",
         "namePlaceholder": "Dish",

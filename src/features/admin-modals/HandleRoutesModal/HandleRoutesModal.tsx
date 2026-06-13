@@ -1,10 +1,11 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import AdminModalFrame from "@/src/shared/ui/AdminModalFrame/AdminModalFrame";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
-import SelectField, { type SelectOption } from "@/src/shared/ui/SelectField/SelectField";
+import SelectWithLabel from "@/src/shared/ui/SelectField/SelectWithLabel";
+import { type SelectOption } from "@/src/shared/ui/SelectField/SelectField";
 import styles from "./HandleRoutesModal.module.css";
 
 type RouteFormState = {
@@ -68,17 +69,11 @@ export default function HandleRoutesModal({
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
     >
-      <Controller
+      <SelectWithLabel
         control={control}
         name="route"
-        render={({ field }) => (
-          <SelectField
-            value={field.value}
-            options={routeOptions}
-            onChange={field.onChange}
-            placeholder={t("dispatcherArea.routes.table.columns.direction")}
-          />
-        )}
+        options={routeOptions}
+        placeholder={t("dispatcherArea.routes.table.columns.direction")}
       />
 
       <InputWithLabel
@@ -88,23 +83,13 @@ export default function HandleRoutesModal({
       />
 
       <div className={styles.row}>
-        <div className={styles.fieldWithLabel}>
-          <span className={styles.fieldLabel}>
-            {t("dispatcherArea.tickets.modal.departureTime")}
-          </span>
-          <Controller
-            control={control}
-            name="departureTime"
-            render={({ field }) => (
-              <SelectField
-                value={field.value}
-                options={timeOptions}
-                onChange={field.onChange}
-                placeholder={t("bookingForm.time.placeholder")}
-              />
-            )}
-          />
-        </div>
+        <SelectWithLabel
+          control={control}
+          name="departureTime"
+          label={t("dispatcherArea.tickets.modal.departureTime")}
+          options={timeOptions}
+          placeholder={t("bookingForm.time.placeholder")}
+        />
         <InputWithLabel
           label={t("dispatcherArea.routes.modal.arrivalTime")}
           placeholder="00:00"
@@ -114,21 +99,13 @@ export default function HandleRoutesModal({
       </div>
 
       <div className={styles.row}>
-        <div className={styles.fieldWithLabel}>
-          <span className={styles.fieldLabel}>{t("dispatcherArea.routes.table.columns.bus")}</span>
-          <Controller
-            control={control}
-            name="vehicle"
-            render={({ field }) => (
-              <SelectField
-                value={field.value}
-                options={vehicleOptions}
-                onChange={field.onChange}
-                placeholder={t("dispatcherArea.routes.table.columns.bus")}
-              />
-            )}
-          />
-        </div>
+        <SelectWithLabel
+          control={control}
+          name="vehicle"
+          label={t("dispatcherArea.routes.table.columns.bus")}
+          options={vehicleOptions}
+          placeholder={t("dispatcherArea.routes.table.columns.bus")}
+        />
         <InputWithLabel
           label={t("dispatcherArea.routes.modal.seatsLabel")}
           placeholder={t("dispatcherArea.routes.modal.seatsPlaceholder")}
@@ -136,21 +113,13 @@ export default function HandleRoutesModal({
         />
       </div>
 
-      <div className={styles.fieldWithLabel}>
-        <span className={styles.fieldLabel}>{t("dispatcherArea.routes.table.columns.status")}</span>
-        <Controller
-          control={control}
-          name="status"
-          render={({ field }) => (
-            <SelectField
-              value={field.value}
-              options={statusOptions}
-              onChange={field.onChange}
-              placeholder={t("dispatcherArea.routes.table.columns.status")}
-            />
-          )}
-        />
-      </div>
+      <SelectWithLabel
+        control={control}
+        name="status"
+        label={t("dispatcherArea.routes.table.columns.status")}
+        options={statusOptions}
+        placeholder={t("dispatcherArea.routes.table.columns.status")}
+      />
     </AdminModalFrame>
   );
 }

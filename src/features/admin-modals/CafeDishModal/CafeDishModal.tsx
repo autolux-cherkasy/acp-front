@@ -1,10 +1,11 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import AdminModalFrame from "@/src/shared/ui/AdminModalFrame/AdminModalFrame";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
-import SelectField, { type SelectOption } from "@/src/shared/ui/SelectField/SelectField";
+import SelectWithLabel from "@/src/shared/ui/SelectField/SelectWithLabel";
+import { type SelectOption } from "@/src/shared/ui/SelectField/SelectField";
 import styles from "./CafeDishModal.module.css";
 
 type CafeDishFormState = {
@@ -56,23 +57,21 @@ export default function CafeDishModal({
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
     >
-      <div className={styles.fieldWithLabel}>
-        <span className={styles.fieldLabel}>
-          {t("dispatcherArea.dataMgmt.cafeDishModal.categoryLabel")}
-        </span>
-        <Controller
-          control={control}
-          name="category"
-          render={({ field }) => (
-            <SelectField
-              value={field.value}
-              options={categoryOptions}
-              onChange={field.onChange}
-              placeholder={t("dispatcherArea.dataMgmt.cafeDishModal.categoryPlaceholder")}
-            />
-          )}
-        />
-      </div>
+      <SelectWithLabel
+        control={control}
+        name="category"
+        label={t("dispatcherArea.dataMgmt.cafeDishModal.categoryLabel")}
+        options={categoryOptions}
+        placeholder={t("dispatcherArea.dataMgmt.cafeDishModal.categoryPlaceholder")}
+      />
+
+      <SelectWithLabel
+        control={control}
+        name="category"
+        label={t("dispatcherArea.dataMgmt.cafeDishModal.subcategoryLabel")}
+        options={categoryOptions}
+        placeholder={t("dispatcherArea.dataMgmt.cafeDishModal.categoryPlaceholder")}
+      />
 
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.cafeDishModal.nameLabel")}

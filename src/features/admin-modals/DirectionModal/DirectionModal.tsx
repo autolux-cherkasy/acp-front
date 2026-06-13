@@ -1,10 +1,11 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import AdminModalFrame from "@/src/shared/ui/AdminModalFrame/AdminModalFrame";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
-import SelectField, { type SelectOption } from "@/src/shared/ui/SelectField/SelectField";
+import SelectWithLabel from "@/src/shared/ui/SelectField/SelectWithLabel";
+import { type SelectOption } from "@/src/shared/ui/SelectField/SelectField";
 import styles from "./DirectionModal.module.css";
 
 type DirectionFormState = {
@@ -60,25 +61,13 @@ export default function DirectionModal({
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
     >
-      <div className={styles.fieldWithLabel}>
-        {mode === "edit" && (
-          <span className={styles.fieldLabel}>
-            {t("dispatcherArea.dataMgmt.directionModal.routeLabel")}
-          </span>
-        )}
-        <Controller
-          control={control}
-          name="route"
-          render={({ field }) => (
-            <SelectField
-              value={field.value}
-              options={routeOptions}
-              onChange={field.onChange}
-              placeholder={t("dispatcherArea.dataMgmt.directionModal.routePlaceholder")}
-            />
-          )}
-        />
-      </div>
+      <SelectWithLabel
+        control={control}
+        name="route"
+        label={mode === "edit" ? t("dispatcherArea.dataMgmt.directionModal.routeLabel") : undefined}
+        options={routeOptions}
+        placeholder={t("dispatcherArea.dataMgmt.directionModal.routePlaceholder")}
+      />
 
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.directionModal.placeLabel")}
@@ -87,23 +76,13 @@ export default function DirectionModal({
       />
 
       <div className={styles.row}>
-        <div className={styles.fieldWithLabel}>
-          <span className={styles.fieldLabel}>
-            {t("dispatcherArea.dataMgmt.directionModal.departureTime")}
-          </span>
-          <Controller
-            control={control}
-            name="departureTime"
-            render={({ field }) => (
-              <SelectField
-                value={field.value}
-                options={timeOptions}
-                onChange={field.onChange}
-                placeholder="00:00"
-              />
-            )}
-          />
-        </div>
+        <SelectWithLabel
+          control={control}
+          name="departureTime"
+          label={t("dispatcherArea.dataMgmt.directionModal.departureTime")}
+          options={timeOptions}
+          placeholder="00:00"
+        />
 
         <InputWithLabel
           label={t("dispatcherArea.dataMgmt.directionModal.arrivalTime")}
