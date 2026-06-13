@@ -231,18 +231,6 @@
   white-space: nowrap;
 }
 
-.timeDropdownChevron {
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-}
-
-.timeDropdownChevronOpen {
-  transform: none;
-}
 
 .timeDropdownMenu {
   position: absolute;
@@ -666,7 +654,6 @@
 }
 
 .routeDropdownChevron,
-.timeDropdownChevron,
 .seatsDropdownChevron,
 .calendarIcon,
 .priceIcon,
@@ -675,7 +662,6 @@
 }
 
 .routeDropdownChevron img,
-.timeDropdownChevron img,
 .seatsDropdownChevron img,
 .calendarIcon img,
 .priceIcon img,
@@ -684,7 +670,6 @@
 }
 
 .routeDropdownChevron::before,
-.timeDropdownChevron::before,
 .seatsDropdownChevron::before,
 .calendarIcon::before,
 .priceIcon::before,
@@ -701,7 +686,6 @@
 }
 
 .routeDropdownChevron::before,
-.timeDropdownChevron::before,
 .seatsDropdownChevron::before {
   width: 12px;
   height: 7px;
@@ -710,7 +694,6 @@
 }
 
 .routeDropdownChevronOpen::before,
-.timeDropdownChevronOpen::before,
 .seatsDropdownChevronOpen::before {
   mask-image: url("/icons/arrow-up.svg");
   -webkit-mask-image: url("/icons/arrow-up.svg");
@@ -964,11 +947,6 @@
   }
 
   .routeDropdownChevron {
-    width: 20px;
-    height: 20px;
-  }
-
-  .timeDropdownChevron {
     width: 20px;
     height: 20px;
   }

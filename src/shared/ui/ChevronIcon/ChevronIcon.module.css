@@ -1,14 +1,20 @@
 .chevron {
   display: inline-block;
   flex-shrink: 0;
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid var(--color-brand);
-  border-bottom: 2px solid var(--color-brand);
-  transform: rotate(45deg) translateY(-3px);
+  width: 12px;
+  height: 12px;
+  background-color: var(--DarkSlateGray, #226078);
+  mask-image: url("/icons/down-arrow.svg");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: url("/icons/down-arrow.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
   transition: transform 150ms ease;
 }
 
 .open {
-  transform: rotate(-135deg) translateY(-3px);
+  transform: rotate(180deg);
 }

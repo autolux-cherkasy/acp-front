@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { useMemo } from "react";
 
 import type { Trip } from "@/src/entities/trip";
 
+import ChevronIcon from "@/src/shared/ui/ChevronIcon/ChevronIcon";
 import { useClickOutside } from "@/src/shared/lib/useClickOutside";
 import { formatTripTime } from "../../lib/bookingForm.utils";
 import styles from "../BookingForm.module.css";
@@ -50,19 +50,7 @@ export default function TripTimeSelect({
         <span className={styles.timeDropdownValue}>
           {selectedOption ? formatTripTime(selectedOption, locale) : placeholder}
         </span>
-        <span
-          className={`${styles.timeDropdownChevron} ${
-            isOpen ? styles.timeDropdownChevronOpen : ""
-          }`}
-          aria-hidden="true"
-        >
-          <Image
-            src={isOpen ? "/icons/arrow-up.svg" : "/icons/down-arrow.svg"}
-            alt=""
-            width={12}
-            height={7}
-          />
-        </span>
+        <ChevronIcon open={isOpen} />
       </button>
 
       {isOpen ? (
