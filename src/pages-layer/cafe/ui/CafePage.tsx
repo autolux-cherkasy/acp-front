@@ -7,7 +7,7 @@ import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { DecorativeBorder } from "@/src/shared/ui/DecorativeBorder/DecorativeBorder";
 import styles from "./cafe-page.module.css";
-import { CafeCategoryResponse, CafeMenuResponse } from "@/src/entities/cafe/types";
+import { CafeCategoryResponse, CafeSectionResponse } from "@/src/entities/cafe/types";
 import CafePageSkeleton from "./CafePageSkeleton";
 
 function MenuGroup({
@@ -52,7 +52,7 @@ export default function CafePage() {
 
   if (isLoading) return <CafePageSkeleton />;
 
-  const renderCard = (menu: CafeMenuResponse) => {
+  const renderCard = (menu: CafeSectionResponse) => {
     const cardSideClass =
       menu.displayOrder % 2 !== 0 ? styles.cardImageLeft : styles.cardImageRight;
     const imageSrc = menu.imageUrl ?? "";
@@ -114,7 +114,7 @@ export default function CafePage() {
 
         <div className={styles.hotdogBlock}>
           <section className={styles.menuContent} aria-label={t("cafe.menuAria")}>
-            {cafeData?.map((menu: CafeMenuResponse) => renderCard(menu))}
+            {cafeData?.map((menu: CafeSectionResponse) => renderCard(menu))}
           </section>
           <section className={styles.story} aria-label={t("cafe.storyAria")}>
             <p className={styles.storyText}>{t("cafe.description")}</p>

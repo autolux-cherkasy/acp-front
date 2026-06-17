@@ -16,7 +16,7 @@ export type CafeCategoryResponse = {
   groups: CafeItemGroup[];
 };
 
-export type CafeMenuResponse = {
+export type CafeSectionResponse = {
   id: string;
   name: string;
   slug: string;
