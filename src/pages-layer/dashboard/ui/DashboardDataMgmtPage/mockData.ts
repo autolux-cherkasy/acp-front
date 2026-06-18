@@ -163,3 +163,42 @@ export const MOCK_DATA_BY_TAB: Record<string, TabMockData> = {
   fleet: MOCK_FLEET,
   staff: MOCK_STAFF,
 };
+
+export type ColumnDef = {
+  key: string;
+  label: string;
+};
+
+export const SECTION_COLUMNS: Record<string, ColumnDef[]> = {
+  // cafe
+  cafe: [
+    { key: "name", label: "Вид" },
+    { key: "isAvailable", label: "Наявність" },
+    { key: "price", label: "Ціна" },
+  ],
+  // routes
+  routes: [
+    { key: "direction", label: "Напрямок" },
+    { key: "departure", label: "Час відправлення" },
+    { key: "arrival", label: "Час прибуття" },
+    { key: "price", label: "Ціна" },
+  ],
+  // staff
+  dispatchers: [
+    { key: "fullName", label: "П.І.Б" },
+    { key: "phone", label: "Телефон" },
+  ],
+  drivers: [
+    { key: "fullName", label: "П.І.Б" },
+    { key: "phone", label: "Телефон" },
+    { key: "license", label: "Посвідчення водія" },
+    { key: "category", label: "Категорія" },
+  ],
+  // fleet
+  fleet: [
+    { key: "model", label: "Марка автобуса" },
+    { key: "seats", label: "Місця" },
+    { key: "number", label: "Номер" },
+    { key: "driver", label: "Водій" },
+  ],
+};

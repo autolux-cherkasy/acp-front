@@ -5,7 +5,7 @@ import DataTable from "@/src/shared/ui/DataTable/DataTable";
 import Icon from "@/src/shared/ui/Icon/Icon";
 import { useState } from "react";
 import styles from "./DataMgmtPage.module.css";
-import { DataSection } from "./mockData";
+import { DataSection, SECTION_COLUMNS } from "./mockData";
 
 type CollapsiblesectionProps = {
   section: DataSection;
@@ -55,7 +55,7 @@ const CollapsibleSection = ({
         {open && (
           <DataTable
             rows={section.rows ?? []}
-            columns={section.columns ?? []}
+            columns={SECTION_COLUMNS[tab] ?? []}
             onAdd={onAddRow}
             onEdit={onEditRow}
           />

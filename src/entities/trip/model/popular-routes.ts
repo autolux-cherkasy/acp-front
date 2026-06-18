@@ -1,5 +1,5 @@
 import type { Locale } from "@/src/shared/i18n/config";
-import type { Trip } from "@/src/entities/trip/api/trips";
+import type { Trip } from "./types";
 
 export type LocalizedValue<T> = Record<Locale, T>;
 
@@ -254,10 +254,7 @@ export const popularRoutes: PopularRoute[] = [
   },
 ];
 
-export function getLocalizedRouteValue<T>(
-  value: LocalizedValue<T>,
-  locale: Locale
-) {
+export function getLocalizedRouteValue<T>(value: LocalizedValue<T>, locale: Locale) {
   return value[locale];
 }
 

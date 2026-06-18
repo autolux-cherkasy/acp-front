@@ -9,9 +9,10 @@ import {
 } from "@/src/shared/ui/DashboardComponents/DashboardTable";
 import styles from "./DataTable.module.css";
 import { useI18n } from "../../i18n";
+import { ColumnDef } from "@/src/pages-layer/dashboard/ui/DashboardDataMgmtPage/mockData";
 
 type Props = {
-  columns: string[];
+  columns: ColumnDef[];
   rows: string[][];
   onEdit: (rowIndex: number) => void;
   onAdd: () => void;
@@ -25,12 +26,12 @@ export default function DataTable({ columns, rows, onEdit, onAdd }: Props) {
         <th className={dashboardTableStyles.thNum}>№</th>
         {columns.map((col, i) => (
           <th
-            key={col}
+            key={col.key}
             className={
               i === 0 ? styles.thFirst : `${dashboardTableStyles.th} ${styles.thContentCol}`
             }
           >
-            {col}
+            {col.label}
           </th>
         ))}
         <th className={`${dashboardTableStyles.thAction} ${styles.thEditSeparator}`}>
