@@ -7,7 +7,14 @@
   padding-top: 20px; /* Figma: padding-top 20 */
   padding-bottom: 0;
 }
-
+.state {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px 80px;
+  box-sizing: border-box;
+}
 /* Main screen block: 1440, gap 32 (між секціями сторінки краще через pageMain gap, але тут теж можна) */
 .mainBlock {
   width: 100%;
@@ -24,7 +31,8 @@
 .formBlock {
   width: 100%;
   max-width: calc(
-    var(--booking-hero-form-max-width) + var(--booking-hero-image-max-width) + var(--booking-hero-gap)
+    var(--booking-hero-form-max-width) + var(--booking-hero-image-max-width) +
+      var(--booking-hero-gap)
   );
   height: 532px; /* Figma: 532 */
   margin: 0 auto;

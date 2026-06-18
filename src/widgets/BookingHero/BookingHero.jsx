@@ -1,17 +1,19 @@
-import Image from "next/image";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
+import Loader from "@/src/shared/ui/Loader/Loader";
 import styles from "./BookingHero.module.css";
-import { useI18n } from "@/src/shared/i18n/I18nProvider";
 
 const BookingForm = dynamic(() => import("../BookingForm"), {
   ssr: false,
-  loading: () => <div className={styles.formFallback} aria-hidden="true" />,
+  loading: () => (
+    <div className={styles.state}>
+      <Loader />
+    </div>
+  ),
 });
 
 export default function BookingHero() {
-  const { t } = useI18n();
-
   return (
     <section id="booking" className={styles.section}>
       <div className={styles.mainBlock}>
@@ -22,7 +24,7 @@ export default function BookingHero() {
             <Image
               className={styles.image}
               src="/BookingHero/main_photo_bus.png"
-              alt={t("bookingHero.imageAlt")}
+              alt={"Автобус"}
               width={608}
               height={532}
               sizes="(max-width: 768px) 100vw, (max-width: 1240px) 100vw, 608px"

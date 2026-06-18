@@ -11,12 +11,18 @@ import { SEAT_OPTIONS } from "../../model/types";
 import styles from "../BookingForm.module.css";
 
 type SeatsSelectProps = {
+  availableSeats?: number;
   value: string;
   placeholder: string;
   onChange: (value: string) => void;
 };
 
-export default function SeatsSelect({ value, placeholder, onChange }: SeatsSelectProps) {
+export default function SeatsSelect({
+  availableSeats = 7,
+  value,
+  placeholder,
+  onChange,
+}: SeatsSelectProps) {
   const { t } = useI18n();
   const { isOpen, setIsOpen, fieldRef: dropdownRef } = useClickOutside();
   const [toastMessage, setToastMessage] = useState("");
@@ -81,6 +87,7 @@ export default function SeatsSelect({ value, placeholder, onChange }: SeatsSelec
                   className={`${styles.seatsDropdownOption} ${
                     isSelected ? styles.seatsDropdownOptionSelected : ""
                   }`}
+                  disabled={Number(seatOption) > availableSeats}
                   onClick={() => {
                     onChange(seatOption);
                     setIsOpen(false);

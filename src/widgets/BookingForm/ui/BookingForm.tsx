@@ -183,6 +183,7 @@ export default function BookingForm() {
 
           <div className={styles.row2}>
             <SeatsSelect
+              availableSeats={trips.find((i) => i.id === selectedTripId)?.availableSeats ?? undefined}
               value={seatsValue}
               placeholder={t("bookingForm.qty.placeholder")}
               onChange={setSeatsValue}
