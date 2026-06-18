@@ -69,7 +69,8 @@ export default function BookingForm() {
       }),
     [lang],
   );
-  const priceText = selectedTrip?.price != null ? priceFormatter.format(selectedTrip.price) : "";
+  const priceText =
+    selectedTrip?.price != null ? priceFormatter.format(selectedTrip.price * seats) : "";
   const isBusy = isBootstrapping || isCheckingAvailability || isPendingNavigation;
 
   useEffect(() => {
@@ -183,7 +184,9 @@ export default function BookingForm() {
 
           <div className={styles.row2}>
             <SeatsSelect
-              availableSeats={trips.find((i) => i.id === selectedTripId)?.availableSeats ?? undefined}
+              availableSeats={
+                trips.find((i) => i.id === selectedTripId)?.availableSeats ?? undefined
+              }
               value={seatsValue}
               placeholder={t("bookingForm.qty.placeholder")}
               onChange={setSeatsValue}

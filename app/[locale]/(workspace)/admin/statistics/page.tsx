@@ -1,5 +1,5 @@
-import RoleWorkspaceSectionPage from "@/src/pages-layer/role-workspace/ui/RoleWorkspaceSectionPage";
+import StatisticsPage from "@/src/pages-layer/dashboard/ui/DashboardStatisticsPage/StatisticsPage";
 
 export default function AdminStatisticsPage() {
-  return <RoleWorkspaceSectionPage sectionKey="statistics" />;
+  return <StatisticsPage />;
 }
