@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { getTripAvailability } from "@/src/entities/trip";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
-import styles from "./BookingForm.module.css";
-import { EMPTY_TRIPS, type BookingFormProps } from "../model/types";
+import Button from "@/src/shared/ui/Button/Button";
+import SelectField from "@/src/shared/ui/SelectField/SelectField";
 import { useBookingTrips } from "../model/useBookingTrips";
+import styles from "./BookingForm.module.css";
 import BookingStatus from "./controls/BookingStatus";
 import DateField from "./controls/DateField";
 import PriceField from "./controls/PriceField";
-import SelectField from "@/src/shared/ui/SelectField/SelectField";
 import SeatsSelect from "./controls/SeatsSelect";
 import TripTimeSelect from "./controls/TripTimeSelect";
-import Button from "@/src/shared/ui/Button/Button";
+import { sortTripsByTime } from "../lib/bookingForm.utils";
 
-export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormProps) {
+export default function BookingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const resolveHref = useLocalizedHref();
@@ -24,11 +24,13 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
   const timeLocale = lang === "en" ? "en-GB" : "uk-UA";
   const preselectedRouteValue = searchParams.get("route")?.trim() ?? "";
 
-  const [date, setDate] = useState<Date | null>(null);
-  const [selectedRouteValue, setSelectedRouteValue] = useState(preselectedRouteValue);
+  const [selectedDate, setDate] = useState<Date | null>(null);
+  const [selectedRoute, setSelectedRouteValue] = useState(preselectedRouteValue);
+  const [selectedTripId, setSelectedTripId] = useState<string>("");
   const [seatsValue, setSeatsValue] = useState("1");
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [isPendingNavigation, startNavigation] = useTransition();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const seats = useMemo(() => {
     const parsedSeats = Number(seatsValue);
@@ -39,25 +41,27 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
   const weekdays = raw("bookingForm.calendar.weekdays") as string[];
   const {
     routeOptions,
-    selectedRouteOption,
-    timeOptions,
-    selectedTrip,
-    selectedTripId,
-    setSelectedTripId,
-    statusMessage,
-    setStatusMessage,
-    isError,
-    setIsError,
-    isBootstrapping,
-    isSearchingTrips,
-    availableDateKeys,
+    trips,
+    dates,
+    isDatesLoading,
+    isTripsLoading,
+    isRoutesLoading,
+    isTripsError,
+    isDatesError,
   } = useBookingTrips({
-    initialTrips,
-    selectedRouteValue,
-    date,
-    seats,
-    t,
+    selectedRoute,
+    selectedDate,
   });
+  const availableDateKeys = useMemo(() => dates.map((d) => d.date), [dates]);
+  const timeOptions = useMemo(() => sortTripsByTime(trips), [trips]);
+  const selectedTrip = useMemo(
+    () => timeOptions.find((trip) => trip.id === selectedTripId) ?? null,
+    [timeOptions, selectedTripId],
+  );
+  const isBootstrapping = isRoutesLoading || isDatesLoading || isTripsLoading;
+  const statusMessage =
+    isTripsError || isDatesError ? t("bookingForm.status.loadError") : (submitError ?? "");
+  const isError = isTripsError || isDatesError || !!submitError;
   const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat(lang === "en" ? "en-US" : "uk-UA", {
@@ -66,7 +70,7 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
     [lang],
   );
   const priceText = selectedTrip?.price != null ? priceFormatter.format(selectedTrip.price) : "";
-  const isBusy = isBootstrapping || isSearchingTrips || isCheckingAvailability || isPendingNavigation;
+  const isBusy = isBootstrapping || isCheckingAvailability || isPendingNavigation;
 
   useEffect(() => {
     if (!preselectedRouteValue) {
@@ -74,9 +78,9 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
     }
 
     const set = () => {
-      setSelectedRouteValue((currentValue) => (
-        currentValue === preselectedRouteValue ? currentValue : preselectedRouteValue
-      ));
+      setSelectedRouteValue((currentValue) =>
+        currentValue === preselectedRouteValue ? currentValue : preselectedRouteValue,
+      );
       setDate(null);
       setSeatsValue("1");
     };
@@ -87,14 +91,12 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
     event.preventDefault();
 
     if (!selectedTrip) {
-      setStatusMessage(t("bookingForm.status.selectTrip"));
-      setIsError(true);
+      setSubmitError(t("bookingForm.status.selectTrip"));
       return;
     }
 
     setIsCheckingAvailability(true);
-    setStatusMessage("");
-    setIsError(false);
+    setSubmitError(null);
 
     try {
       const availability = await getTripAvailability(selectedTrip.id, seats);
@@ -104,8 +106,7 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
         (availability.availableSeats == null || availability.availableSeats >= seats);
 
       if (!hasEnoughSeats) {
-        setStatusMessage(t("bookingForm.status.seatsUnavailable"));
-        setIsError(true);
+        setSubmitError(t("bookingForm.status.seatsUnavailable"));
         return;
       }
 
@@ -133,15 +134,16 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
           searchParams.set("price", String(selectedTrip.price));
         }
 
-        router.push(resolveHref(`/tickets/${selectedTrip.slug ?? selectedTrip.id}?${searchParams}`));
+        router.push(
+          resolveHref(`/tickets/${selectedTrip.slug ?? selectedTrip.id}?${searchParams}`),
+        );
       });
     } catch (error) {
-      setStatusMessage(
+      setSubmitError(
         error instanceof Error && error.message
           ? error.message
           : t("bookingForm.status.availabilityError"),
       );
-      setIsError(true);
     } finally {
       setIsCheckingAvailability(false);
     }
@@ -154,7 +156,7 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.inputBlock}>
           <SelectField
-            value={selectedRouteValue}
+            value={selectedRoute}
             options={routeOptions}
             placeholder={t("bookingForm.route.placeholder")}
             disabled={isBootstrapping || routeOptions.length === 0}
@@ -162,7 +164,7 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
           />
 
           <DateField
-            value={date}
+            value={selectedDate}
             onChange={setDate}
             placeholder={t("bookingForm.date.placeholder")}
             months={months}
@@ -176,7 +178,7 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
             options={timeOptions}
             locale={timeLocale}
             placeholder={t("bookingForm.time.placeholder")}
-            disabled={!selectedRouteValue || isSearchingTrips || timeOptions.length === 0}
+            disabled={!selectedRoute || isTripsLoading || timeOptions.length === 0}
           />
 
           <div className={styles.row2}>
@@ -186,10 +188,7 @@ export default function BookingForm({ initialTrips = EMPTY_TRIPS }: BookingFormP
               onChange={setSeatsValue}
             />
 
-            <PriceField
-              placeholder={t("bookingForm.price.placeholder")}
-              value={priceText}
-            />
+            <PriceField placeholder={t("bookingForm.price.placeholder")} value={priceText} />
           </div>
         </div>
 
