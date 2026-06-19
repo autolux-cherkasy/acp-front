@@ -1,12 +1,14 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { getTripAvailability } from "@/src/entities/trip";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
+import { useBookingStore } from "@/src/shared/store/BookingStore";
 import Button from "@/src/shared/ui/Button/Button";
 import SelectField from "@/src/shared/ui/SelectField/SelectField";
+import { sortTripsByTime } from "../lib/bookingForm.utils";
 import { useBookingTrips } from "../model/useBookingTrips";
 import styles from "./BookingForm.module.css";
 import BookingStatus from "./controls/BookingStatus";
@@ -14,23 +16,22 @@ import DateField from "./controls/DateField";
 import PriceField from "./controls/PriceField";
 import SeatsSelect from "./controls/SeatsSelect";
 import TripTimeSelect from "./controls/TripTimeSelect";
-import { sortTripsByTime } from "../lib/bookingForm.utils";
 
 export default function BookingForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const resolveHref = useLocalizedHref();
   const { lang, t, raw } = useI18n();
   const timeLocale = lang === "en" ? "en-GB" : "uk-UA";
-  const preselectedRouteValue = searchParams.get("route")?.trim() ?? "";
 
   const [selectedDate, setDate] = useState<Date | null>(null);
-  const [selectedRoute, setSelectedRouteValue] = useState(preselectedRouteValue);
+  const [selectedRoute, setSelectedRoute] = useState("");
   const [selectedTripId, setSelectedTripId] = useState<string>("");
   const [seatsValue, setSeatsValue] = useState("1");
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [isPendingNavigation, startNavigation] = useTransition();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const selectedPopularRoute = useBookingStore((s) => s.selectedRoute);
+  const clearPopularRoute = useBookingStore((s) => s.setSelectedRoute);
 
   const seats = useMemo(() => {
     const parsedSeats = Number(seatsValue);
@@ -58,6 +59,7 @@ export default function BookingForm() {
     () => timeOptions.find((trip) => trip.id === selectedTripId) ?? null,
     [timeOptions, selectedTripId],
   );
+
   const isBootstrapping = isRoutesLoading || isDatesLoading || isTripsLoading;
   const statusMessage =
     isTripsError || isDatesError ? t("bookingForm.status.loadError") : (submitError ?? "");
@@ -73,20 +75,31 @@ export default function BookingForm() {
     selectedTrip?.price != null ? priceFormatter.format(selectedTrip.price * seats) : "";
   const isBusy = isBootstrapping || isCheckingAvailability || isPendingNavigation;
 
-  useEffect(() => {
-    if (!preselectedRouteValue) {
-      return;
-    }
+  function normalize(name: string) {
+    return name
+      .toLowerCase()
+      .replace(/^(ст\.м\.|м\.|с\.)/, "")
+      .trim();
+  }
 
-    const set = () => {
-      setSelectedRouteValue((currentValue) =>
-        currentValue === preselectedRouteValue ? currentValue : preselectedRouteValue,
-      );
-      setDate(null);
-      setSeatsValue("1");
+  useEffect(() => {
+    if (!selectedPopularRoute || routeOptions.length === 0) return;
+    const [from, to] = selectedPopularRoute.split("__");
+    const match = routeOptions.find(
+      (route) =>
+        normalize(route.from) === normalize(from) && normalize(route.to) === normalize(to),
+    );
+    const set = (match: (typeof routeOptions)[number]) => {
+      setSelectedRoute(match.value);
     };
-    set();
-  }, [preselectedRouteValue]);
+    if (match) {
+      clearPopularRoute("");
+      set(match);
+    } else {
+      console.log(selectedPopularRoute);
+      console.log("shit");
+    }
+  }, [selectedPopularRoute, routeOptions]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -161,7 +174,7 @@ export default function BookingForm() {
             options={routeOptions}
             placeholder={t("bookingForm.route.placeholder")}
             disabled={isBootstrapping || routeOptions.length === 0}
-            onChange={setSelectedRouteValue}
+            onChange={setSelectedRoute}
           />
 
           <DateField

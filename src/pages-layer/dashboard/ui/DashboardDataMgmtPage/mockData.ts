@@ -186,6 +186,7 @@ export const SECTION_COLUMNS: Record<string, ColumnDef[]> = {
   // staff
   dispatchers: [
     { key: "fullName", label: "П.І.Б" },
+    { key: "email", label: "Емейл" },
     { key: "phone", label: "Телефон" },
   ],
   drivers: [
