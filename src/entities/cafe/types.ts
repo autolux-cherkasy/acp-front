@@ -5,15 +5,11 @@ export type CafeItemResponse = {
   displayOrder: number;
 };
 
-export type CafeItemGroup = {
-  note: string | null;
-  items: CafeItemResponse[];
-};
 export type CafeCategoryResponse = {
   id: string;
   name: string;
   displayOrder: number;
-  groups: CafeItemGroup[];
+  items: CafeItemResponse[];
 };
 
 export type CafeSectionResponse = {

@@ -22,32 +22,40 @@ function MenuGroup({
       <h2 className={styles.groupTitle}>{category.name}</h2>
 
       <div className={styles.menuList}>
-        {category.groups.map((group) => (
-          <>
-            {group.note && <p className={styles.groupNote}>{group.note}</p>}
-            {group.items.map((item) => (
-              <div key={`${category.id}-${item.name}`} className={styles.menuRow}>
-                <span className={styles.menuName}>
-                  {group.note ? "+ " : ""}
-                  {item.name}
-                </span>
+        {(category.items ?? []).map((item) => {
+          const plusIdx = item.name.indexOf("+");
+          const hasTwoLines = plusIdx > 0;
 
-                <span className={styles.menuLine} aria-hidden="true">
-                  <span className={styles.menuLineStroke} />
-                </span>
+          return (
+            <div key={`${category.id}-${item.name}`} className={styles.menuRow}>
+              <span className={styles.menuName}>
+                {hasTwoLines ? (
+                  <>
+                    <span className={styles.menuNameLine}>
+                      {item.name.slice(0, plusIdx).trim()}
+                    </span>
+                    <span className={styles.menuNameLine}>{item.name.slice(plusIdx).trim()}</span>
+                  </>
+                ) : (
+                  item.name
+                )}
+              </span>
 
-                <span className={styles.menuPrice}>{item.price} ₴</span>
-              </div>
-            ))}
-          </>
-        ))}
+              <span className={styles.menuLine} aria-hidden="true">
+                <span className={styles.menuLineStroke} />
+              </span>
+
+              <span className={styles.menuPrice}>{item.price} ₴</span>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
 }
 
 export default function CafePage() {
-  const { locale, t } = useI18n();
+  const { t } = useI18n();
   const { data: cafeData, isLoading } = useCafeQuery();
 
   if (isLoading) return <CafePageSkeleton />;
@@ -55,7 +63,7 @@ export default function CafePage() {
   const renderCard = (menu: CafeSectionResponse) => {
     const cardSideClass =
       menu.displayOrder % 2 !== 0 ? styles.cardImageLeft : styles.cardImageRight;
-    const imageSrc = menu.imageUrl ?? "";
+    const imageSrc = `${menu.imageUrl ?? ""}+${menu.id}`;
     const isSplitLayout = menu.categories.length > 1;
     const layoutClass = isSplitLayout ? styles.cardSplit : styles.cardSingle;
 
