@@ -1,26 +1,18 @@
 "use client";
 
-import Image from "next/image";
-
+import { popularRoutes, type PopularRoute } from "@/src/entities/trip";
 import { SharedLabel } from "@/src/shared";
-import LocaleLink from "@/src/shared/i18n/Link";
-import styles from "./PopularRoutes.module.css";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import Chip from "@/src/shared/ui/Chip/Chip";
-import {
-  getLocalizedRouteValue,
-  getPopularRouteHref,
-  popularRoutes as fallbackRoutes,
-  type PopularRoute,
-} from "@/src/entities/trip";
+import styles from "./PopularRoutes.module.css";
+import { RouteCard } from "./RouteCard";
 
 type Props = {
   routes?: PopularRoute[];
 };
 
 export default function PopularRoutes({ routes }: Props) {
-  const { lang, t } = useI18n();
-  const data = routes?.length ? routes : fallbackRoutes;
+  const { t } = useI18n();
+  const data = routes?.length ? routes : popularRoutes;
   const topRoutes = data.slice(0, 2);
   const bottomRoutes = data.slice(2);
 
@@ -32,53 +24,27 @@ export default function PopularRoutes({ routes }: Props) {
 
       <div className={styles.cards}>
         <div className={styles.topRow}>
-          {topRoutes.map((r) => {
-            const title = getLocalizedRouteValue(r.title, lang);
-            const alt = getLocalizedRouteValue(r.imageAlt, lang);
-
-            return (
-              <LocaleLink
-                key={r.id}
-                href={getPopularRouteHref(r)}
-                className={`${styles.card} ${styles.cardLarge}`}
-                aria-label={`${t("popularRoutes.openRoute")}: ${title}`}
-              >
-                <Image
-                  className={styles.img}
-                  src={r.imageSrc}
-                  alt={alt}
-                  fill
-                  sizes="(max-width: 520px) calc(100vw - 32px), (max-width: 768px) calc((100vw - 72px) / 2), (max-width: 1300px) 50vw, 608px"
-                />
-                <Chip className={styles.routeChip}>{title}</Chip>
-              </LocaleLink>
-            );
-          })}
+          {topRoutes.map((r) => (
+            <RouteCard
+              key={r.id}
+              route={r}
+              variant="large"
+              ariaLabel={`${t("popularRoutes.openRoute")}: ${r.title}`}
+              onClick={() => {}}
+            />
+          ))}
         </div>
 
         <div className={styles.bottomGrid}>
-          {bottomRoutes.map((r) => {
-            const title = getLocalizedRouteValue(r.title, lang);
-            const alt = getLocalizedRouteValue(r.imageAlt, lang);
-
-            return (
-              <LocaleLink
-                key={r.id}
-                href={getPopularRouteHref(r)}
-                className={`${styles.card} ${styles.cardSmall}`}
-                aria-label={`${t("popularRoutes.openRoute")}: ${title}`}
-              >
-                <Image
-                  className={styles.img}
-                  src={r.imageSrc}
-                  alt={alt}
-                  fill
-                  sizes="(max-width: 520px) calc(100vw - 32px), (max-width: 768px) calc((100vw - 72px) / 2), (max-width: 1300px) 33vw, 397px"
-                />
-                <Chip className={styles.routeChip}>{title}</Chip>
-              </LocaleLink>
-            );
-          })}
+          {bottomRoutes.map((r) => (
+            <RouteCard
+              key={r.id}
+              route={r}
+              variant="small"
+              ariaLabel={`${t("popularRoutes.openRoute")}: ${r.title}`}
+              onClick={() => {}}
+            />
+          ))}
         </div>
       </div>
     </section>
