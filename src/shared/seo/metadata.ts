@@ -66,8 +66,7 @@ const seoByLocale: Record<Locale, LocaleSeo> = {
     },
     login: {
       title: "Вхід до особистого кабінету",
-      description:
-        "Сторінка входу до особистого кабінету пасажира Автолюкс Черкаси-Плюс.",
+      description: "Сторінка входу до особистого кабінету пасажира Автолюкс Черкаси-Плюс.",
       keywords: ["вхід", "особистий кабінет", "авторизація"],
     },
     register: {
@@ -78,8 +77,7 @@ const seoByLocale: Record<Locale, LocaleSeo> = {
     },
     forgotPassword: {
       title: "Відновлення пароля",
-      description:
-        "Сторінка відновлення доступу до особистого кабінету Автолюкс Черкаси-Плюс.",
+      description: "Сторінка відновлення доступу до особистого кабінету Автолюкс Черкаси-Плюс.",
       keywords: ["відновлення пароля", "доступ до акаунта", "змінити пароль"],
     },
     resetPassword: {
@@ -90,14 +88,12 @@ const seoByLocale: Record<Locale, LocaleSeo> = {
     },
     profile: {
       title: "Профіль користувача",
-      description:
-        "Керування даними профілю та налаштуваннями особистого кабінету пасажира.",
+      description: "Керування даними профілю та налаштуваннями особистого кабінету пасажира.",
       keywords: ["профіль", "особистий кабінет", "налаштування акаунта"],
     },
     profileTickets: {
       title: "Мої квитки",
-      description:
-        "Перегляд активних квитків і керування замовленнями в особистому кабінеті.",
+      description: "Перегляд активних квитків і керування замовленнями в особистому кабінеті.",
       keywords: ["мої квитки", "замовлення", "історія поїздок"],
     },
     notFound: {
@@ -140,20 +136,17 @@ const seoByLocale: Record<Locale, LocaleSeo> = {
     },
     login: {
       title: "Sign in to your account",
-      description:
-        "Passenger account sign-in page for Autolux Cherkasy-Plus.",
+      description: "Passenger account sign-in page for Autolux Cherkasy-Plus.",
       keywords: ["sign in", "account", "authorization"],
     },
     register: {
       title: "Passenger registration",
-      description:
-        "Create an Autolux Cherkasy-Plus account to book tickets and manage your trips.",
+      description: "Create an Autolux Cherkasy-Plus account to book tickets and manage your trips.",
       keywords: ["registration", "create account", "trip booking"],
     },
     forgotPassword: {
       title: "Password recovery",
-      description:
-        "Restore access to your Autolux Cherkasy-Plus passenger account.",
+      description: "Restore access to your Autolux Cherkasy-Plus passenger account.",
       keywords: ["password recovery", "account access", "reset password"],
     },
     resetPassword: {
@@ -164,14 +157,12 @@ const seoByLocale: Record<Locale, LocaleSeo> = {
     },
     profile: {
       title: "User profile",
-      description:
-        "Manage your profile details and passenger account settings.",
+      description: "Manage your profile details and passenger account settings.",
       keywords: ["profile", "account settings", "personal cabinet"],
     },
     profileTickets: {
       title: "My tickets",
-      description:
-        "View active tickets and manage your travel orders in your account.",
+      description: "View active tickets and manage your travel orders in your account.",
       keywords: ["my tickets", "orders", "travel history"],
     },
     notFound: {
@@ -340,20 +331,12 @@ export function createPageMetadata({
   };
 }
 
-export function getTicketBookingSeo(locale: Locale, routeTitle: string) {
-  return locale === "en"
-    ? {
-        title: `Book ticket: ${routeTitle}`,
-        description:
-          `Book and pay online for the ${routeTitle} route. Check departure details, seats, and passenger information before your trip.`,
-        keywords: ["ticket booking", routeTitle, "online payment"],
-      }
-    : {
-        title: `Бронювання квитка: ${routeTitle}`,
-        description:
-          `Онлайн-бронювання та оплата квитка на рейс ${routeTitle}. Перевіряйте деталі відправлення, місця та дані пасажира перед поїздкою.`,
-        keywords: ["бронювання квитка", routeTitle, "онлайн оплата"],
-      };
+export function getTicketBookingSeo(routeTitle: string) {
+  return {
+    title: `Бронювання квитка: ${routeTitle}`,
+    description: `Онлайн-бронювання та оплата квитка на рейс ${routeTitle}. Перевіряйте деталі відправлення, місця та дані пасажира перед поїздкою.`,
+    keywords: ["бронювання квитка", routeTitle, "онлайн оплата"],
+  };
 }
 
 export function getOrganizationStructuredData(locale: Locale) {
@@ -401,15 +384,7 @@ export function getOrganizationStructuredData(locale: Locale) {
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday",
-        ],
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         opens: "05:00",
         closes: "19:30",
       },

@@ -48,9 +48,18 @@ function formatDisplayDate(value: string | null, locale: string) {
   }).format(parsedDate);
 }
 
-function formatDisplayTime(value: string | null) {
+function formatDisplayTime(value: string | null, locale: string) {
   if (!value) {
     return "--:--";
+  }
+
+  const parsedDate = new Date(value);
+  if (!Number.isNaN(parsedDate.getTime())) {
+    return new Intl.DateTimeFormat(locale, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(parsedDate);
   }
 
   const timeMatch = value.match(/(\d{2}:\d{2})/);
@@ -134,8 +143,8 @@ export default function TicketBookingPage({
     : (trip.price ?? 0);
   const totalPrice = pricePerSeat * seats;
   const formattedDate = formatDisplayDate(trip.date, locale);
-  const departureTime = formatDisplayTime(rawDepartureTime ?? trip.departureTime);
-  const arrivalTime = formatDisplayTime(rawArrivalTime ?? trip.arrivalTime);
+  const departureTime = formatDisplayTime(rawDepartureTime ?? trip.departureTime, locale);
+  const arrivalTime = formatDisplayTime(rawArrivalTime ?? trip.arrivalTime, locale);
   const passengerCount = `${seats} ${t(`ticketBooking.hero.passenger.${getPassengerLabelKey(seats, lang)}`)}`;
   const heroMeta =
     formattedDate &&
