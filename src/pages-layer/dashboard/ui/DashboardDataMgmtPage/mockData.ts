@@ -9,6 +9,7 @@ export type SubSection = {
 export type DataSection = {
   id: string;
   title: string;
+  imageUrl?: string;
   columns?: string[];
   rows?: TableRow[];
   subSections?: SubSection[];
@@ -54,6 +55,7 @@ export const MOCK_CAFE: TabMockData = {
     {
       id: "coffee",
       title: "Кава/додатки/чай",
+      imageUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop",
       subSections: [
         {
           groupLabel: "Напій",

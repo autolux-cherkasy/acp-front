@@ -12,22 +12,16 @@ import {
   LabelList,
 } from "recharts";
 import styles from "./LoadChart.module.css";
+import type { LoadAnalyticsItem } from "@/src/entities/dashboard/api/analyticsApi";
 
-const MOCK_DATA = [
-  { time: "6:00", value: 10 },
-  { time: "8:00", value: 30 },
-  { time: "10:00", value: 50 },
-  { time: "12:00", value: 70 },
-  { time: "14:00", value: 70 },
-  { time: "16:00", value: 140 },
-  { time: "18:00", value: 65 },
-  { time: "20:00", value: 20 },
-  { time: "22:00", value: 65 },
-  { time: "23:00", value: 50 },
-];
+type Props = { data?: LoadAnalyticsItem[] };
 
-export default function LoadChart() {
+export default function LoadChart({ data }: Props) {
   const { t } = useI18n();
+  const chartData = (data ?? []).map(({ hour, ticketsBought }) => ({
+    time: `${hour}:00`,
+    value: ticketsBought,
+  }));
 
   return (
     <DashboardCard
@@ -38,7 +32,7 @@ export default function LoadChart() {
       <div className={styles.chartWrapper}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          data={MOCK_DATA}
+          data={chartData}
           margin={{ top: 20, right: 8, left: 0, bottom: 0 }}
         >
           <defs>

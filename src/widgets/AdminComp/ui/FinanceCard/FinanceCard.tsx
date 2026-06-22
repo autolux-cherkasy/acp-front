@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import styles from "./FinanceCard.module.css";
 import { formatCurrency, formatYAxis } from "@/src/shared/lib/formatters";
+import type { FinanceAnalytics } from "@/src/entities/dashboard/api/analyticsApi";
 
 type FinanceEntry = {
   key: "reserved" | "purchased" | "noShows";
@@ -22,26 +23,25 @@ type FinanceEntry = {
   icon: string;
 };
 
-const FINANCE_DATA: FinanceEntry[] = [
+const FINANCE_TEMPLATE: Omit<FinanceEntry, "value">[] = [
   {
     key: "reserved",
-    value: 568000,
     color: "#eebb3a",
     icon: "/icons/Services/clock-loading.svg",
   },
   {
     key: "purchased",
-    value: 376000,
     color: "#169f2c",
     icon: "/icons/shield-check-broken.svg",
   },
   {
     key: "noShows",
-    value: 192000,
     color: "#d51216",
     icon: "/icons/close-circle-broken.svg",
   },
 ];
+
+type Props = { data?: FinanceAnalytics };
 
 function getNiceAxisConfig(maxValue: number, tickCount = 6) {
   const rawInterval = maxValue / tickCount;
@@ -56,9 +56,18 @@ function getNiceAxisConfig(maxValue: number, tickCount = 6) {
 }
 
 
-export default function FinanceCard() {
+export default function FinanceCard({ data }: Props) {
   const { t } = useI18n();
-  const maxValue = Math.max(...FINANCE_DATA.map((d) => d.value));
+  const values = [
+    data?.activeBookings ?? 0,
+    data?.paidBookings ?? 0,
+    data?.canceledBookings ?? 0,
+  ];
+  const FINANCE_DATA: FinanceEntry[] = FINANCE_TEMPLATE.map((entry, i) => ({
+    ...entry,
+    value: values[i],
+  }));
+  const maxValue = Math.max(...FINANCE_DATA.map((d) => d.value), 1);
   const { domain, ticks } = getNiceAxisConfig(maxValue);
 
   return (

@@ -1,11 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPageHeader";
 import NoShowReport from "@/src/widgets/AdminComp/ui/NoShowReport/NoShowReport";
 import PopularRoutesCard from "@/src/widgets/AdminComp/ui/PopularRoutes/PopularRoutesCard";
+import {
+  useAnalyticsSummaryQuery,
+  useBlockUserMutation,
+} from "@/src/entities/dashboard/api/useAnalyticsQueries";
 import pageStyles from "./AnalyticsPage.module.css";
 import styles from "./analytics.module.css";
 
@@ -15,10 +20,36 @@ const LoadChart = dynamic(() => import("@/src/widgets/AdminComp/ui/LoadChart/Loa
 const FinanceCard = dynamic(() => import("@/src/widgets/AdminComp/ui/FinanceCard/FinanceCard"), {
   ssr: false,
 });
+
 export default function AnalyticsPage() {
   const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
+  const [date, setDate] = useState<string | undefined>(undefined);
+
+  const { data: summary } = useAnalyticsSummaryQuery(date);
+  const blockMutation = useBlockUserMutation();
+
+  const noShowRows = summary?.noShow.map((item) => ({
+    id: item.userId,
+    name: item.passengerName ?? "",
+    phone: item.passengerPhone ?? "",
+    ratio: `${item.unpaidBookings}/${item.totalBookings}`,
+    isBlocked: item.isBlocked,
+  }));
+
+  const popularRoutes = summary?.popularRoutes.map((r, i) => ({
+    id: i + 1,
+    route: r.direction,
+    tickets: r.ticketsCount,
+  }));
+
+  function handleCalendarChange(d: Date) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    setDate(`${yyyy}-${mm}-${dd}`);
+  }
 
   return (
     <div className={`${styles.mainContainer} ${pageStyles.pageRoot}`}>
@@ -29,13 +60,16 @@ export default function AnalyticsPage() {
           text: t("dispatcherArea.analytics.allRoutes"),
           onClick: () => router.push(`${pathname}/all`),
         }}
-        onCalendarChange={() => {}}
+        onCalendarChange={handleCalendarChange}
       />
       <div className={styles.grid}>
-        <NoShowReport />
-        <FinanceCard />
-        <LoadChart />
-        <PopularRoutesCard />
+        <NoShowReport
+          rows={noShowRows}
+          onBlockUser={(id) => blockMutation.mutate({ userId: id, block: true })}
+        />
+        <FinanceCard data={summary?.finance} />
+        <LoadChart data={summary?.load} />
+        <PopularRoutesCard routes={popularRoutes} />
       </div>
     </div>
   );

@@ -67,15 +67,19 @@ const MOCK_ROWS: NoShowRow[] = [
   },
 ];
 
-type Props = { rows?: NoShowRow[] };
+type Props = {
+  rows?: NoShowRow[];
+  onBlockUser?: (userId: number) => void;
+};
 
-export default function NoShowReport({ rows = MOCK_ROWS }: Props) {
+export default function NoShowReport({ rows = MOCK_ROWS, onBlockUser }: Props) {
   const { t } = useI18n();
   const [blocked, setBlocked] = useState<Set<number>>(new Set());
   const blockedUserModal = useDisclosure<number>();
 
   function block(id: number) {
     setBlocked((prev) => new Set(prev).add(id));
+    onBlockUser?.(id);
   }
 
   return (
