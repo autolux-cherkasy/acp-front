@@ -15,6 +15,11 @@ import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPage
 import { useState } from "react";
 import RouteAnalyticsDetails from "./RouteAnalyticsDetails";
 import styles from "../analytics.module.css";
+import { formatCurrency } from "@/src/shared/lib/formatters";
+import {
+  useAllRoutesAnalyticsQuery,
+  useRouteAnalyticsQuery,
+} from "@/src/entities/dashboard/api/useAnalyticsQueries";
 
 type AllRouteRow = {
   id: number;
@@ -26,175 +31,26 @@ type AllRouteRow = {
   redemptionRate: string;
 };
 
-type TrendPoint = {
-  dayKey: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
-  value: number;
-};
-
 type TicketStatKey = "reserved" | "purchased" | "cancelled";
-
-type RouteAnalyticsDetail = {
-  trend: TrendPoint[];
-  ticketStats: Record<TicketStatKey, number>;
-};
-
-const mockAllRoutes: AllRouteRow[] = [
-  {
-    id: 1,
-    direction: "м.Черкаси - м.Київ (ст.м.Харківська)",
-    tripsPerDay: 16,
-    ticketsSold: 240,
-    load: "82%",
-    income: "120 000 ₴",
-    redemptionRate: "92%",
-  },
-  {
-    id: 2,
-    direction: "м.Черкаси - м.Київ (ст.м.Чернігівська)",
-    tripsPerDay: 16,
-    ticketsSold: 180,
-    load: "70%",
-    income: "90 000 ₴",
-    redemptionRate: "76%",
-  },
-  {
-    id: 3,
-    direction: "м.Золотоноша - м.Київ",
-    tripsPerDay: 16,
-    ticketsSold: 80,
-    load: "52%",
-    income: "32 000 ₴",
-    redemptionRate: "42%",
-  },
-  {
-    id: 4,
-    direction: "м.Кременчук - м.Черкаси",
-    tripsPerDay: 2,
-    ticketsSold: 18,
-    load: "68%",
-    income: "17 100 ₴",
-    redemptionRate: "96%",
-  },
-  {
-    id: 5,
-    direction: "м.Черкаси - м.Харків",
-    tripsPerDay: 2,
-    ticketsSold: 12,
-    load: "40%",
-    income: "11 400 ₴",
-    redemptionRate: "81%",
-  },
-  {
-    id: 6,
-    direction: "м.Градизьк - м.Черкаси",
-    tripsPerDay: 2,
-    ticketsSold: 8,
-    load: "12%",
-    income: "1 600 ₴",
-    redemptionRate: "76%",
-  },
-  {
-    id: 7,
-    direction: "м.Черкаси - с.Софіївка",
-    tripsPerDay: 2,
-    ticketsSold: 4,
-    load: "8%",
-    income: "11 400 ₴",
-    redemptionRate: "65%",
-  },
-];
-
-const ROUTE_ANALYTICS_DETAILS: Record<number, RouteAnalyticsDetail> = {
-  1: {
-    trend: [
-      { dayKey: "monday", value: 10 },
-      { dayKey: "tuesday", value: 200 },
-      { dayKey: "wednesday", value: 110 },
-      { dayKey: "thursday", value: 130 },
-      { dayKey: "friday", value: 310 },
-      { dayKey: "saturday", value: 75 },
-      { dayKey: "sunday", value: 220 },
-    ],
-    ticketStats: { reserved: 240, purchased: 180, cancelled: 60 },
-  },
-  2: {
-    trend: [
-      { dayKey: "monday", value: 25 },
-      { dayKey: "tuesday", value: 160 },
-      { dayKey: "wednesday", value: 145 },
-      { dayKey: "thursday", value: 170 },
-      { dayKey: "friday", value: 220 },
-      { dayKey: "saturday", value: 95 },
-      { dayKey: "sunday", value: 185 },
-    ],
-    ticketStats: { reserved: 180, purchased: 137, cancelled: 43 },
-  },
-  3: {
-    trend: [
-      { dayKey: "monday", value: 15 },
-      { dayKey: "tuesday", value: 60 },
-      { dayKey: "wednesday", value: 90 },
-      { dayKey: "thursday", value: 120 },
-      { dayKey: "friday", value: 165 },
-      { dayKey: "saturday", value: 75 },
-      { dayKey: "sunday", value: 105 },
-    ],
-    ticketStats: { reserved: 80, purchased: 55, cancelled: 25 },
-  },
-  4: {
-    trend: [
-      { dayKey: "monday", value: 8 },
-      { dayKey: "tuesday", value: 12 },
-      { dayKey: "wednesday", value: 18 },
-      { dayKey: "thursday", value: 14 },
-      { dayKey: "friday", value: 26 },
-      { dayKey: "saturday", value: 9 },
-      { dayKey: "sunday", value: 21 },
-    ],
-    ticketStats: { reserved: 18, purchased: 14, cancelled: 4 },
-  },
-  5: {
-    trend: [
-      { dayKey: "monday", value: 7 },
-      { dayKey: "tuesday", value: 20 },
-      { dayKey: "wednesday", value: 16 },
-      { dayKey: "thursday", value: 22 },
-      { dayKey: "friday", value: 29 },
-      { dayKey: "saturday", value: 10 },
-      { dayKey: "sunday", value: 18 },
-    ],
-    ticketStats: { reserved: 12, purchased: 9, cancelled: 3 },
-  },
-  6: {
-    trend: [
-      { dayKey: "monday", value: 2 },
-      { dayKey: "tuesday", value: 6 },
-      { dayKey: "wednesday", value: 4 },
-      { dayKey: "thursday", value: 7 },
-      { dayKey: "friday", value: 10 },
-      { dayKey: "saturday", value: 3 },
-      { dayKey: "sunday", value: 8 },
-    ],
-    ticketStats: { reserved: 8, purchased: 6, cancelled: 2 },
-  },
-  7: {
-    trend: [
-      { dayKey: "monday", value: 1 },
-      { dayKey: "tuesday", value: 3 },
-      { dayKey: "wednesday", value: 2 },
-      { dayKey: "thursday", value: 4 },
-      { dayKey: "friday", value: 6 },
-      { dayKey: "saturday", value: 3 },
-      { dayKey: "sunday", value: 5 },
-    ],
-    ticketStats: { reserved: 4, purchased: 3, cancelled: 1 },
-  },
-};
 
 export default function AllRoutesPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
+  const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
+
+  const { data: routesData } = useAllRoutesAnalyticsQuery();
+  const { data: routeDetail } = useRouteAnalyticsQuery(selectedDirection);
+
+  const allRoutes: AllRouteRow[] = (routesData ?? []).map((r, i) => ({
+    id: i,
+    direction: r.direction,
+    tripsPerDay: r.tripsCount,
+    ticketsSold: r.ticketsSoldTotal,
+    load: `${r.occupancyPercent}%`,
+    income: formatCurrency(r.revenueTotal),
+    redemptionRate: `${r.buyoutRatePercent}%`,
+  }));
+
   const {
     page,
     setPage,
@@ -213,7 +69,7 @@ export default function AllRoutesPage() {
       paginationRef,
     },
   } = useResizeTableHook({
-    items: mockAllRoutes,
+    items: allRoutes,
   });
 
   const {
@@ -226,22 +82,33 @@ export default function AllRoutesPage() {
     paginationHeight,
   } = measurements;
 
-  const selectedRoute = mockAllRoutes.find((route) => route.id === selectedRouteId) ?? null;
-  const selectedRouteDetails = selectedRoute ? ROUTE_ANALYTICS_DETAILS[selectedRoute.id] : null;
-  const hasSelection = Boolean(selectedRoute && selectedRouteDetails);
+  const selectedRoute = allRoutes.find((r) => r.direction === selectedDirection) ?? null;
+  const hasSelection = Boolean(selectedRoute && routeDetail);
+
   const trendChartData =
-    selectedRouteDetails?.trend.map((point) => ({
-      dayLabel: t(`dispatcherArea.analytics.allRoutesPage.details.days.${point.dayKey}`),
-      value: point.value,
+    routeDetail?.dynamics.map((point) => ({
+      dayLabel: point.day,
+      value: point.ticketsSold,
     })) ?? [];
-  const ticketStatsData = selectedRouteDetails
-    ? (Object.entries(selectedRouteDetails.ticketStats) as [TicketStatKey, number][]).map(
-        ([key, value]) => ({
-          key,
-          value,
-          label: t(`dispatcherArea.analytics.allRoutesPage.details.stats.${key}`),
-        }),
-      )
+
+  const ticketStatsData: { key: TicketStatKey; value: number; label: string }[] = routeDetail
+    ? [
+        {
+          key: "reserved",
+          value: routeDetail.ticketStats.reserved,
+          label: t("dispatcherArea.analytics.allRoutesPage.details.stats.reserved"),
+        },
+        {
+          key: "purchased",
+          value: routeDetail.ticketStats.boughtOut,
+          label: t("dispatcherArea.analytics.allRoutesPage.details.stats.purchased"),
+        },
+        {
+          key: "cancelled",
+          value: routeDetail.ticketStats.canceled,
+          label: t("dispatcherArea.analytics.allRoutesPage.details.stats.cancelled"),
+        },
+      ]
     : [];
 
   return (
@@ -294,11 +161,11 @@ export default function AllRoutesPage() {
                     return (
                       <DashboardTr
                         ref={index === 0 ? firstRowRef : undefined}
-                        key={row.id}
+                        key={row.direction}
                         className={`${styles.clickableRow} ${
-                          selectedRouteId === row.id ? styles.selectedRow : ""
+                          selectedDirection === row.direction ? styles.selectedRow : ""
                         }`}
-                        onClick={() => setSelectedRouteId(row.id)}
+                        onClick={() => setSelectedDirection(row.direction)}
                       >
                         <td className={dashboardTableStyles.tdNum}>
                           {(page - 1) * rowsPerPage + index + 1}
