@@ -852,7 +852,9 @@
         "newTitle": "Додати категорія меню",
         "editTitle": "Редагувати категорію меню",
         "label": "Категорія меню",
-        "placeholder": "Категорія"
+        "placeholder": "Категорія",
+        "addPhoto": "Додати фото",
+        "changePhoto": "Змінити фото"
       },
       "cafeDishModal": {
         "newTitle": "Нова страва",

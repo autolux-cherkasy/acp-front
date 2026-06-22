@@ -1,9 +1,11 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import AdminModalFrame from "@/src/shared/ui/AdminModalFrame/AdminModalFrame";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
+import ImageUploadField from "@/src/shared/ui/ImageUploadField/ImageUploadField";
 
 type RouteFormState = {
   name: string;
@@ -12,9 +14,10 @@ type RouteFormState = {
 type RouteModalProps = {
   mode: "create" | "edit";
   onClose: () => void;
-  onSubmit: (data: RouteFormState) => void;
+  onSubmit: (data: RouteFormState & { imageFile?: File }) => void;
   onDelete?: () => void;
-  initialData?: Partial<RouteFormState>;
+  initialData?: Partial<RouteFormState & { imageUrl?: string }>;
+  showImage?: boolean;
   icon?: string;
   titles?: { create: string; edit: string };
   labels?: { create: string; edit: string };
@@ -27,18 +30,27 @@ export default function RouteModal({
   onSubmit,
   onDelete,
   initialData,
+  showImage,
   icon = "/icons/workspace/sidebar/routes.svg",
   titles,
   labels,
   placeholder,
 }: RouteModalProps) {
   const { t } = useI18n();
+  const [imageFile, setImageFile] = useState<File | undefined>(undefined);
 
   const { register, handleSubmit } = useForm<RouteFormState>({
     defaultValues: {
       name: initialData?.name ?? "",
     },
   });
+
+  const submitHandler = useCallback(
+    (data: RouteFormState) => {
+      onSubmit({ ...data, imageFile });
+    },
+    [onSubmit, imageFile],
+  );
 
   const title =
     mode === "create"
@@ -56,7 +68,7 @@ export default function RouteModal({
       title={title}
       icon={icon}
       onClose={onClose}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(submitHandler)}
       onDelete={onDelete}
     >
       <InputWithLabel
@@ -64,6 +76,14 @@ export default function RouteModal({
         placeholder={placeholder ?? t("dispatcherArea.dataMgmt.routeModal.placeholder")}
         {...register("name")}
       />
+      {showImage && (
+        <ImageUploadField
+          initialUrl={initialData?.imageUrl}
+          addLabel={t("dispatcherArea.dataMgmt.cafeCategoryModal.addPhoto")}
+          changeLabel={t("dispatcherArea.dataMgmt.cafeCategoryModal.changePhoto")}
+          onChange={(file) => setImageFile(file)}
+        />
+      )}
     </AdminModalFrame>
   );
 }
