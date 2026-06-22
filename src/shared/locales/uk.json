@@ -131,7 +131,7 @@
       "emailLabel": "Email",
       "emailPlaceholder": "Введіть email",
       "phoneLabel": "Номер телефону",
-      "phonePlaceholder": "+380 1234 5678",
+      "phonePlaceholder": "+380 XXX XXX XXX",
       "seatsLabel": "Кількість місць",
       "note": "Заповніть дані пасажира, щоб перейти до бронювання або оплати.",
       "seatsHint": "Вільний вибір місця",

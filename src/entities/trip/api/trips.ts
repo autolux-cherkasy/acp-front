@@ -86,6 +86,8 @@ export async function getTripAvailability(
     availableSeats: response.availableSeats,
     canReserve: response.canReserve,
     raw: response,
+    boardingStop: response.boardingStop ?? null,
+    alightingStop: response.alightingStop ?? null,
   };
 }
 

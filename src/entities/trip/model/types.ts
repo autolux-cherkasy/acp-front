@@ -31,7 +31,7 @@ export type Trip = {
   date: string | null;
   departureTime: string | null;
   arrivalTime: string | null;
-  price: number | null;
+  price: number;
   availableSeats: number | null;
   totalSeats: number | null;
   imageSrc: string | null;
@@ -54,6 +54,8 @@ export type TripAvailability = {
   availableSeats: number | null;
   canReserve: boolean | null;
   raw: unknown;
+  boardingStop: TripStop;
+  alightingStop: TripStop;
 };
 
 export type CreateTripPayload = Record<string, unknown>;

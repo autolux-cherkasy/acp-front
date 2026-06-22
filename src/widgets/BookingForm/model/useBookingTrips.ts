@@ -70,6 +70,8 @@ export function useBookingTrips({ selectedRoute, selectedDate }: UseBookingTrips
     })),
     trips: tripsData ?? [],
     dates: datesData ?? [],
+    fromStopId,
+    toStopId,
     isDatesLoading,
     isTripsLoading,
     isRoutesLoading,

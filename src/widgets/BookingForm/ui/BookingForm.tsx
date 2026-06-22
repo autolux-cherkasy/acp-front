@@ -49,6 +49,8 @@ export default function BookingForm() {
     isRoutesLoading,
     isTripsError,
     isDatesError,
+    fromStopId,
+    toStopId,
   } = useBookingTrips({
     selectedRoute,
     selectedDate,
@@ -86,8 +88,7 @@ export default function BookingForm() {
     if (!selectedPopularRoute || routeOptions.length === 0) return;
     const [from, to] = selectedPopularRoute.split("__");
     const match = routeOptions.find(
-      (route) =>
-        normalize(route.from) === normalize(from) && normalize(route.to) === normalize(to),
+      (route) => normalize(route.from) === normalize(from) && normalize(route.to) === normalize(to),
     );
     const set = (match: (typeof routeOptions)[number]) => {
       setSelectedRoute(match.value);
@@ -135,6 +136,8 @@ export default function BookingForm() {
         if (selectedTrip.date) {
           searchParams.set("date", selectedTrip.date);
         }
+        searchParams.set("fromStopId", fromStopId);
+        searchParams.set("toStopId", toStopId);
 
         if (selectedTrip.departureTime) {
           searchParams.set("departureTime", selectedTrip.departureTime);

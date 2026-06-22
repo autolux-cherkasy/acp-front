@@ -4,17 +4,21 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { type PopularRoute, getLocalizedRouteValue } from "@/src/entities/trip";
+import { Trip, TripStop } from "@/src/entities/trip";
 import { useProfileQuery } from "@/src/entities/user/api/useUserQueries";
-import LocaleLink from "@/src/shared/i18n/Link";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import LocaleLink from "@/src/shared/i18n/Link";
 import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import Button from "@/src/shared/ui/Button/Button";
 import styles from "./ticket-booking-page.module.css";
 
 type TicketBookingPageProps = {
-  route: PopularRoute;
+  trip: Trip;
   initialSeats: number;
+  boardingStop: TripStop | undefined;
+  alightingStop: TripStop | undefined;
+  departureTime: string | null;
+  arrivalTime: string | null;
 };
 
 type PassengerFormData = {
@@ -56,10 +60,15 @@ function formatDisplayTime(value: string | null) {
 function formatHeroDate(value: string) {
   return value.replace(
     /(^\d+\s+)(\p{L})/u,
-    (_match, prefix: string, firstLetter: string) =>
-      `${prefix}${firstLetter.toUpperCase()}`,
+    (_match, prefix: string, firstLetter: string) => `${prefix}${firstLetter.toUpperCase()}`,
   );
 }
+
+function parseCity(value: string): { city: string; stop: string | null } {
+  const match = value.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+  return { city: match?.[1] ?? value, stop: match?.[2] ?? null };
+}
+
 
 function getPassengerLabelKey(count: number, lang: "uk" | "en") {
   if (lang === "en") {
@@ -85,20 +94,18 @@ function getPassengerLabelKey(count: number, lang: "uk" | "en") {
 }
 
 export default function TicketBookingPage({
-  route,
+  trip,
   initialSeats,
+  boardingStop,
+  alightingStop,
+  departureTime: rawDepartureTime,
+  arrivalTime: rawArrivalTime,
 }: TicketBookingPageProps) {
   const { lang, t } = useI18n();
   const profileQuery = useProfileQuery();
   const locale = lang === "en" ? "en-GB" : "uk-UA";
-  const maxBookableSeats = Math.max(
-    1,
-    Math.min(route.maxSeats, MAX_BOOKING_SEATS),
-  );
-  const safeInitialSeats = Math.min(
-    Math.max(initialSeats, 1),
-    maxBookableSeats,
-  );
+  const maxBookableSeats = Math.max(1, Math.min(trip.totalSeats ?? 0, MAX_BOOKING_SEATS));
+  const safeInitialSeats = Math.min(Math.max(initialSeats, 1), maxBookableSeats);
 
   const {
     register,
@@ -114,13 +121,6 @@ export default function TicketBookingPage({
   });
   const [seats, setSeats] = useState(safeInitialSeats);
 
-  const routeTitle = getLocalizedRouteValue(route.title, lang);
-  const nearestTripLabel = getLocalizedRouteValue(route.nearestTripLabel, lang);
-  const departureCity = getLocalizedRouteValue(route.departureCity, lang);
-  const departureStop = getLocalizedRouteValue(route.departureStop, lang);
-  const arrivalCity = getLocalizedRouteValue(route.arrivalCity, lang);
-  const arrivalStop = getLocalizedRouteValue(route.arrivalStop, lang);
-
   const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat(lang === "en" ? "en-US" : "uk-UA", {
@@ -129,14 +129,17 @@ export default function TicketBookingPage({
     [lang],
   );
 
-  const totalPrice = route.price * seats;
-  const formattedDate = formatDisplayDate(route.tripDate, locale);
-  const departureTime = formatDisplayTime(route.departureTime);
-  const arrivalTime = formatDisplayTime(route.arrivalTime);
+  const pricePerSeat = alightingStop
+    ? alightingStop.priceFromOrigin - (boardingStop?.priceFromOrigin ?? 0)
+    : (trip.price ?? 0);
+  const totalPrice = pricePerSeat * seats;
+  const formattedDate = formatDisplayDate(trip.date, locale);
+  const departureTime = formatDisplayTime(rawDepartureTime ?? trip.departureTime);
+  const arrivalTime = formatDisplayTime(rawArrivalTime ?? trip.arrivalTime);
   const passengerCount = `${seats} ${t(`ticketBooking.hero.passenger.${getPassengerLabelKey(seats, lang)}`)}`;
-  const heroMeta = formattedDate
-    ? `${formatHeroDate(formattedDate)}${route.departureTime ? ` ${t("ticketBooking.hero.timePrefix")} ${departureTime}` : ""}, ${passengerCount}`
-    : `${nearestTripLabel}, ${passengerCount}`;
+  const heroMeta =
+    formattedDate &&
+    `${formatHeroDate(formattedDate)}${trip.departureTime ? ` ${t("ticketBooking.hero.timePrefix")} ${departureTime}` : ""}, ${passengerCount}`;
   const seatsLabel =
     lang === "en"
       ? `Seats (max. ${maxBookableSeats})*`
@@ -175,7 +178,7 @@ export default function TicketBookingPage({
         <div className={styles.hero}>
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>
-              {t("ticketBooking.routePrefix")}: {routeTitle}
+              {t("ticketBooking.routePrefix")}: {`${boardingStop?.name} - ${alightingStop?.name}`}
             </h1>
             <p className={styles.heroMeta}>{heroMeta}</p>
           </div>
@@ -185,23 +188,15 @@ export default function TicketBookingPage({
       <div className={styles.container}>
         <section className={styles.layout}>
           <section className={styles.mainColumn}>
-            <section
-              className={styles.formCard}
-              aria-labelledby="ticket-booking-form-title"
-            >
-              <h2
-                id="ticket-booking-form-title"
-                className={styles.sectionTitle}
-              >
+            <section className={styles.formCard} aria-labelledby="ticket-booking-form-title">
+              <h2 id="ticket-booking-form-title" className={styles.sectionTitle}>
                 {t("ticketBooking.form.title")}
               </h2>
 
               <form className={styles.form} onSubmit={validatePassengerForm}>
                 <div className={styles.formGrid}>
                   <label className={styles.field}>
-                    <span className={styles.label}>
-                      {t("ticketBooking.form.nameLabel")}
-                    </span>
+                    <span className={styles.label}>{t("ticketBooking.form.nameLabel")}</span>
                     <input
                       className={`${styles.input} ${errors.fullName ? styles.inputInvalid : ""}`}
                       type="text"
@@ -212,9 +207,7 @@ export default function TicketBookingPage({
                       autoComplete="name"
                       aria-invalid={errors.fullName ? "true" : "false"}
                       aria-describedby={
-                        errors.fullName
-                          ? "ticket-booking-full-name-error"
-                          : undefined
+                        errors.fullName ? "ticket-booking-full-name-error" : undefined
                       }
                     />
                     {errors.fullName?.message ? (
@@ -229,9 +222,7 @@ export default function TicketBookingPage({
                   </label>
 
                   <label className={styles.field}>
-                    <span className={styles.label}>
-                      {t("ticketBooking.form.emailLabel")}
-                    </span>
+                    <span className={styles.label}>{t("ticketBooking.form.emailLabel")}</span>
                     <input
                       className={`${styles.input} ${errors.email ? styles.inputInvalid : ""}`}
                       type="email"
@@ -244,9 +235,7 @@ export default function TicketBookingPage({
                       placeholder={t("ticketBooking.form.emailPlaceholder")}
                       autoComplete="email"
                       aria-invalid={errors.email ? "true" : "false"}
-                      aria-describedby={
-                        errors.email ? "ticket-booking-email-error" : undefined
-                      }
+                      aria-describedby={errors.email ? "ticket-booking-email-error" : undefined}
                     />
                     {errors.email?.message ? (
                       <span
@@ -260,25 +249,20 @@ export default function TicketBookingPage({
                   </label>
 
                   <label className={styles.field}>
-                    <span className={styles.label}>
-                      {t("ticketBooking.form.phoneLabel")}
-                    </span>
+                    <span className={styles.label}>{t("ticketBooking.form.phoneLabel")}</span>
                     <input
                       className={`${styles.input} ${errors.phone ? styles.inputInvalid : ""}`}
                       type="tel"
                       {...register("phone", {
                         required: t("auth.register.errors.phoneRequired"),
                         validate: (value) =>
-                          PHONE_PATTERN.test(value.trim()) ||
-                          t("auth.register.errors.phoneFormat"),
+                          PHONE_PATTERN.test(value.trim()) || t("auth.register.errors.phoneFormat"),
                       })}
                       placeholder={t("ticketBooking.form.phonePlaceholder")}
                       autoComplete="tel"
                       inputMode="tel"
                       aria-invalid={errors.phone ? "true" : "false"}
-                      aria-describedby={
-                        errors.phone ? "ticket-booking-phone-error" : undefined
-                      }
+                      aria-describedby={errors.phone ? "ticket-booking-phone-error" : undefined}
                     />
                     {errors.phone?.message ? (
                       <span
@@ -300,9 +284,7 @@ export default function TicketBookingPage({
                           type="button"
                           className={styles.stepperButton}
                           aria-label={t("ticketBooking.controls.decreaseSeats")}
-                          onClick={() =>
-                            setSeats((current) => Math.max(1, current - 1))
-                          }
+                          onClick={() => setSeats((current) => Math.max(1, current - 1))}
                           disabled={seats <= 1}
                         >
                           -
@@ -315,9 +297,7 @@ export default function TicketBookingPage({
                           className={styles.stepperButton}
                           aria-label={t("ticketBooking.controls.increaseSeats")}
                           onClick={() =>
-                            setSeats((current) =>
-                              Math.min(maxBookableSeats, current + 1),
-                            )
+                            setSeats((current) => Math.min(maxBookableSeats, current + 1))
                           }
                           disabled={seats >= maxBookableSeats}
                         >
@@ -337,15 +317,10 @@ export default function TicketBookingPage({
                 </div>
               </form>
             </section>
-            <section
-              className={styles.paymentCard}
-              aria-labelledby="payment-section-title"
-            >
+            <section className={styles.paymentCard} aria-labelledby="payment-section-title">
               <div className={styles.actionBlock}>
                 <div className={styles.paymentSecurity}>
-                  <span className={styles.paymentText}>
-                    {t("ticketBooking.payment.secure")}
-                  </span>
+                  <span className={styles.paymentText}>{t("ticketBooking.payment.secure")}</span>
 
                   <div className={styles.paymentMarks} aria-hidden="true">
                     <Image
@@ -402,9 +377,7 @@ export default function TicketBookingPage({
 
           <aside className={styles.sidebarCard}>
             <section className={styles.sidebarSection}>
-              <h2 className={styles.sectionTitle}>
-                {t("ticketBooking.routeCard.aboutTitle")}
-              </h2>
+              <h2 className={styles.sectionTitle}>{t("ticketBooking.routeCard.aboutTitle")}</h2>
 
               <div className={styles.routeInfo}>
                 <div className={styles.routeTimes}>
@@ -420,13 +393,11 @@ export default function TicketBookingPage({
 
                 <div className={styles.routeStops}>
                   <div className={styles.routeStop}>
-                    <strong>{departureCity}</strong>
-                    {departureStop ? <span>{departureStop}</span> : null}
+                    <strong>{boardingStop?.name ?? trip.from}</strong>
                   </div>
 
                   <div className={styles.routeStop}>
-                    <strong>{arrivalCity}</strong>
-                    {arrivalStop ? <span>{arrivalStop}</span> : null}
+                    <strong>{alightingStop?.name ?? trip.to}</strong>
                   </div>
                 </div>
               </div>
@@ -435,16 +406,11 @@ export default function TicketBookingPage({
             <div className={styles.sidebarDivider} />
 
             <section className={styles.sidebarSection}>
-              <h2 className={styles.sectionTitle}>
-                {t("ticketBooking.routeCard.title")}
-              </h2>
+              <h2 className={styles.sectionTitle}>{t("ticketBooking.routeCard.title")}</h2>
 
               <div className={styles.summaryRow}>
                 <span>
-                  {t(
-                    `ticketBooking.routeCard.passenger.${getPassengerLabelKey(seats, lang)}`,
-                  )}
-                  :
+                  {t(`ticketBooking.routeCard.passenger.${getPassengerLabelKey(seats, lang)}`)}:
                 </span>
                 <strong>{seats}</strong>
               </div>

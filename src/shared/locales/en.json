@@ -131,7 +131,7 @@
       "emailLabel": "Email",
       "emailPlaceholder": "Enter your email",
       "phoneLabel": "Phone number",
-      "phonePlaceholder": "+380 1234 5678",
+      "phonePlaceholder": "+380 XXX XXX XXX",
       "seatsLabel": "Seats",
       "seatsLabelWithMax": "Seats (max. {count})*",
       "note": "Fill in the passenger details to continue with booking or payment.",
