@@ -34,6 +34,7 @@ export {
 } from "./ui/DashboardComponents/DashboardTable";
 export { DashboardDateText } from "./ui/DashboardComponents/DashboardDateText";
 export { TablePagination } from "./ui/TablePagination/TablePagination";
+export { default as EmptyState } from "./ui/EmptyState/EmptyState";
 
 // Shared utilities
 export {

@@ -114,7 +114,7 @@ export default function AllRoutesPage() {
   return (
     <div className={styles.mainContainer}>
       <DashboardPageHeader
-        title={t("dispatcherArea.sidebar.menu.analytics")}
+        title={`${t("dispatcherArea.sidebar.menu.analytics")} / ${t("dispatcherArea.analytics.allRoutes")}`}
         subtitle={t("dispatcherArea.analytics.subtitle")}
         onBack={() => router.back()}
         onCalendarChange={() => {}}
