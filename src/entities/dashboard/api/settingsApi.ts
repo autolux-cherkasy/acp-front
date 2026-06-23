@@ -13,7 +13,11 @@ export type CompanySettingsResponse = {
   managerEmail: string | null;
   updatedAt: string;
 };
-
+export type CompanyPhonesResponse = {
+  phone1: string | null;
+  phone2: string | null;
+  phone3: string | null;
+};
 export type PermissionsResponse = {
   canAccessRoutes: boolean;
   canAccessFleet: boolean;
@@ -24,8 +28,9 @@ export type PermissionsResponse = {
 export type UpdateCompanyPayload = Partial<Omit<CompanySettingsResponse, "updatedAt">>;
 export type UpdatePermissionsPayload = Partial<PermissionsResponse>;
 
-export const getCompanySettings = () =>
-  apiFetch<CompanySettingsResponse>(`${BASE}/company`);
+export const getCompanySettings = () => apiFetch<CompanySettingsResponse>(`${BASE}/company`);
+
+export const getPhones = () => apiFetch<CompanyPhonesResponse>(`/company/phones`);
 
 export const updateCompanySettings = (data: UpdateCompanyPayload) =>
   apiFetch<CompanySettingsResponse>(`${BASE}/company`, {
@@ -33,8 +38,7 @@ export const updateCompanySettings = (data: UpdateCompanyPayload) =>
     body: JSON.stringify(data),
   });
 
-export const getPermissions = () =>
-  apiFetch<PermissionsResponse>(`${BASE}/permissions`);
+export const getPermissions = () => apiFetch<PermissionsResponse>(`${BASE}/permissions`);
 
 export const updatePermissions = (data: UpdatePermissionsPayload) =>
   apiFetch<PermissionsResponse>(`${BASE}/permissions`, {

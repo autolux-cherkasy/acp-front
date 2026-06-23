@@ -7,10 +7,11 @@ import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import { stripLocaleFromPathname } from "@/src/shared/i18n/routing";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { MouseEvent, useEffect, useEffectEvent, useRef, useState } from "react";
+import { MouseEvent, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 
 import styles from "./Header.module.css";
 import HeaderAuthControl from "./HeaderAuthControl";
+import { usePhonesQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
 
 const menu = [
   { key: "menu.home", href: "#home" },
@@ -20,15 +21,7 @@ const menu = [
   { key: "menu.contacts", href: "#contacts" },
 ];
 
-const sectionHrefs = menu
-  .map((item) => item.href)
-  .filter((href) => href.startsWith("#"));
-
-const phones = [
-  { text: "+38097 480 24 28", href: "tel:+380974802428" },
-  { text: "+38093 966 09 40", href: "tel:+380939660940" },
-  { text: "+38099 078 20 21", href: "tel:+380990782021" },
-];
+const sectionHrefs = menu.map((item) => item.href).filter((href) => href.startsWith("#"));
 
 const HEADER_COLLAPSE_BREAKPOINT = 1024;
 
@@ -37,6 +30,16 @@ export default function Header() {
   const resolveHref = useLocalizedHref();
   const router = useRouter();
   const pathname = usePathname();
+  const { data: phonesData } = usePhonesQuery();
+
+  const phones = useMemo(() => {
+    if (!phonesData) return [];
+    return [phonesData.phone1, phonesData.phone2, phonesData.phone3].filter(Boolean).map((p) => ({
+      text: p?.replace(/^\+380(\d{2})(\d{3})(\d{2})(\d{2})$/, "+380$1 $2 $3 $4"),
+      href: `tel:${p}`,
+    }));
+  }, [phonesData]);
+
   const { isAuthenticated, role } = useAuthSession();
   const pathnameWithoutLocale = stripLocaleFromPathname(pathname || "/");
   const workspaceHref = getRoleLandingPath(role);
@@ -53,8 +56,7 @@ export default function Header() {
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isPhoneMenuOpen, setIsPhoneMenuOpen] = useState(false);
-  const currentMenuHref =
-    pathnameWithoutLocale === "/cafe" ? "/cafe" : activeMenuHref;
+  const currentMenuHref = pathnameWithoutLocale === "/cafe" ? "/cafe" : activeMenuHref;
   const phoneMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -66,9 +68,7 @@ export default function Header() {
     syncActiveFromHash();
 
     const ids = ["home", "about", "routes", "contacts"];
-    const sections = ids
-      .map((id) => document.getElementById(id))
-      .filter(Boolean) as HTMLElement[];
+    const sections = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
 
     const onScroll = () => {
       const best = sections
@@ -194,9 +194,7 @@ export default function Header() {
   };
 
   return (
-    <header
-      className={`${styles.header} ${isMobileMenuOpen ? styles.headerNoShadow : ""}`}
-    >
+    <header className={`${styles.header} ${isMobileMenuOpen ? styles.headerNoShadow : ""}`}>
       <div className={styles.container}>
         <a
           className={styles.logoWrap}
@@ -317,11 +315,7 @@ export default function Header() {
             }}
           >
             {isMobileMenuOpen ? (
-              <span
-                key="icon-close"
-                className={styles.mobileCloseIcon}
-                aria-hidden="true"
-              />
+              <span key="icon-close" className={styles.mobileCloseIcon} aria-hidden="true" />
             ) : (
               <Image
                 key="icon-menu"

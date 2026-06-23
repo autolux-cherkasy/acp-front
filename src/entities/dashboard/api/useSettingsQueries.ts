@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getCompanySettings,
   getPermissions,
+  getPhones,
   PermissionsResponse,
   updateCompanySettings,
   updatePermissions,
@@ -11,12 +12,15 @@ import {
 
 export const SETTINGS_COMPANY_KEY = "settings_company";
 export const SETTINGS_PERMISSIONS_KEY = "settings_permissions";
+export const PHONES_KEY = "public_phones";
 
 export const useCompanySettingsQuery = () =>
   useQuery({ queryFn: getCompanySettings, queryKey: [SETTINGS_COMPANY_KEY] });
 
 export const usePermissionsQuery = () =>
   useQuery({ queryFn: getPermissions, queryKey: [SETTINGS_PERMISSIONS_KEY] });
+
+export const usePhonesQuery = () => useQuery({ queryFn: getPhones, queryKey: [PHONES_KEY] });
 
 export function useUpdateCompanyMutation() {
   const queryClient = useQueryClient();
