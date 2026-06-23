@@ -52,7 +52,7 @@
 
 .menu {
   width: var(--radix-popover-trigger-width);
-  z-index: 50;
+  z-index: 99;
   pointer-events: auto;
 }
 

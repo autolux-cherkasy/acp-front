@@ -63,6 +63,7 @@ export default function CafeDishModal({
         label={t("dispatcherArea.dataMgmt.cafeDishModal.categoryLabel")}
         options={categoryOptions}
         placeholder={t("dispatcherArea.dataMgmt.cafeDishModal.categoryPlaceholder")}
+        menuZIndex={10001}
       />
 
       <SelectWithLabel
@@ -71,6 +72,7 @@ export default function CafeDishModal({
         label={t("dispatcherArea.dataMgmt.cafeDishModal.subcategoryLabel")}
         options={categoryOptions}
         placeholder={t("dispatcherArea.dataMgmt.cafeDishModal.categoryPlaceholder")}
+        menuZIndex={10001}
       />
 
       <InputWithLabel

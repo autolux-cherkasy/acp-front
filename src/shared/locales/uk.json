@@ -297,7 +297,19 @@
       "requestError": "Не вдалося виконати запит. Спробуйте ще раз.",
       "noChanges": "Немає змін для збереження.",
       "settingsUpdateSuccess": "Налаштування успішно збережено.",
-      "settingsUpdateError": "Не вдалося зберегти налаштування."
+      "settingsUpdateError": "Не вдалося зберегти налаштування.",
+      "dispatcherAddSuccess": "Диспетчера успішно додано.",
+      "dispatcherAddError": "Не вдалося додати диспетчера.",
+      "dispatcherUpdateSuccess": "Диспетчера успішно оновлено.",
+      "dispatcherUpdateError": "Не вдалося оновити диспетчера.",
+      "dispatcherDeleteSuccess": "Диспетчера успішно видалено.",
+      "dispatcherDeleteError": "Не вдалося видалити диспетчера.",
+      "driverAddSuccess": "Водія успішно додано.",
+      "driverAddError": "Не вдалося додати водія.",
+      "driverUpdateSuccess": "Водія успішно оновлено.",
+      "driverUpdateError": "Не вдалося оновити водія.",
+      "driverDeleteSuccess": "Водія успішно видалено.",
+      "driverDeleteError": "Не вдалося видалити водія."
     },
     "password": {
       "show": "Показати пароль",

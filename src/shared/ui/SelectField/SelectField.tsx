@@ -16,9 +16,10 @@ type Props = {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  menuZIndex?: number;
 };
 
-export default function SelectField({ value, options, onChange, placeholder, disabled }: Props) {
+export default function SelectField({ value, options, onChange, placeholder, disabled, menuZIndex }: Props) {
   const [open, setOpen] = useState(false);
 
   const selectedLabel = options.find((o) => o.value === value)?.label;
@@ -45,6 +46,7 @@ export default function SelectField({ value, options, onChange, placeholder, dis
             sideOffset={4}
             align="start"
             onOpenAutoFocus={(e) => e.preventDefault()}
+            style={menuZIndex !== undefined ? { zIndex: menuZIndex } : undefined}
           >
             <div className={styles.list}>
               {options.map((option) => (

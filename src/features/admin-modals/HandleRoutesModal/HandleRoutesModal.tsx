@@ -74,6 +74,7 @@ export default function HandleRoutesModal({
         name="route"
         options={routeOptions}
         placeholder={t("dispatcherArea.routes.table.columns.direction")}
+        menuZIndex={10001}
       />
 
       <InputWithLabel
@@ -89,6 +90,7 @@ export default function HandleRoutesModal({
           label={t("dispatcherArea.tickets.modal.departureTime")}
           options={timeOptions}
           placeholder={t("bookingForm.time.placeholder")}
+          menuZIndex={10001}
         />
         <InputWithLabel
           label={t("dispatcherArea.routes.modal.arrivalTime")}
@@ -105,6 +107,7 @@ export default function HandleRoutesModal({
           label={t("dispatcherArea.routes.table.columns.bus")}
           options={vehicleOptions}
           placeholder={t("dispatcherArea.routes.table.columns.bus")}
+          menuZIndex={10001}
         />
         <InputWithLabel
           label={t("dispatcherArea.routes.modal.seatsLabel")}
@@ -119,6 +122,7 @@ export default function HandleRoutesModal({
         label={t("dispatcherArea.routes.table.columns.status")}
         options={statusOptions}
         placeholder={t("dispatcherArea.routes.table.columns.status")}
+        menuZIndex={10001}
       />
     </AdminModalFrame>
   );

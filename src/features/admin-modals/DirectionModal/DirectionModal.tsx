@@ -67,6 +67,7 @@ export default function DirectionModal({
         label={mode === "edit" ? t("dispatcherArea.dataMgmt.directionModal.routeLabel") : undefined}
         options={routeOptions}
         placeholder={t("dispatcherArea.dataMgmt.directionModal.routePlaceholder")}
+        menuZIndex={10001}
       />
 
       <InputWithLabel
@@ -82,6 +83,7 @@ export default function DirectionModal({
           label={t("dispatcherArea.dataMgmt.directionModal.departureTime")}
           options={timeOptions}
           placeholder="00:00"
+          menuZIndex={10001}
         />
 
         <InputWithLabel

@@ -12,6 +12,7 @@ type Props<T extends FieldValues> = {
   placeholder?: string;
   disabled?: boolean;
   wrapperClassName?: string;
+  menuZIndex?: number;
 };
 
 export default function SelectWithLabel<T extends FieldValues>({
@@ -22,6 +23,7 @@ export default function SelectWithLabel<T extends FieldValues>({
   placeholder,
   disabled,
   wrapperClassName,
+  menuZIndex,
 }: Props<T>) {
   return (
     <div className={[styles.field, wrapperClassName].filter(Boolean).join(" ")}>
@@ -36,6 +38,7 @@ export default function SelectWithLabel<T extends FieldValues>({
             onChange={field.onChange}
             placeholder={placeholder}
             disabled={disabled}
+            menuZIndex={menuZIndex}
           />
         )}
       />
