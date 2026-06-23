@@ -5,7 +5,7 @@ import {
   updateDevProfile,
 } from "@/src/shared/api/dev-auth";
 
-export const USER_ROLES = ["USER", "ADMIN", "DISPETCHER"] as const;
+export const USER_ROLES = ["USER", "ADMIN", "DISPATCHER"] as const;
 
 export type UserRole = (typeof USER_ROLES)[number];
 

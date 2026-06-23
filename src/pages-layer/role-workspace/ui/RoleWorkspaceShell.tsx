@@ -137,7 +137,7 @@ export default function RoleWorkspaceShell({
   const roleLabel =
     role === "ADMIN"
       ? t("dispatcherArea.sidebar.roleAdmin")
-      : role === "DISPETCHER"
+      : role === "DISPATCHER"
         ? t("dispatcherArea.sidebar.roleDispatcher")
         : fallbackRoleLabel || defaultRoleLabel;
 

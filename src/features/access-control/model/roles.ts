@@ -11,7 +11,7 @@ export function getRoleLandingPath(role: UserRole | null | undefined) {
   switch (role) {
     case "ADMIN":
       return "/admin";
-    case "DISPETCHER":
+    case "DISPATCHER":
       return "/dispatcher";
     default:
       return "/profile";

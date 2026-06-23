@@ -6,7 +6,7 @@ export const DEV_ROLE_KEY = "dev-role";
 export const DEV_PROFILE_KEY = "dev-profile";
 
 const AUTH_CHANGE_EVENT = "auth-change";
-const DEV_AUTH_ROLES = ["USER", "ADMIN", "DISPETCHER"] as const;
+const DEV_AUTH_ROLES = ["USER", "ADMIN", "DISPATCHER"] as const;
 const DEV_AUTH_ENABLED = process.env.NEXT_PUBLIC_ENABLE_DEV_AUTH === "true";
 
 export type DevAuthRole = (typeof DEV_AUTH_ROLES)[number];
@@ -54,7 +54,7 @@ function resolveDevAuthPath(role: DevAuthRole) {
   switch (role) {
     case "ADMIN":
       return "/admin";
-    case "DISPETCHER":
+    case "DISPATCHER":
       return "/dispatcher";
     default:
       return "/profile";
@@ -109,7 +109,7 @@ export function createDevProfile(role: DevAuthRole): DevAuthProfile {
   return {
     id: 1,
     email: `${normalizedRole}@example.com`,
-    name: role === "ADMIN" ? "Admin Test" : role === "DISPETCHER" ? "Dispatcher Test" : "User Test",
+    name: role === "ADMIN" ? "Admin Test" : role === "DISPATCHER" ? "Dispatcher Test" : "User Test",
     phone: "+380991234567",
     role,
     specialCategory: null,

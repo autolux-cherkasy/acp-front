@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const routeEntries = popularRoutes.flatMap((route) =>
     locales.map((locale) => {
-      const pathname = `/tickets/${route.slug}`;
+      const pathname = `/tickets/${route.id}`;
 
       return {
         url: buildAbsoluteUrl(localizeHref(pathname, locale)),
