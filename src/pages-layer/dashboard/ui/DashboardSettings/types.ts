@@ -9,6 +9,13 @@ export type CompanyForm = {
   managerEmail: string;
 };
 
+export type ModulePermissions = {
+  routes: boolean;
+  fleet: boolean;
+  staff: boolean;
+  cafe: boolean;
+};
+
 export type SingleField = {
   type: "single";
   key: keyof CompanyForm;
