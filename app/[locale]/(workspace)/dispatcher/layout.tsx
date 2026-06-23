@@ -3,7 +3,7 @@ import RoleWorkspaceShell from "@/src/pages-layer/role-workspace/ui/RoleWorkspac
 
 export default function DispatcherWorkspaceLayout({ children }: { children: React.ReactNode }) {
   return (
-    <RoleAccessGate allowedRoles={["DISPETCHER", "ADMIN"]}>
+    <RoleAccessGate allowedRoles={["DISPATCHER", "ADMIN"]}>
       <RoleWorkspaceShell basePath="/dispatcher" defaultRoleLabel="Dispatcher">
         {children}
       </RoleWorkspaceShell>

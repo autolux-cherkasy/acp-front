@@ -32,6 +32,7 @@ type NavItem = {
   key: NavItemKey;
   segment: "" | "routes" | "data" | "analytics" | "statistics" | "settings";
   iconPath: string;
+  roles: Array<"ADMIN" | "DISPATCHER">;
 };
 
 // Add matching SVG files to public/icons/workspace/sidebar/ with these exact names.
@@ -45,24 +46,12 @@ const SIDEBAR_ICON_PATHS: Record<NavItemKey, string> = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { key: "tickets", segment: "", iconPath: SIDEBAR_ICON_PATHS.tickets },
-  { key: "routes", segment: "routes", iconPath: SIDEBAR_ICON_PATHS.routes },
-  { key: "data", segment: "data", iconPath: SIDEBAR_ICON_PATHS.data },
-  {
-    key: "analytics",
-    segment: "analytics",
-    iconPath: SIDEBAR_ICON_PATHS.analytics,
-  },
-  {
-    key: "statistics",
-    segment: "statistics",
-    iconPath: SIDEBAR_ICON_PATHS.statistics,
-  },
-  {
-    key: "settings",
-    segment: "settings",
-    iconPath: SIDEBAR_ICON_PATHS.settings,
-  },
+  { key: "tickets", segment: "", iconPath: SIDEBAR_ICON_PATHS.tickets, roles: ["ADMIN", "DISPATCHER"] },
+  { key: "routes", segment: "routes", iconPath: SIDEBAR_ICON_PATHS.routes, roles: ["ADMIN", "DISPATCHER"] },
+  { key: "data", segment: "data", iconPath: SIDEBAR_ICON_PATHS.data, roles: ["ADMIN", "DISPATCHER"] },
+  { key: "analytics", segment: "analytics", iconPath: SIDEBAR_ICON_PATHS.analytics, roles: ["ADMIN"] },
+  { key: "statistics", segment: "statistics", iconPath: SIDEBAR_ICON_PATHS.statistics, roles: ["ADMIN"] },
+  { key: "settings", segment: "settings", iconPath: SIDEBAR_ICON_PATHS.settings, roles: ["ADMIN"] },
 ];
 
 function joinClassNames(...tokens: Array<string | false | null | undefined>) {
@@ -188,7 +177,7 @@ export default function RoleWorkspaceShell({
               className={styles.nav}
               aria-label={t("dispatcherArea.sidebar.navAria")}
             >
-              {NAV_ITEMS.map((item) => {
+              {NAV_ITEMS.filter((item) => item.roles.includes((role ?? "DISPATCHER") as "ADMIN" | "DISPATCHER")).map((item) => {
                 const href = buildHref(basePath, item.segment);
                 const isActive = isActivePath(
                   currentPath,
