@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPageHeader";
 import styles from "./SettingsPage.module.css";
-import { Button, DashboardCard, useI18n, useServerToast } from "@/src/shared";
+import { Button, DashboardCard, useI18n } from "@/src/shared";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
 import Loader from "@/src/shared/ui/Loader/Loader";
 import { getCompanyFields, type CompanyForm, type ModulePermissions } from "./types";
@@ -28,7 +28,6 @@ const MODULE_NAMES: (keyof ModulePermissions)[] = ["routes", "fleet", "staff", "
 
 const DashboardSettingsPage = () => {
   const { t } = useI18n();
-  const { notifySuccess, notifyError } = useServerToast();
 
   const companyQuery = useCompanySettingsQuery();
   const permissionsQuery = usePermissionsQuery();
@@ -102,9 +101,7 @@ const DashboardSettingsPage = () => {
         managerPhone: formatPhone(updated.managerPhone),
         managerEmail: updated.managerEmail ?? "",
       });
-      notifySuccess(null, t("common.toast.settingsUpdateSuccess"));
-    } catch (err) {
-      notifyError(err, t("common.toast.settingsUpdateError"));
+    } catch {
     }
   };
 
@@ -113,8 +110,7 @@ const DashboardSettingsPage = () => {
       await updatePermissionsMutation.mutateAsync({
         [MODULE_KEY_MAP[name]]: checked,
       });
-    } catch (err) {
-      notifyError(err, t("common.toast.settingsUpdateError"));
+    } catch {
     }
   };
 
