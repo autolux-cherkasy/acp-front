@@ -66,6 +66,18 @@
   overflow: hidden;
 }
 
+.tableEmptyState {
+  height: 100%;
+  max-height: none;
+}
+
+.tableEmptyCard {
+  background: var(--color-white, #fff);
+  min-height: 0;
+  height: 100%;
+  border-radius: 0;
+}
+
 .tableScroll {
   height: 100%;
   overflow: hidden;

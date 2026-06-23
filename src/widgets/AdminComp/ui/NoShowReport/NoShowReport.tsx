@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import StatusBadge from "@/src/shared/ui/StatusBadge/StatusBadge";
+import BlockedUserModal from "@/src/features/admin-modals/BlockedUserModal/BlockedUserModal";
 import {
   DashboardCard,
   DashboardTable,
   DashboardThead,
-  SharedLabel,
   DashboardTr,
+  EmptyState,
 } from "@/src/shared";
-import styles from "./NoShowReport.module.css";
+import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
-import BlockedUserModal from "@/src/features/admin-modals/BlockedUserModal/BlockedUserModal";
+import StatusBadge from "@/src/shared/ui/StatusBadge/StatusBadge";
+import { useState } from "react";
+import styles from "./NoShowReport.module.css";
 
 type NoShowRow = {
   id: number;
@@ -88,22 +88,15 @@ export default function NoShowReport({ rows = MOCK_ROWS, onBlockUser }: Props) {
       title={t("dispatcherArea.analytics.noShowReport.title")}
       subtitle={t("dispatcherArea.analytics.noShowReport.subtitle")}
     >
-
       {rows.length === 0 ? (
-        <div className={styles.emptyState} aria-live="polite">
-          <div className={styles.emptyCard}>
-            <div className={styles.icon} aria-hidden="true" />
-            <p className={styles.emptyTitle}>
-              {t("dispatcherArea.analytics.noShowReport.empty.title")}
-            </p>
-            <p className={styles.emptyText}>
-              {t("dispatcherArea.analytics.noShowReport.empty.description")}
-            </p>
-            <p className={styles.emptyText}>
-              {t("dispatcherArea.analytics.noShowReport.empty.note")}
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          iconUrl="/icons/no-person.svg"
+          title={t("dispatcherArea.analytics.noShowReport.empty.title")}
+          description={[
+            t("dispatcherArea.analytics.noShowReport.empty.description"),
+            t("dispatcherArea.analytics.noShowReport.empty.note"),
+          ]}
+        />
       ) : (
         <div className={styles.tableWrapper}>
           <DashboardTable className={styles.table}>

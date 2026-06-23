@@ -6,6 +6,7 @@ import {
   dashboardTableStyles,
   DashboardThead,
   DashboardTr,
+  EmptyState,
   TablePagination,
   useI18n,
 } from "@/src/shared";
@@ -131,59 +132,68 @@ export default function AllRoutesPage() {
           headerRef={headerRef}
         >
           <div ref={tableAreaRef} className={styles.tableArea}>
-            <div ref={tableScrollRef} className={styles.tableScroll}>
-              <DashboardTable>
-                <DashboardThead ref={theadRef}>
-                  <th className={dashboardTableStyles.thNum}>
-                    {t("dispatcherArea.analytics.allRoutesPage.columns.number")}
-                  </th>
-                  <th className={dashboardTableStyles.thLeft}>
-                    {t("dispatcherArea.analytics.allRoutesPage.columns.direction")}
-                  </th>
-                  <th className={dashboardTableStyles.th}>
-                    {t("dispatcherArea.analytics.allRoutesPage.columns.tripsPerDay")}
-                  </th>
-                  <th className={dashboardTableStyles.th}>
-                    {t("dispatcherArea.analytics.allRoutesPage.columns.ticketsSold")}
-                  </th>
-                  <th className={dashboardTableStyles.th}>
-                    {t("dispatcherArea.analytics.allRoutesPage.columns.load")}
-                  </th>
-                  <th className={dashboardTableStyles.th}>
-                    {t("dispatcherArea.analytics.allRoutesPage.columns.income")}
-                  </th>
-                  <th className={dashboardTableStyles.th}>
-                    {t("dispatcherArea.analytics.allRoutesPage.columns.redemptionRate")}
-                  </th>
-                </DashboardThead>
-                <tbody>
-                  {paginatedRows.map((row, index) => {
-                    return (
-                      <DashboardTr
-                        ref={index === 0 ? firstRowRef : undefined}
-                        key={row.direction}
-                        className={`${styles.clickableRow} ${
-                          selectedDirection === row.direction ? styles.selectedRow : ""
-                        }`}
-                        onClick={() => setSelectedDirection(row.direction)}
-                      >
-                        <td className={dashboardTableStyles.tdNum}>
-                          {(page - 1) * rowsPerPage + index + 1}
-                        </td>
-                        <td className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft}`}>
-                          {row.direction}
-                        </td>
-                        <td className={dashboardTableStyles.td}>{row.tripsPerDay}</td>
-                        <td className={dashboardTableStyles.td}>{row.ticketsSold}</td>
-                        <td className={dashboardTableStyles.td}>{row.load}</td>
-                        <td className={dashboardTableStyles.td}>{row.income}</td>
-                        <td className={dashboardTableStyles.td}>{row.redemptionRate}</td>
-                      </DashboardTr>
-                    );
-                  })}
-                </tbody>
-              </DashboardTable>
-            </div>
+            {allRoutes.length === 0 ? (
+              <EmptyState
+                iconUrl="/icons/workspace/sidebar/routes.svg"
+                description="Список порожній"
+                className={styles.tableEmptyState}
+                cardClassName={styles.tableEmptyCard}
+              />
+            ) : (
+              <div ref={tableScrollRef} className={styles.tableScroll}>
+                <DashboardTable>
+                  <DashboardThead ref={theadRef}>
+                    <th className={dashboardTableStyles.thNum}>
+                      {t("dispatcherArea.analytics.allRoutesPage.columns.number")}
+                    </th>
+                    <th className={dashboardTableStyles.thLeft}>
+                      {t("dispatcherArea.analytics.allRoutesPage.columns.direction")}
+                    </th>
+                    <th className={dashboardTableStyles.th}>
+                      {t("dispatcherArea.analytics.allRoutesPage.columns.tripsPerDay")}
+                    </th>
+                    <th className={dashboardTableStyles.th}>
+                      {t("dispatcherArea.analytics.allRoutesPage.columns.ticketsSold")}
+                    </th>
+                    <th className={dashboardTableStyles.th}>
+                      {t("dispatcherArea.analytics.allRoutesPage.columns.load")}
+                    </th>
+                    <th className={dashboardTableStyles.th}>
+                      {t("dispatcherArea.analytics.allRoutesPage.columns.income")}
+                    </th>
+                    <th className={dashboardTableStyles.th}>
+                      {t("dispatcherArea.analytics.allRoutesPage.columns.redemptionRate")}
+                    </th>
+                  </DashboardThead>
+                  <tbody>
+                    {paginatedRows.map((row, index) => {
+                      return (
+                        <DashboardTr
+                          ref={index === 0 ? firstRowRef : undefined}
+                          key={row.direction}
+                          className={`${styles.clickableRow} ${
+                            selectedDirection === row.direction ? styles.selectedRow : ""
+                          }`}
+                          onClick={() => setSelectedDirection(row.direction)}
+                        >
+                          <td className={dashboardTableStyles.tdNum}>
+                            {(page - 1) * rowsPerPage + index + 1}
+                          </td>
+                          <td className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft}`}>
+                            {row.direction}
+                          </td>
+                          <td className={dashboardTableStyles.td}>{row.tripsPerDay}</td>
+                          <td className={dashboardTableStyles.td}>{row.ticketsSold}</td>
+                          <td className={dashboardTableStyles.td}>{row.load}</td>
+                          <td className={dashboardTableStyles.td}>{row.income}</td>
+                          <td className={dashboardTableStyles.td}>{row.redemptionRate}</td>
+                        </DashboardTr>
+                      );
+                    })}
+                  </tbody>
+                </DashboardTable>
+              </div>
+            )}
           </div>
           <div ref={paginationRef}>
             <TablePagination

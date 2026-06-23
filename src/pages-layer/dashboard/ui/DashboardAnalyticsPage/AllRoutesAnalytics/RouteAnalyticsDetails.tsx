@@ -1,6 +1,6 @@
 "use client";
 
-import { DashboardCard } from "@/src/shared";
+import { DashboardCard, EmptyState } from "@/src/shared";
 import type { PieLabelRenderProps } from "recharts";
 import {
   Area,
@@ -112,6 +112,12 @@ export default function RouteAnalyticsDetails({
         title={trendTitle.replace("{{route}}", routeTitle)}
       >
         <div className={styles.chartWrapper}>
+          {trendChartData.length === 0 ? (
+            <EmptyState
+              iconUrl="/icons/workspace/sidebar/analytics.svg"
+              title={`Немає даних по маршруту ${routeTitle}`}
+            />
+          ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={trendChartData} margin={{ top: 28, right: 16, left: 4, bottom: 0 }}>
               <defs>
@@ -160,6 +166,7 @@ export default function RouteAnalyticsDetails({
               </Area>
             </AreaChart>
           </ResponsiveContainer>
+          )}
         </div>
       </DashboardCard>
       <DashboardCard
@@ -167,44 +174,50 @@ export default function RouteAnalyticsDetails({
         title={statisticsTitle}
       >
         <div className={styles.statisticsContent}>
-          <div className={styles.statisticsLegend}>
-            {ticketStatsData.map((item) => (
-              <div key={item.key} className={styles.legendItem}>
-                <span
-                  className={styles.legendDot}
-                  style={{ backgroundColor: PIE_STAT_COLORS[item.key] }}
-                />
-                <span className={styles.legendLabel}>{item.label}</span>
+          {ticketStatsData.length === 0 ? (
+            <EmptyState iconUrl="/pie-chart.svg" />
+          ) : (
+            <>
+              <div className={styles.statisticsLegend}>
+                {ticketStatsData.map((item) => (
+                  <div key={item.key} className={styles.legendItem}>
+                    <span
+                      className={styles.legendDot}
+                      style={{ backgroundColor: PIE_STAT_COLORS[item.key] }}
+                    />
+                    <span className={styles.legendLabel}>{item.label}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className={styles.donutWrapper}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 24, right: 20, bottom: 16, left: 20 }}>
-                <Pie
-                  data={ticketStatsData}
-                  dataKey="value"
-                  nameKey="label"
-                  cx="50%"
-                  cy="52%"
-                  innerRadius={44}
-                  outerRadius={75}
-                  paddingAngle={1}
-                  stroke="none"
-                  labelLine={false}
-                  label={renderPieValueLabel}
-                >
-                  {ticketStatsData.map((item) => (
-                    <Cell key={item.key} fill={PIE_STAT_COLORS[item.key]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ borderRadius: 12 }}
-                  formatter={(value, _name, entry) => [value, entry.payload.label]}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+              <div className={styles.donutWrapper}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart margin={{ top: 24, right: 20, bottom: 16, left: 20 }}>
+                    <Pie
+                      data={ticketStatsData}
+                      dataKey="value"
+                      nameKey="label"
+                      cx="50%"
+                      cy="52%"
+                      innerRadius={44}
+                      outerRadius={75}
+                      paddingAngle={1}
+                      stroke="none"
+                      labelLine={false}
+                      label={renderPieValueLabel}
+                    >
+                      {ticketStatsData.map((item) => (
+                        <Cell key={item.key} fill={PIE_STAT_COLORS[item.key]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ borderRadius: 12 }}
+                      formatter={(value, _name, entry) => [value, entry.payload.label]}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          )}
         </div>
       </DashboardCard>
     </>
