@@ -81,8 +81,7 @@ const DataMgmtPage = () => {
     return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : stripped;
   };
 
-  const formatCategory = (cat: string) =>
-    cat.startsWith("Категорія") ? cat : `Категорія ${cat}`;
+  const formatCategory = (cat: string) => (cat.startsWith("Категорія") ? cat : `Категорія ${cat}`);
 
   const staffSections: DataSection[] = [
     {
@@ -297,7 +296,9 @@ const DataMgmtPage = () => {
           }
           initialData={
             rowModal.data!.mode === "edit"
-              ? sections[rowModal.data!.sectionIndex].rows?.[rowModal.data!.rowIndex]
+              ? sections[rowModal.data!.sectionIndex].rows?.[rowModal.data!.rowIndex]?.filter(
+                  (cell): cell is string => typeof cell === "string",
+                )
               : undefined
           }
         />

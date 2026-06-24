@@ -42,23 +42,22 @@ export type CreateDriverBody = {
 
 export type UpdateDriverBody = Partial<CreateDriverBody>;
 
-export const getAdminStaff = () =>
-  apiFetch<AdminStaffResponse>(`${ADMIN_URL}/staff`);
+export const getAdminStaff = () => apiFetch<AdminStaffResponse>(`${ADMIN_URL}/staff`);
 
 export const addDispatcher = (body: CreateDispatcherBody) =>
-  apiFetch<DispatcherResponse>(`${ADMIN_URL}/dispatchers`, {
+  apiFetch<DispatcherResponse>(`${ADMIN_URL}/staff/dispatchers`, {
     method: "POST",
     body: JSON.stringify(body),
   });
 
 export const updateDispatcher = (id: number, body: UpdateDispatcherBody) =>
-  apiFetch<DispatcherResponse>(`${ADMIN_URL}/dispatchers/${id}`, {
+  apiFetch<DispatcherResponse>(`${ADMIN_URL}/staff/dispatchers/${id}`, {
     method: "PATCH",
     body: JSON.stringify(body),
   });
 
 export const deleteDispatcher = (id: number) =>
-  apiFetch<void>(`${ADMIN_URL}/dispatchers/${id}`, {
+  apiFetch<void>(`${ADMIN_URL}/staff/dispatchers/${id}`, {
     method: "DELETE",
   });
 

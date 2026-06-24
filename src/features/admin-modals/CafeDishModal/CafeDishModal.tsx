@@ -39,7 +39,7 @@ export default function CafeDishModal({
     defaultValues: {
       category: initialCategory,
       name: initialData?.[0] ?? "",
-      price: initialData?.[1] ?? "",
+      price: initialData?.[2] ?? "",
     },
   });
 
