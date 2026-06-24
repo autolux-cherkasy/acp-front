@@ -1,4 +1,4 @@
-export type TableRow = string[];
+export type TableRow = (string | boolean)[];
 
 export type SubSection = {
   groupLabel: string;
@@ -50,75 +50,6 @@ export const MOCK_ROUTES: TabMockData = {
   ],
 };
 
-export const MOCK_CAFE: TabMockData = {
-  sections: [
-    {
-      id: "coffee",
-      title: "Кава/додатки/чай",
-      imageUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop",
-      subSections: [
-        {
-          groupLabel: "Напій",
-          columns: ["Напій", "Ціна"],
-          rows: [
-            ["Еспресо", "40 ₴"],
-            ["Еспресо з молоком", "45 ₴"],
-            ["Допіо", "75 ₴"],
-            ["Лунго", "45 ₴"],
-            ["Американо", "45 ₴"],
-            ["Американо з молоком", "50 ₴"],
-            ["Флет Вайт", "80 ₴"],
-            ["Капучіно", "65 ₴"],
-            ["Лате", "65 ₴"],
-            ["Раф", "75 ₴"],
-            ["Какао", "65 ₴"],
-          ],
-        },
-        {
-          groupLabel: "Додатки",
-          columns: ["Додатки", "Ціна"],
-          rows: [
-            ["Згущене молоко", "10 ₴"],
-            ["Вершки", "15 ₴"],
-            ["Маршмелоу", "10 ₴"],
-            ["Сироп", "5 ₴"],
-          ],
-        },
-        {
-          groupLabel: "Чай",
-          columns: ["Чай", "Ціна"],
-          rows: [
-            ["Натуральний в асортименті", "40 ₴"],
-            ["Заварні в асортименті", "40 ₴"],
-          ],
-        },
-      ],
-    },
-    {
-      id: "summer-drinks",
-      title: "Літні напої",
-      columns: ["Напій", "Ціна"],
-      rows: [
-        ["Еспресо тонік", "75 ₴"],
-        ["Оранж кава", "75 ₴"],
-        ["Айс лате", "70 ₴"],
-        ["Лимонади в асортименті", "65 ₴"],
-        ["Каркаде ягідний", "45 ₴"],
-      ],
-    },
-    {
-      id: "hotdog",
-      title: "Хот-Дог",
-      columns: ["Вид", "Ціна"],
-      rows: [
-        ["Французька булка + сосиска молочна", "70 ₴"],
-        ["Французька булка + сосиска молочна з сиром", "70 ₴"],
-        ["Французька булка + сосиска копчена", "75 ₴"],
-      ],
-    },
-  ],
-};
-
 export const MOCK_FLEET: TabMockData = {
   sections: [
     {
@@ -134,36 +65,9 @@ export const MOCK_FLEET: TabMockData = {
   ],
 };
 
-export const MOCK_STAFF: TabMockData = {
-  sections: [
-    {
-      id: "dispatchers",
-      title: "Диспетчери",
-      columns: ["П.І.Б", "Телефон"],
-      rows: [
-        ["Василенко Світлана Іванівна", "+38067 854 12 85"],
-        ["Притула Марія Федорівна", "+38063 547 22 65"],
-        ["Тищенко Галина Петрівна", "+38063 395 54 94"],
-      ],
-    },
-    {
-      id: "drivers",
-      title: "Водії",
-      columns: ["П.І.Б", "Телефон", "Посвідчення водія", "Категорія"],
-      rows: [
-        ["Березань Олег Васильович", "+38095 447 25 64", "До 12.08.2036", "Категорія D"],
-        ["Назаренко Петро Іванович", "+38067 878 36 12", "До 24.05.2038", "Категорія D"],
-        ["Лобода Сергій Вікторович", "+38093 295 59 67", "До 17.02.2042", "Категорія DE"],
-      ],
-    },
-  ],
-};
-
 export const MOCK_DATA_BY_TAB: Record<string, TabMockData> = {
   routes: MOCK_ROUTES,
-  cafe: MOCK_CAFE,
   fleet: MOCK_FLEET,
-  staff: MOCK_STAFF,
 };
 
 export type ColumnDef = {
@@ -188,14 +92,14 @@ export const SECTION_COLUMNS: Record<string, ColumnDef[]> = {
   // staff
   dispatchers: [
     { key: "fullName", label: "П.І.Б" },
-    { key: "email", label: "Емейл" },
+    { key: "email", label: "Email" },
     { key: "phone", label: "Телефон" },
   ],
   drivers: [
     { key: "fullName", label: "П.І.Б" },
-    { key: "phone", label: "Телефон" },
-    { key: "license", label: "Посвідчення водія" },
+    { key: "license", label: "Посвідчення водія до" },
     { key: "category", label: "Категорія" },
+    { key: "phone", label: "Телефон" },
   ],
   // fleet
   fleet: [

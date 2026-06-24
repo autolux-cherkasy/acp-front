@@ -151,7 +151,7 @@ const CollapsibleSection = ({
           ) : (
             <DataTable
               rows={section.rows ?? []}
-              columns={SECTION_COLUMNS[tab] ?? []}
+              columns={SECTION_COLUMNS[section.id] ?? SECTION_COLUMNS[tab] ?? []}
               onAdd={onAddRow}
               onEdit={onEditRow}
             />

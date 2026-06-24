@@ -16,6 +16,7 @@ import { useAdminCafeQuery } from "@/src/entities/dashboard/api/dashboardCafeQue
 import { useAdminStaffQuery } from "@/src/entities/dashboard/api/dashboardStaffQueries";
 import { usePermissionsQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
 import { useAuthSession } from "@/src/features/auth";
+import { formatPhone } from "@/src/shared/lib/formatters";
 
 const DataMgmtPage = () => {
   const [tab, setTab] = useState("routes");
@@ -74,23 +75,30 @@ const DataMgmtPage = () => {
       }))
     : [];
 
+  const formatLicenseDate = (date: string) => {
+    const stripped = date.replace(/^До\s+/, "");
+    const iso = stripped.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : stripped;
+  };
+
+  const formatCategory = (cat: string) =>
+    cat.startsWith("Категорія") ? cat : `Категорія ${cat}`;
+
   const staffSections: DataSection[] = [
     {
       id: "dispatchers",
       title: "Диспетчери",
-      columns: ["П.І.Б", "Емейл", "Телефон"],
-      rows: staffData?.dispatchers.map((d) => [d.name ?? "", d.email, d.phone ?? ""]) ?? [],
+      rows: staffData?.dispatchers.map((d) => [d.name ?? "", d.email, formatPhone(d.phone)]) ?? [],
     },
     {
       id: "drivers",
       title: "Водії",
-      columns: ["П.І.Б", "Телефон", "Посвідчення водія", "Категорія"],
       rows:
         staffData?.drivers.map((d) => [
           d.fullName ?? "",
-          d.phone ?? "",
-          d.licenseValidUntil ?? "",
-          d.licenseCategories ?? "",
+          formatLicenseDate(d.licenseValidUntil),
+          formatCategory(d.licenseCategories),
+          formatPhone(d.phone),
         ]) ?? [],
     },
   ];
@@ -230,12 +238,12 @@ const DataMgmtPage = () => {
                                     rows: sub.rows.map((row, ri) =>
                                       ri !== rowIdx
                                         ? row
-                                        : row.map((cell, ci) => (ci === cellIdx ? value : cell))
+                                        : row.map((cell, ci) => (ci === cellIdx ? value : cell)),
                                     ),
-                                  }
+                                  },
                             ),
-                          }
-                    )
+                          },
+                    ),
                   )
                 }
               />
