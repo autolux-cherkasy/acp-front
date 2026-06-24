@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { showServerToast } from "@/src/shared/lib/toast";
 import {
@@ -24,6 +25,19 @@ export const usePermissionsQuery = () =>
 
 export const usePhonesQuery = () =>
   useQuery({ queryFn: getPhones, queryKey: [PHONES_KEY] });
+
+export const usePhones = () => {
+  const { data: phonesData } = usePhonesQuery();
+  return useMemo(() => {
+    if (!phonesData) return [];
+    return [phonesData.phone1, phonesData.phone2, phonesData.phone3]
+      .filter(Boolean)
+      .map((p) => ({
+        text: p?.replace(/^\+380(\d{2})(\d{3})(\d{2})(\d{2})$/, "+380$1 $2 $3 $4"),
+        href: `tel:${p}`,
+      }));
+  }, [phonesData]);
+};
 
 export function useUpdateCompanyMutation() {
   const queryClient = useQueryClient();

@@ -7,11 +7,11 @@ import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import { stripLocaleFromPathname } from "@/src/shared/i18n/routing";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { MouseEvent, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { MouseEvent, useEffect, useEffectEvent, useRef, useState } from "react";
 
 import styles from "./Header.module.css";
 import HeaderAuthControl from "./HeaderAuthControl";
-import { usePhonesQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
+import { usePhones } from "@/src/entities/dashboard/api/useSettingsQueries";
 
 const menu = [
   { key: "menu.home", href: "#home" },
@@ -30,15 +30,7 @@ export default function Header() {
   const resolveHref = useLocalizedHref();
   const router = useRouter();
   const pathname = usePathname();
-  const { data: phonesData } = usePhonesQuery();
-
-  const phones = useMemo(() => {
-    if (!phonesData) return [];
-    return [phonesData.phone1, phonesData.phone2, phonesData.phone3].filter(Boolean).map((p) => ({
-      text: p?.replace(/^\+380(\d{2})(\d{3})(\d{2})(\d{2})$/, "+380$1 $2 $3 $4"),
-      href: `tel:${p}`,
-    }));
-  }, [phonesData]);
+  const phones = usePhones();
 
   const { isAuthenticated, role } = useAuthSession();
   const pathnameWithoutLocale = stripLocaleFromPathname(pathname || "/");

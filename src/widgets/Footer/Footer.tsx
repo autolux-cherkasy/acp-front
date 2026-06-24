@@ -6,27 +6,23 @@ import Link from "next/link";
 
 import styles from "./Footer.module.css";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
+import { usePhones } from "@/src/entities/dashboard/api/useSettingsQueries";
 
 const MAP_QUERY = "вулиця Митницька, 7, Черкаси, Черкаська область, 18000";
 
 export default function Footer() {
   const { t } = useI18n();
+  const phones = usePhones();
   const localizeHref = useLocalizedHref();
 
-  const src = `https://www.google.com/maps?q=${encodeURIComponent(
-    MAP_QUERY
-  )}&output=embed`;
+  const src = `https://www.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&output=embed`;
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <footer
-      className={styles.footer}
-      id="contacts"
-      aria-label={t("footer.ariaLabel")}
-    >
+    <footer className={styles.footer} id="contacts" aria-label={t("footer.ariaLabel")}>
       <div className={styles.container}>
         <div className={styles.contacts}>
           {/* Column 1: Time & Address */}
@@ -58,9 +54,7 @@ export default function Footer() {
               </div>
               <div className={styles.textColumn}>
                 <div className={styles.contactText}>{t("footer.addressLine1")}</div>
-                <div className={styles.contactTextMuted}>
-                  {t("footer.addressLine2")}
-                </div>
+                <div className={styles.contactTextMuted}>{t("footer.addressLine2")}</div>
               </div>
             </div>
           </div>
@@ -78,15 +72,11 @@ export default function Footer() {
                 />
               </div>
               <div className={styles.textColumn}>
-                <a className={styles.contactLink} href="tel:+380974802428">
-                  +38097 480 24 28
-                </a>
-                <a className={styles.contactLink} href="tel:+380939660940">
-                  +38093 966 09 40
-                </a>
-                <a className={styles.contactLink} href="tel:+380990782021">
-                  +38099 078 20 21
-                </a>
+                {phones.map((item) => (
+                  <a key={`popup-${item.href}`} className={styles.contactLink} href={item.href}>
+                    {item.text}
+                  </a>
+                ))}
               </div>
             </div>
           </div>
@@ -124,7 +114,12 @@ export default function Footer() {
                 />
               </div>
               <div className={styles.textColumn}>
-                <a className={styles.offerText} href="https://instagram.com" target="_blank" rel="noreferrer">
+                <a
+                  className={styles.offerText}
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Instagram
                 </a>
               </div>
@@ -141,7 +136,12 @@ export default function Footer() {
                 />
               </div>
               <div className={styles.textColumn}>
-                <a className={styles.offerText} href="https://facebook.com" target="_blank" rel="noreferrer">
+                <a
+                  className={styles.offerText}
+                  href="https://facebook.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Facebook
                 </a>
               </div>

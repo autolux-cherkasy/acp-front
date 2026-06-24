@@ -151,7 +151,6 @@ export default function RoleWorkspaceShell({
       const result = await logoutMutation.mutateAsync();
       notifySuccess(result, t("common.toast.logoutSuccess"));
       router.replace(localizeHref(AUTH_FALLBACK_PATH));
-      router.refresh();
     } catch (error) {
       notifyError(error, t("common.toast.logoutError"));
     }
