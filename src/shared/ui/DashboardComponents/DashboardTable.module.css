@@ -5,13 +5,14 @@
   border-radius: 8px;
 }
 
-.theadRow th {
+.theadRow th,
+.theadRow td {
   padding: 8px 12px;
   font-size: 14px;
   font-weight: 500;
   color: var(--color-brand);
   border-bottom: 0.5px solid var(--color-brand);
-  text-align: center;
+  text-align: left;
 }
 
 .theadRow .thNum,

@@ -13,7 +13,7 @@ import { ColumnDef } from "@/src/pages-layer/dashboard/ui/DashboardDataMgmtPage/
 
 type Props = {
   columns: ColumnDef[];
-  rows: string[][];
+  rows: (string | boolean)[][];
   onEdit: (rowIndex: number) => void;
   onAdd: () => void;
 };
@@ -56,7 +56,17 @@ export default function DataTable({ columns, rows, onEdit, onAdd }: Props) {
                         .join(" ")
                 }
               >
-                {cell}
+                {typeof cell === "boolean" ? (
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    checked={cell}
+                    readOnly
+                    className={styles.switch}
+                  />
+                ) : (
+                  cell
+                )}
               </td>
             ))}
             <td className={`${dashboardTableStyles.tdAction} ${styles.tdCenter}`}>

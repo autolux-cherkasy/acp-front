@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { TicketSearchInput } from "@/src/features/search-tickets";
 import { Button, DashboardCard, DashboardDateText, useI18n } from "@/src/shared";
 import { useSearch } from "@/src/shared/lib/useSearch";
@@ -12,10 +12,15 @@ import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import RouteModal from "@/src/features/admin-modals/RouteModal/RouteModal";
 import DirectionModal from "@/src/features/admin-modals/DirectionModal/DirectionModal";
 import CafeDishModal from "@/src/features/admin-modals/CafeDishModal/CafeDishModal";
+import { useAdminCafeQuery } from "@/src/entities/dashboard/api/dashboardCafeQueries";
+import { useAdminStaffQuery } from "@/src/entities/dashboard/api/dashboardStaffQueries";
+import { usePermissionsQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
+import { useAuthSession } from "@/src/features/auth";
 
 const DataMgmtPage = () => {
   const [tab, setTab] = useState("routes");
   const { t } = useI18n();
+  const { role } = useAuthSession();
   const [sections, setSections] = useState(MOCK_DATA_BY_TAB.routes.sections);
   const sectionModal = useDisclosure<{ mode: "create" } | { mode: "edit"; sectionIndex: number }>();
   const categoryOptions = sections.map((s) => ({ value: s.title, label: s.title }));
@@ -23,6 +28,13 @@ const DataMgmtPage = () => {
     | { mode: "create"; sectionIndex: number }
     | { mode: "edit"; sectionIndex: number; rowIndex: number }
   >();
+  const { data: cafeData } = useAdminCafeQuery({
+    enabled: tab === "cafe",
+  });
+  const { data: staffData } = useAdminStaffQuery({
+    enabled: tab === "staff",
+  });
+  const { data: permissions } = usePermissionsQuery();
 
   const sectionModalByTab: Partial<
     Record<
@@ -49,13 +61,81 @@ const DataMgmtPage = () => {
       placeholder: t("dispatcherArea.dataMgmt.cafeCategoryModal.placeholder"),
     },
   };
+  const cafeSections: DataSection[] = cafeData
+    ? cafeData.map((section) => ({
+        id: section.id,
+        title: section.name,
+        imageUrl: section.imageUrl ?? undefined,
+        subSections: section.categories.map((category) => ({
+          groupLabel: category.name,
+          columns: ["Назва", "Наявність", "Ціна"],
+          rows: category.items.map((item) => [item.name, item.isAvailable, `${item.price} ₴`]),
+        })),
+      }))
+    : [];
+
+  const staffSections: DataSection[] = [
+    {
+      id: "dispatchers",
+      title: "Диспетчери",
+      columns: ["П.І.Б", "Емейл", "Телефон"],
+      rows: staffData?.dispatchers.map((d) => [d.name ?? "", d.email, d.phone ?? ""]) ?? [],
+    },
+    {
+      id: "drivers",
+      title: "Водії",
+      columns: ["П.І.Б", "Телефон", "Посвідчення водія", "Категорія"],
+      rows:
+        staffData?.drivers.map((d) => [
+          d.fullName ?? "",
+          d.phone ?? "",
+          d.licenseValidUntil ?? "",
+          d.licenseCategories ?? "",
+        ]) ?? [],
+    },
+  ];
+
+  const allTabs = [
+    {
+      value: "routes",
+      label: t("dispatcherArea.settingsCards.dataAccess.items.routes"),
+      hasHeaderAction: true,
+      permissionKey: "canAccessRoutes" as const,
+    },
+    {
+      value: "fleet",
+      label: t("dispatcherArea.settingsCards.dataAccess.items.fleet"),
+      hasHeaderAction: false,
+      permissionKey: "canAccessFleet" as const,
+    },
+    {
+      value: "staff",
+      label: t("dispatcherArea.settingsCards.dataAccess.items.staff"),
+      hasHeaderAction: false,
+      permissionKey: "canAccessStaff" as const,
+    },
+    {
+      value: "cafe",
+      label: t("dispatcherArea.settingsCards.dataAccess.items.cafe"),
+      hasHeaderAction: true,
+      permissionKey: "canAccessCafe" as const,
+    },
+  ];
+
+  const tabs =
+    role === "DISPATCHER" && permissions
+      ? allTabs.filter((tabDef) => permissions[tabDef.permissionKey])
+      : allTabs;
+
   const { query, setQuery, filtered } = useSearch(sections, (section, q) => {
     const lq = q.toLowerCase();
 
     if (section.title.toLowerCase().includes(lq)) return true;
 
     return (
-      section.rows?.some((row) => row.some((cell) => cell.toLowerCase().includes(lq))) ?? false
+      section.rows?.some((row) =>
+        row.some((cell) => typeof cell === "string" && cell.toLowerCase().includes(lq)),
+      ) ?? false
     );
   });
 
@@ -65,34 +145,25 @@ const DataMgmtPage = () => {
   };
 
   useEffect(() => {
-    const set = () => {
-      setSections(MOCK_DATA_BY_TAB[tab].sections);
+    const set = (s: DataSection[]) => {
+      setSections(s);
     };
-    set();
-  }, [tab]);
+    if (tab === "staff") {
+      set(staffSections);
+    } else if (tab === "cafe") {
+      set(cafeSections);
+    } else {
+      set(MOCK_DATA_BY_TAB[tab]?.sections ?? []);
+    }
+  }, [tab, staffData, cafeData]);
 
-  const tabs = [
-    {
-      value: "routes",
-      label: t("dispatcherArea.settingsCards.dataAccess.items.routes"),
-      hasHeaderAction: true,
-    },
-    {
-      value: "fleet",
-      label: t("dispatcherArea.settingsCards.dataAccess.items.fleet"),
-      hasHeaderAction: false,
-    },
-    {
-      value: "staff",
-      label: t("dispatcherArea.settingsCards.dataAccess.items.staff"),
-      hasHeaderAction: false,
-    },
-    {
-      value: "cafe",
-      label: t("dispatcherArea.settingsCards.dataAccess.items.cafe"),
-      hasHeaderAction: true,
-    },
-  ];
+  useEffect(() => {
+    const setT = (v: string) => setTab(v);
+    if (tabs.length > 0 && !tabs.find((tabDef) => tabDef.value === tab)) {
+      setT(tabs[0].value);
+      setQuery("");
+    }
+  }, [permissions]);
 
   return (
     <div className={styles.mainContainer}>
@@ -144,6 +215,29 @@ const DataMgmtPage = () => {
                 onEditRow={(rowIndex) =>
                   rowModal.open({ mode: "edit", sectionIndex: index, rowIndex })
                 }
+                onToggleSubCell={(subIdx, rowIdx, cellIdx, value) =>
+                  setSections((prev) =>
+                    prev.map((s, si) =>
+                      si !== index
+                        ? s
+                        : {
+                            ...s,
+                            subSections: s.subSections?.map((sub, subi) =>
+                              subi !== subIdx
+                                ? sub
+                                : {
+                                    ...sub,
+                                    rows: sub.rows.map((row, ri) =>
+                                      ri !== rowIdx
+                                        ? row
+                                        : row.map((cell, ci) => (ci === cellIdx ? value : cell))
+                                    ),
+                                  }
+                            ),
+                          }
+                    )
+                  )
+                }
               />
             </div>
           ))}
@@ -154,9 +248,13 @@ const DataMgmtPage = () => {
           mode={sectionModal.data!.mode}
           onClose={sectionModal.close}
           onSubmit={sectionModal.close}
+          showImage={tab === "cafe"}
           initialData={
             sectionModal.data!.mode === "edit"
-              ? { name: sections[sectionModal.data!.sectionIndex].title }
+              ? {
+                  name: sections[sectionModal.data!.sectionIndex].title,
+                  imageUrl: sections[sectionModal.data!.sectionIndex].imageUrl,
+                }
               : undefined
           }
           {...sectionModalByTab[tab]}
@@ -169,7 +267,13 @@ const DataMgmtPage = () => {
           onSubmit={rowModal.close}
           initialData={
             rowModal.data!.mode === "edit"
-              ? { place: sections[rowModal.data!.sectionIndex].rows?.[rowModal.data!.rowIndex][0] }
+              ? {
+                  place: (() => {
+                    const val =
+                      sections[rowModal.data!.sectionIndex].rows?.[rowModal.data!.rowIndex]?.[0];
+                    return typeof val === "string" ? val : val == null ? undefined : String(val);
+                  })(),
+                }
               : undefined
           }
         />

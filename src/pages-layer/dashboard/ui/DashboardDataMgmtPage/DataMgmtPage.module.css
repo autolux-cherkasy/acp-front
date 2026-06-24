@@ -93,5 +93,13 @@
 .chevron {
   margin: 5px;
 }
+.theadRow th {
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-brand);
+  border-bottom: 0.5px solid var(--color-brand);
+  text-align: center;
+}
 .chevron:hover {
 }
