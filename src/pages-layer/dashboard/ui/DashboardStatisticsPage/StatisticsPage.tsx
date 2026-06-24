@@ -102,13 +102,13 @@ function PieLabel({
   outerRadius,
   value,
 }: {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  outerRadius: number;
-  value: number;
+  cx?: number;
+  cy?: number;
+  midAngle?: number;
+  outerRadius?: number;
+  value?: number;
 }) {
-  if (!value || value < 5) return null;
+  if (!value || value < 5 || cx == null || cy == null || midAngle == null || outerRadius == null) return null;
   const r = outerRadius + 26;
   const x = cx + r * Math.cos(-(midAngle * Math.PI) / 180);
   const y = cy + r * Math.sin(-(midAngle * Math.PI) / 180);
@@ -236,7 +236,7 @@ export default function StatisticsPage() {
                       1000000,
                     ]}
                   />
-                  <Tooltip formatter={(v: number) => [`${v.toLocaleString("uk-UA")} ₴`, "Дохід"]} />
+                  <Tooltip formatter={(v) => [typeof v === "number" ? `${v.toLocaleString("uk-UA")} ₴` : v, "Дохід"]} />
                   <Area
                     type="monotone"
                     dataKey="v"
@@ -261,11 +261,6 @@ export default function StatisticsPage() {
                     formatter={(val) => (
                       <span style={{ fontSize: 12, color: "var(--color-text-strong)" }}>{val}</span>
                     )}
-                    payload={TICKETS_DATA.filter((d) => d.name).map((d, i) => ({
-                      value: d.name,
-                      color: TICKET_COLORS[i],
-                      type: "circle" as const,
-                    }))}
                   />
                   <Pie
                     data={TICKETS_DATA}
