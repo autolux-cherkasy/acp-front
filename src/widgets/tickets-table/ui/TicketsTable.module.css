@@ -11,7 +11,9 @@
   border-collapse: separate;
   border-spacing: 0;
   font-family: var(--font-roboto), sans-serif;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-strong);
 }
 
 /* Header */
@@ -65,37 +67,24 @@
 }
 
 .passengerName {
-  font-weight: 400;
   margin-bottom: 3px;
-}
-
-.passengerPhone {
-  font-size: 14px;
-  color: var(--color-border-muted);
 }
 
 /* Route cell */
 
 .route {
-  font-weight: 400;
   margin-bottom: 2px;
-}
-
-.routeStop {
-  font-size: 14px;
-  color: var(--color-border-muted);
 }
 
 /* Date / time cell */
 
 .time {
-  font-weight: 400;
-  margin-bottom: 2px;
+  font-size: 16px;
 }
 
 .date {
   font-size: 14px;
-  color: var(--color-border-muted);
+  margin-bottom: 2px;
 }
 
 /* Tickets cell */
@@ -106,15 +95,13 @@
 }
 
 .price {
-  font-size: 14px;
-  color: var(--color-border-muted);
+  font-size: 16px;
 }
 
 /* Row number */
 
 .rowNumber {
   font-weight: 400;
-  color: var(--color-border-muted);
 }
 
 /* Details button */

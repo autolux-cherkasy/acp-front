@@ -53,12 +53,12 @@ export default function DashboardPageHeader({
         )}
         <div className={styles.dateContainer}>
           <DashboardDateText chosenDate={chosenDate} />
+          <MiniCalendarTrigger
+            chosenDate={chosenDate}
+            setChosenDate={setChosenDate}
+            onCalendarChange={onCalendarChange}
+          />
         </div>
-        <MiniCalendarTrigger
-          chosenDate={chosenDate}
-          setChosenDate={setChosenDate}
-          onCalendarChange={onCalendarChange}
-        />
       </div>
     </div>
   );

@@ -30,21 +30,15 @@ export default function TicketsTable({ tickets, onDetails }: Props) {
             <th className={styles.th} style={{ width: 48 }}>
               {t("dispatcherArea.routes.table.columns.number")}
             </th>
-            <th className={styles.th}>
-              {t("dispatcherArea.tickets.table.columns.data")}
-            </th>
+            <th className={styles.th}>{t("dispatcherArea.tickets.table.columns.data")}</th>
             <th className={styles.th}>
               {t("dispatcherArea.analytics.popularRoutes.columns.route")}
             </th>
             <th className={styles.th}>{t("bookingForm.date.placeholder")}</th>
             <th className={styles.th}>{t("dispatcherArea.sidebar.menu.tickets")}</th>
             <th className={styles.th}>{t("dispatcherArea.routes.table.columns.status")}</th>
-            <th className={styles.th}>
-              {t("dispatcherArea.tickets.table.columns.timer")}
-            </th>
-            <th className={styles.th}>
-              {t("dispatcherArea.tickets.table.columns.actions")}
-            </th>
+            <th className={styles.th}>{t("dispatcherArea.tickets.table.columns.timer")}</th>
+            <th className={styles.th}>{t("dispatcherArea.tickets.table.columns.actions")}</th>
           </tr>
         </thead>
         <tbody>
@@ -90,14 +84,12 @@ function TicketRow({ ticket, rowNumber, locale, onDetails }: TicketRowProps) {
 
       <td className={styles.td}>
         <div className={styles.route}>{routeLine}</div>
-        {ticket.routeStop && (
-          <div className={styles.routeStop}>({ticket.routeStop})</div>
-        )}
+        {ticket.routeStop && <div>({ticket.routeStop})</div>}
       </td>
 
       <td className={styles.td}>
-        <div className={styles.time}>{ticket.departureTime}</div>
         <div className={styles.date}>{ticket.departureDate}</div>
+        <div className={styles.time}>{ticket.departureTime}</div>
       </td>
 
       <td className={styles.td}>
@@ -114,11 +106,7 @@ function TicketRow({ ticket, rowNumber, locale, onDetails }: TicketRowProps) {
       </td>
 
       <td className={styles.td}>
-        <button
-          type="button"
-          className={styles.detailsButton}
-          onClick={() => onDetails(ticket.id)}
-        >
+        <button type="button" className={styles.detailsButton} onClick={() => onDetails(ticket.id)}>
           {t("dispatcherArea.tickets.actions.details")}
         </button>
       </td>

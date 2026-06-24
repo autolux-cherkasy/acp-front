@@ -67,8 +67,8 @@ export default function FinanceCard({ data }: Props) {
     ...entry,
     value: values[i],
   }));
-  const maxValue = Math.max(...FINANCE_DATA.map((d) => d.value), 1);
-  const { domain, ticks } = getNiceAxisConfig(maxValue);
+  const dataMax = Math.max(...FINANCE_DATA.map((d) => d.value));
+  const { domain, ticks } = getNiceAxisConfig(dataMax > 0 ? dataMax : 600000);
 
   return (
     <DashboardCard
