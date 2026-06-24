@@ -54,13 +54,13 @@ export function AuthSessionProvider({
       return getDevProfile() as UserProfile | null;
     }
 
-    if (!authenticated) {
+    if (!hasAccessToken()) {
       return null;
     }
 
     const result = await refetch();
     return result.data ?? null;
-  }, [authenticated, devRole, refetch]);
+  }, [devRole, refetch]);
 
   useEffect(() => {
     return installDevAuthHelpers();

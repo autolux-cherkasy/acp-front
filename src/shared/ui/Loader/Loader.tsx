@@ -1,4 +1,4 @@
-function Loader({ size = 180, text = "Loading..." }) {
+function Loader({ size = 180, text = "Завантаження..." }) {
   return (
     <div
       style={{
