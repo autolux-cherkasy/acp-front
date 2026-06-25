@@ -12,7 +12,10 @@ import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import RouteModal from "@/src/features/admin-modals/RouteModal/RouteModal";
 import DirectionModal from "@/src/features/admin-modals/DirectionModal/DirectionModal";
 import CafeDishModal from "@/src/features/admin-modals/CafeDishModal/CafeDishModal";
-import { useAdminCafeQuery } from "@/src/entities/dashboard/api/dashboardCafeQueries";
+import {
+  useAdminCafeQuery,
+  useCafeItemUpdateMutation,
+} from "@/src/entities/dashboard/api/dashboardCafeQueries";
 import { useAdminStaffQuery } from "@/src/entities/dashboard/api/dashboardStaffQueries";
 import { usePermissionsQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
 import { useAuthSession } from "@/src/features/auth";
@@ -36,6 +39,7 @@ const DataMgmtPage = () => {
     enabled: tab === "staff",
   });
   const { data: permissions } = usePermissionsQuery();
+  const cafeItemAvailMutation = useCafeItemUpdateMutation({ enabled: tab === "cafe" });
 
   const sectionModalByTab: Partial<
     Record<
@@ -70,6 +74,7 @@ const DataMgmtPage = () => {
         subSections: section.categories.map((category) => ({
           groupLabel: category.name,
           columns: ["Назва", "Наявність", "Ціна"],
+          ids: category.items.map((item) => item.id),
           rows: category.items.map((item) => [item.name, item.isAvailable, `${item.price} ₴`]),
         })),
       }))
@@ -222,28 +227,8 @@ const DataMgmtPage = () => {
                 onEditRow={(rowIndex) =>
                   rowModal.open({ mode: "edit", sectionIndex: index, rowIndex })
                 }
-                onToggleSubCell={(subIdx, rowIdx, cellIdx, value) =>
-                  setSections((prev) =>
-                    prev.map((s, si) =>
-                      si !== index
-                        ? s
-                        : {
-                            ...s,
-                            subSections: s.subSections?.map((sub, subi) =>
-                              subi !== subIdx
-                                ? sub
-                                : {
-                                    ...sub,
-                                    rows: sub.rows.map((row, ri) =>
-                                      ri !== rowIdx
-                                        ? row
-                                        : row.map((cell, ci) => (ci === cellIdx ? value : cell)),
-                                    ),
-                                  },
-                            ),
-                          },
-                    ),
-                  )
+                onToggleSubCell={(id, value) =>
+                  cafeItemAvailMutation.mutate({ id, body: { isAvailable: value } })
                 }
               />
             </div>

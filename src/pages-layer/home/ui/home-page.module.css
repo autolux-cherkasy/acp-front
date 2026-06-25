@@ -23,7 +23,6 @@
 .mainScreenBlock {
   width: 100vw;
   max-width: var(--layout-max-width);
-  height: 850px;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
 

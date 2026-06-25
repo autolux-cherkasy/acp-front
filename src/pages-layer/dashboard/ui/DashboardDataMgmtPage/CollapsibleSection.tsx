@@ -22,7 +22,7 @@ type CollapsiblesectionProps = {
   onEditSection?: () => void;
   onAddRow: () => void;
   onEditRow: (index: number) => void;
-  onToggleSubCell?: (subIdx: number, rowIdx: number, cellIdx: number, value: boolean) => void;
+  onToggleSubCell?: (id: string, value: boolean) => void;
   initialOpenState?: boolean;
 };
 
@@ -92,7 +92,7 @@ const CollapsibleSection = ({
                               checked={cell}
                               className={tableStyles.switchRoot}
                               onCheckedChange={(checked) =>
-                                onToggleSubCell?.(subIdx, rowIdx, colIdx, checked)
+                                onToggleSubCell?.(sub.ids?.[rowIdx] ?? "", checked)
                               }
                             >
                               <Switch.Thumb className={tableStyles.switchThumb} />

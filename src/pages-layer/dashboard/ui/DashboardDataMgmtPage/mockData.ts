@@ -3,6 +3,7 @@ export type TableRow = (string | boolean)[];
 export type SubSection = {
   groupLabel: string;
   columns: string[];
+  ids: string[];
   rows: TableRow[];
 };
 
