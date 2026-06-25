@@ -1,6 +1,5 @@
 import { apiFetch } from "@/src/shared";
-
-const BASE = "/admin/settings";
+import { ADMIN_SETTINGS_URL } from "./dashboardApiKeys";
 
 export type CompanySettingsResponse = {
   name: string;
@@ -28,20 +27,20 @@ export type PermissionsResponse = {
 export type UpdateCompanyPayload = Partial<Omit<CompanySettingsResponse, "updatedAt">>;
 export type UpdatePermissionsPayload = Partial<PermissionsResponse>;
 
-export const getCompanySettings = () => apiFetch<CompanySettingsResponse>(`${BASE}/company`);
+export const getCompanySettings = () => apiFetch<CompanySettingsResponse>(`${ADMIN_SETTINGS_URL}/company`);
 
 export const getPhones = () => apiFetch<CompanyPhonesResponse>(`/company/phones`);
 
 export const updateCompanySettings = (data: UpdateCompanyPayload) =>
-  apiFetch<CompanySettingsResponse>(`${BASE}/company`, {
+  apiFetch<CompanySettingsResponse>(`${ADMIN_SETTINGS_URL}/company`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });
 
-export const getPermissions = () => apiFetch<PermissionsResponse>(`${BASE}/permissions`);
+export const getPermissions = () => apiFetch<PermissionsResponse>(`${ADMIN_SETTINGS_URL}/permissions`);
 
 export const updatePermissions = (data: UpdatePermissionsPayload) =>
-  apiFetch<PermissionsResponse>(`${BASE}/permissions`, {
+  apiFetch<PermissionsResponse>(`${ADMIN_SETTINGS_URL}/permissions`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });

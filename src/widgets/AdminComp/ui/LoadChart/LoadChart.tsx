@@ -1,6 +1,6 @@
 "use client";
 
-import type { LoadAnalyticsItem } from "@/src/entities/dashboard/api/analyticsApi";
+import type { LoadAnalyticsItem } from "@/src/entities/dashboard/api/dashboardAnalyticsApi";
 import { DashboardCard, EmptyState } from "@/src/shared";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import {

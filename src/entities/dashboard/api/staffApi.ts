@@ -1,6 +1,5 @@
 import { apiFetch } from "@/src/shared";
-
-const ADMIN_URL = "/admin";
+import { ADMIN_STAFF_URL } from "./dashboardApiKeys";
 
 export type DispatcherResponse = {
   id: number;
@@ -42,38 +41,38 @@ export type CreateDriverBody = {
 
 export type UpdateDriverBody = Partial<CreateDriverBody>;
 
-export const getAdminStaff = () => apiFetch<AdminStaffResponse>(`${ADMIN_URL}/staff`);
+export const getAdminStaff = () => apiFetch<AdminStaffResponse>(`${ADMIN_STAFF_URL}`);
 
 export const addDispatcher = (body: CreateDispatcherBody) =>
-  apiFetch<DispatcherResponse>(`${ADMIN_URL}/staff/dispatchers`, {
+  apiFetch<DispatcherResponse>(`${ADMIN_STAFF_URL}/dispatchers`, {
     method: "POST",
     body: JSON.stringify(body),
   });
 
 export const updateDispatcher = (id: number, body: UpdateDispatcherBody) =>
-  apiFetch<DispatcherResponse>(`${ADMIN_URL}/staff/dispatchers/${id}`, {
+  apiFetch<DispatcherResponse>(`${ADMIN_STAFF_URL}/dispatchers/${id}`, {
     method: "PATCH",
     body: JSON.stringify(body),
   });
 
 export const deleteDispatcher = (id: number) =>
-  apiFetch<void>(`${ADMIN_URL}/staff/dispatchers/${id}`, {
+  apiFetch<void>(`${ADMIN_STAFF_URL}/dispatchers/${id}`, {
     method: "DELETE",
   });
 
 export const addDriver = (body: CreateDriverBody) =>
-  apiFetch<DriverResponse>(`${ADMIN_URL}/staff/drivers`, {
+  apiFetch<DriverResponse>(`${ADMIN_STAFF_URL}/drivers`, {
     method: "POST",
     body: JSON.stringify(body),
   });
 
 export const updateDriver = (id: string, body: UpdateDriverBody) =>
-  apiFetch<DriverResponse>(`${ADMIN_URL}/staff/drivers/${id}`, {
+  apiFetch<DriverResponse>(`${ADMIN_STAFF_URL}/drivers/${id}`, {
     method: "PATCH",
     body: JSON.stringify(body),
   });
 
 export const deleteDriver = (id: string) =>
-  apiFetch<void>(`${ADMIN_URL}/staff/drivers/${id}`, {
+  apiFetch<void>(`${ADMIN_STAFF_URL}/drivers/${id}`, {
     method: "DELETE",
   });

@@ -16,7 +16,8 @@ import {
   updateDriver,
 } from "./staffApi";
 
-export const ADMIN_STAFF_KEY = "admin_staff";
+import { ADMIN_STAFF_KEY } from "./dashboardApiKeys";
+export { ADMIN_STAFF_KEY };
 
 export const useAdminStaffQuery = (options?: { enabled?: boolean }) =>
   useQuery<AdminStaffResponse>({

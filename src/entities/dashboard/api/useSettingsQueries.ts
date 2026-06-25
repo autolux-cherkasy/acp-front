@@ -12,10 +12,8 @@ import {
   type UpdateCompanyPayload,
   type UpdatePermissionsPayload,
 } from "./settingsApi";
-
-export const SETTINGS_COMPANY_KEY = "settings_company";
-export const SETTINGS_PERMISSIONS_KEY = "settings_permissions";
-export const PHONES_KEY = "public_phones";
+import { SETTINGS_COMPANY_KEY, SETTINGS_PERMISSIONS_KEY, PHONES_KEY } from "./dashboardApiKeys";
+export { SETTINGS_COMPANY_KEY, SETTINGS_PERMISSIONS_KEY, PHONES_KEY };
 
 export const useCompanySettingsQuery = () =>
   useQuery({ queryFn: getCompanySettings, queryKey: [SETTINGS_COMPANY_KEY] });

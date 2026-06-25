@@ -1,6 +1,5 @@
 import { apiFetch } from "@/src/shared";
-
-const BASE = "/admin/analytics";
+import { ADMIN_ANALYTICS_URL } from "./dashboardApiKeys";
 
 export type NoShowItem = {
   userId: number;
@@ -78,26 +77,26 @@ export type UserWithUnpaidBookingsResponse = {
 
 export function getAnalyticsSummary(date?: string) {
   const qs = date ? `?date=${encodeURIComponent(date)}` : "";
-  return apiFetch<GetSummaryAnalyticsResponse>(`${BASE}/summary${qs}`);
+  return apiFetch<GetSummaryAnalyticsResponse>(`${ADMIN_ANALYTICS_URL}/summary${qs}`);
 }
 
 export function getAllRoutesAnalytics() {
-  return apiFetch<AllRoutesResponse[]>(`${BASE}`);
+  return apiFetch<AllRoutesResponse[]>(`${ADMIN_ANALYTICS_URL}`);
 }
 
 export function getRouteAnalytics(direction: string) {
   return apiFetch<RouteAnalyticsResponse>(
-    `${BASE}/route?direction=${encodeURIComponent(direction)}`,
+    `${ADMIN_ANALYTICS_URL}/route?direction=${encodeURIComponent(direction)}`,
   );
 }
 
 export function getUserWithUnpaidBookings(userId: number) {
-  return apiFetch<UserWithUnpaidBookingsResponse>(`${BASE}/users/${userId}`);
+  return apiFetch<UserWithUnpaidBookingsResponse>(`${ADMIN_ANALYTICS_URL}/users/${userId}`);
 }
 
 export function blockUser(userId: number, block: boolean) {
   return apiFetch<{ userId: number; isBlocked: boolean }>(
-    `${BASE}/users/${userId}/block`,
+    `${ADMIN_ANALYTICS_URL}/users/${userId}/block`,
     { method: "PATCH", body: JSON.stringify({ block }) },
   );
 }

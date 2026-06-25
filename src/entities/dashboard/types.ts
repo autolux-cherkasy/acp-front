@@ -10,6 +10,14 @@ export type CafeItemResponse = {
   updatedAt?: Date;
 };
 
+export type UpdateCafeItemPayload = {
+  categoryId?: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  displayOrder?: number;
+  isAvailable?: boolean;
+};
 export type CafeCategoryResponse = {
   id: string;
   sectionId: string;
