@@ -11,7 +11,8 @@ import type { RouteRow } from "@/src/widgets/AdminComp/model/types";
 import type { RoutesStatsProps } from "@/src/widgets/AdminComp/model/types";
 
 type RouteFormState = {
-  direction: string;
+  departureCity: string;
+  arrivalCity: string;
   departureTime: string;
   vehicle: string;
   seats: string;
@@ -27,8 +28,10 @@ const MOCK_VEHICLE_OPTIONS: SelectOption[] = [
 ];
 
 function rowToFormState(row: RouteRow): Partial<RouteFormState> {
+  const [dep, arr] = row.direction.split(" - ");
   return {
-    direction: row.direction,
+    departureCity: dep ?? "",
+    arrivalCity: arr ?? "",
     departureTime: row.departureTime ?? "",
     vehicle: row.busNumber ?? "",
     seats:

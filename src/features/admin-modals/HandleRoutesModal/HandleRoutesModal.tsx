@@ -10,7 +10,8 @@ import styles from "./HandleRoutesModal.module.css";
 
 type RouteFormState = {
   route: string;
-  direction: string;
+  departureCity: string;
+  arrivalCity: string;
   departureTime: string;
   arrivalTime: string;
   vehicle: string;
@@ -46,7 +47,8 @@ export default function HandleRoutesModal({
   const { register, handleSubmit, control } = useForm<RouteFormState>({
     defaultValues: {
       route: initialData?.route ?? "",
-      direction: initialData?.direction ?? "",
+      departureCity: initialData?.departureCity ?? "",
+      arrivalCity: initialData?.arrivalCity ?? "",
       departureTime: initialData?.departureTime ?? "",
       arrivalTime: initialData?.arrivalTime ?? "",
       vehicle: initialData?.vehicle ?? "",
@@ -78,9 +80,14 @@ export default function HandleRoutesModal({
       />
 
       <InputWithLabel
-        label={t("dispatcherArea.routes.modal.routeLabel")}
-        placeholder={t("dispatcherArea.routes.modal.directionPlaceholder")}
-        {...register("direction")}
+        label={t("dispatcherArea.routes.modal.departureCityLabel")}
+        placeholder={t("dispatcherArea.routes.modal.cityPlaceholder")}
+        {...register("departureCity")}
+      />
+      <InputWithLabel
+        label={t("dispatcherArea.routes.modal.arrivalCityLabel")}
+        placeholder={t("dispatcherArea.routes.modal.cityPlaceholder")}
+        {...register("arrivalCity")}
       />
 
       <div className={styles.row}>

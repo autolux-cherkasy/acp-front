@@ -17,6 +17,7 @@ import {
   useCafeItemUpdateMutation,
 } from "@/src/entities/dashboard/api/dashboardCafeQueries";
 import { useAdminStaffQuery } from "@/src/entities/dashboard/api/dashboardStaffQueries";
+import { useAdminFleetQuery } from "@/src/entities/dashboard/api/dashboardFleetQueries";
 import { usePermissionsQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
 import { useAuthSession } from "@/src/features/auth";
 import { formatPhone } from "@/src/shared/lib/formatters";
@@ -32,11 +33,14 @@ const DataMgmtPage = () => {
     | { mode: "create"; sectionIndex: number }
     | { mode: "edit"; sectionIndex: number; rowIndex: number }
   >();
-  const { data: cafeData } = useAdminCafeQuery({
+  const { data: cafeData, isLoading: isCafeLoading } = useAdminCafeQuery({
     enabled: tab === "cafe",
   });
-  const { data: staffData } = useAdminStaffQuery({
+  const { data: staffData, isLoading: isStaffLoading } = useAdminStaffQuery({
     enabled: tab === "staff",
+  });
+  const { data: fleetData, isLoading: isFleetLoading } = useAdminFleetQuery({
+    enabled: tab === "fleet",
   });
   const { data: permissions } = usePermissionsQuery();
   const cafeItemAvailMutation = useCafeItemUpdateMutation({ enabled: tab === "cafe" });
@@ -107,6 +111,20 @@ const DataMgmtPage = () => {
     },
   ];
 
+  const fleetSections: DataSection[] = [
+    {
+      id: "buses",
+      title: "Автобус",
+      rows:
+        fleetData?.map((bus) => [
+          bus.model,
+          String(bus.seatsCount),
+          bus.registrationNumber,
+          bus.driver?.fullName ?? "—",
+        ]) ?? [],
+    },
+  ];
+
   const allTabs = [
     {
       value: "routes",
@@ -154,20 +172,24 @@ const DataMgmtPage = () => {
   const handleTabChange = (value: string) => {
     setTab(value);
     setQuery("");
+    sectionModal.close();
+    rowModal.close();
   };
 
   useEffect(() => {
     const set = (s: DataSection[]) => {
       setSections(s);
     };
-    if (tab === "staff") {
+    if (tab === "fleet") {
+      set(fleetSections);
+    } else if (tab === "staff") {
       set(staffSections);
     } else if (tab === "cafe") {
       set(cafeSections);
     } else {
       set(MOCK_DATA_BY_TAB[tab]?.sections ?? []);
     }
-  }, [tab, staffData, cafeData]);
+  }, [tab, fleetData, staffData, cafeData]);
 
   useEffect(() => {
     const setT = (v: string) => setTab(v);
@@ -211,28 +233,33 @@ const DataMgmtPage = () => {
         }
       >
         <div className={styles.sections}>
-          {filtered.map((section: DataSection, index: number) => (
-            <div key={`${tab}-${index}`}>
-              <CollapsibleSection
-                section={section}
-                tab={tab}
-                index={index}
-                initialOpenState={tab === "staff" || tab === "fleet" ? true : false}
-                onEditSection={
-                  tab === "routes" || tab === "cafe"
-                    ? () => sectionModal.open({ mode: "edit", sectionIndex: index })
-                    : undefined
-                }
-                onAddRow={() => rowModal.open({ mode: "create", sectionIndex: index })}
-                onEditRow={(rowIndex) =>
-                  rowModal.open({ mode: "edit", sectionIndex: index, rowIndex })
-                }
-                onToggleSubCell={(id, value) =>
-                  cafeItemAvailMutation.mutate({ id, body: { isAvailable: value } })
-                }
-              />
-            </div>
-          ))}
+          {tab === "cafe" && isCafeLoading
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className={styles.sectionSkeleton} />
+              ))
+            : filtered.map((section: DataSection, index: number) => (
+                <div key={`${tab}-${index}`}>
+                  <CollapsibleSection
+                    section={section}
+                    tab={tab}
+                    index={index}
+                    initialOpenState={tab === "staff" || tab === "fleet" ? true : false}
+                    onEditSection={
+                      tab === "routes" || tab === "cafe"
+                        ? () => sectionModal.open({ mode: "edit", sectionIndex: index })
+                        : undefined
+                    }
+                    onAddRow={() => rowModal.open({ mode: "create", sectionIndex: index })}
+                    onEditRow={(rowIndex) =>
+                      rowModal.open({ mode: "edit", sectionIndex: index, rowIndex })
+                    }
+                    onToggleSubCell={(id, value) =>
+                      cafeItemAvailMutation.mutate({ id, body: { isAvailable: value } })
+                    }
+                    isLoading={tab === "staff" ? isStaffLoading : tab === "fleet" ? isFleetLoading : undefined}
+                  />
+                </div>
+              ))}
         </div>
       </DashboardCard>
       {sectionModal.isOpen && sectionModalByTab[tab] !== undefined && (
@@ -241,14 +268,17 @@ const DataMgmtPage = () => {
           onClose={sectionModal.close}
           onSubmit={sectionModal.close}
           showImage={tab === "cafe"}
-          initialData={
-            sectionModal.data!.mode === "edit"
-              ? {
-                  name: sections[sectionModal.data!.sectionIndex].title,
-                  imageUrl: sections[sectionModal.data!.sectionIndex].imageUrl,
-                }
-              : undefined
-          }
+          showTwoCities={tab === "routes"}
+          initialData={(() => {
+            if (sectionModal.data!.mode !== "edit") return undefined;
+            const section = sections[sectionModal.data!.sectionIndex];
+            if (!section) return undefined;
+            if (tab === "routes") {
+              const [dep, arr] = section.title.split(" - ");
+              return { departureCity: dep ?? "", arrivalCity: arr ?? "" };
+            }
+            return { name: section.title, imageUrl: section.imageUrl };
+          })()}
           {...sectionModalByTab[tab]}
         />
       )}
@@ -257,17 +287,20 @@ const DataMgmtPage = () => {
           mode={rowModal.data!.mode}
           onClose={rowModal.close}
           onSubmit={rowModal.close}
-          initialData={
-            rowModal.data!.mode === "edit"
-              ? {
-                  place: (() => {
-                    const val =
-                      sections[rowModal.data!.sectionIndex].rows?.[rowModal.data!.rowIndex]?.[0];
-                    return typeof val === "string" ? val : val == null ? undefined : String(val);
-                  })(),
-                }
-              : undefined
-          }
+          initialData={(() => {
+            if (rowModal.data!.mode !== "edit") return undefined;
+            const row = sections[rowModal.data!.sectionIndex]?.rows?.[rowModal.data!.rowIndex];
+            if (!row) return undefined;
+            const dirStr = typeof row[0] === "string" ? row[0] : "";
+            const [dep, arr] = dirStr.split(" - ");
+            return {
+              departurePlace: dep ?? "",
+              arrivalPlace: arr ?? "",
+              departureTime: typeof row[1] === "string" ? row[1] : "",
+              arrivalTime: typeof row[2] === "string" ? row[2] : "",
+              price: typeof row[3] === "string" ? row[3].replace(" ₴", "") : "",
+            };
+          })()}
         />
       )}
       {rowModal.isOpen && tab === "cafe" && (

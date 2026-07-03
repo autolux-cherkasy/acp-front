@@ -9,6 +9,8 @@ import ImageUploadField from "@/src/shared/ui/ImageUploadField/ImageUploadField"
 
 type RouteFormState = {
   name: string;
+  departureCity: string;
+  arrivalCity: string;
 };
 
 type RouteModalProps = {
@@ -18,6 +20,7 @@ type RouteModalProps = {
   onDelete?: () => void;
   initialData?: Partial<RouteFormState & { imageUrl?: string }>;
   showImage?: boolean;
+  showTwoCities?: boolean;
   icon?: string;
   titles?: { create: string; edit: string };
   labels?: { create: string; edit: string };
@@ -31,6 +34,7 @@ export default function RouteModal({
   onDelete,
   initialData,
   showImage,
+  showTwoCities,
   icon = "/icons/workspace/sidebar/routes.svg",
   titles,
   labels,
@@ -42,6 +46,8 @@ export default function RouteModal({
   const { register, handleSubmit } = useForm<RouteFormState>({
     defaultValues: {
       name: initialData?.name ?? "",
+      departureCity: initialData?.departureCity ?? "",
+      arrivalCity: initialData?.arrivalCity ?? "",
     },
   });
 
@@ -71,11 +77,26 @@ export default function RouteModal({
       onSubmit={handleSubmit(submitHandler)}
       onDelete={onDelete}
     >
-      <InputWithLabel
-        label={label}
-        placeholder={placeholder ?? t("dispatcherArea.dataMgmt.routeModal.placeholder")}
-        {...register("name")}
-      />
+      {showTwoCities ? (
+        <>
+          <InputWithLabel
+            label={t("dispatcherArea.dataMgmt.routeModal.departureCityLabel")}
+            placeholder={t("dispatcherArea.dataMgmt.routeModal.cityPlaceholder")}
+            {...register("departureCity")}
+          />
+          <InputWithLabel
+            label={t("dispatcherArea.dataMgmt.routeModal.arrivalCityLabel")}
+            placeholder={t("dispatcherArea.dataMgmt.routeModal.cityPlaceholder")}
+            {...register("arrivalCity")}
+          />
+        </>
+      ) : (
+        <InputWithLabel
+          label={label}
+          placeholder={placeholder ?? t("dispatcherArea.dataMgmt.routeModal.placeholder")}
+          {...register("name")}
+        />
+      )}
       {showImage && (
         <ImageUploadField
           initialUrl={initialData?.imageUrl}

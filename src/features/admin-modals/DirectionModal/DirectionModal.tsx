@@ -10,7 +10,8 @@ import styles from "./DirectionModal.module.css";
 
 type DirectionFormState = {
   route: string;
-  place: string;
+  departurePlace: string;
+  arrivalPlace: string;
   departureTime: string;
   arrivalTime: string;
   price: string;
@@ -40,7 +41,8 @@ export default function DirectionModal({
   const { register, handleSubmit, control } = useForm<DirectionFormState>({
     defaultValues: {
       route: initialData?.route ?? "",
-      place: initialData?.place ?? "",
+      departurePlace: initialData?.departurePlace ?? "",
+      arrivalPlace: initialData?.arrivalPlace ?? "",
       departureTime: initialData?.departureTime ?? "",
       arrivalTime: initialData?.arrivalTime ?? "",
       price: initialData?.price ?? "",
@@ -71,9 +73,15 @@ export default function DirectionModal({
       />
 
       <InputWithLabel
-        label={t("dispatcherArea.dataMgmt.directionModal.placeLabel")}
-        placeholder={t("dispatcherArea.dataMgmt.directionModal.placePlaceholder")}
-        {...register("place")}
+        label={t("dispatcherArea.dataMgmt.directionModal.departurePlaceLabel")}
+        placeholder={t("dispatcherArea.dataMgmt.directionModal.cityPlaceholder")}
+        {...register("departurePlace")}
+      />
+
+      <InputWithLabel
+        label={t("dispatcherArea.dataMgmt.directionModal.arrivalPlaceLabel")}
+        placeholder={t("dispatcherArea.dataMgmt.directionModal.cityPlaceholder")}
+        {...register("arrivalPlace")}
       />
 
       <div className={styles.row}>
