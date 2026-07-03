@@ -24,6 +24,7 @@ type CollapsiblesectionProps = {
   onEditRow: (index: number) => void;
   onToggleSubCell?: (id: string, value: boolean) => void;
   initialOpenState?: boolean;
+  isLoading?: boolean;
 };
 
 const CollapsibleSection = ({
@@ -34,6 +35,7 @@ const CollapsibleSection = ({
   onEditSection,
   onToggleSubCell,
   initialOpenState,
+  isLoading,
 }: CollapsiblesectionProps) => {
   const [open, setOpen] = useState(initialOpenState ?? false);
   const { t } = useI18n();
@@ -154,6 +156,7 @@ const CollapsibleSection = ({
               columns={SECTION_COLUMNS[section.id] ?? SECTION_COLUMNS[tab] ?? []}
               onAdd={onAddRow}
               onEdit={onEditRow}
+              isLoading={isLoading}
             />
           ))}
       </div>
