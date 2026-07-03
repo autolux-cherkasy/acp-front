@@ -16,9 +16,12 @@ type Props = {
   rows: (string | boolean)[][];
   onEdit: (rowIndex: number) => void;
   onAdd: () => void;
+  isLoading?: boolean;
 };
 
-export default function DataTable({ columns, rows, onEdit, onAdd }: Props) {
+const SKELETON_ROWS = 4;
+
+export default function DataTable({ columns, rows, onEdit, onAdd, isLoading }: Props) {
   const { t } = useI18n();
   return (
     <DashboardTable className={styles.dataTable}>
@@ -42,7 +45,22 @@ export default function DataTable({ columns, rows, onEdit, onAdd }: Props) {
       </DashboardThead>
 
       <tbody>
-        {rows.map((row, rowIdx) => (
+        {isLoading
+          ? Array.from({ length: SKELETON_ROWS }).map((_, rowIdx) => (
+              <DashboardTr key={rowIdx} className={styles.dataRow}>
+                <td className={`${dashboardTableStyles.tdNum} ${styles.tdCenter}`} />
+                {columns.map((col, colIdx) => (
+                  <td
+                    key={col.key}
+                    className={colIdx === 0 ? styles.tdFirst : [styles.tdLeft, styles.contentRow].join(" ")}
+                  >
+                    <div className={styles.skeletonBar} style={{ width: colIdx === 0 ? "60%" : "80%" }} />
+                  </td>
+                ))}
+                <td className={`${dashboardTableStyles.tdAction} ${styles.tdCenter}`} />
+              </DashboardTr>
+            ))
+          : rows.map((row, rowIdx) => (
           <DashboardTr key={rowIdx} className={styles.dataRow}>
             <td className={`${dashboardTableStyles.tdNum} ${styles.tdCenter}`}>{rowIdx + 1}</td>
             {row.map((cell, colIdx) => (
@@ -82,6 +100,7 @@ export default function DataTable({ columns, rows, onEdit, onAdd }: Props) {
           </DashboardTr>
         ))}
       </tbody>
+
     </DashboardTable>
   );
 }
