@@ -85,13 +85,10 @@ export default function DirectionModal({
       />
 
       <div className={styles.row}>
-        <SelectWithLabel
-          control={control}
-          name="departureTime"
+        <InputWithLabel
           label={t("dispatcherArea.dataMgmt.directionModal.departureTime")}
-          options={timeOptions}
+          {...register("departureTime")}
           placeholder="00:00"
-          menuZIndex={10001}
         />
 
         <InputWithLabel

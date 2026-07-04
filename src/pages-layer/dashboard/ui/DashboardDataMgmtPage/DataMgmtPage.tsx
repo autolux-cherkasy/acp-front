@@ -18,6 +18,7 @@ import {
 } from "@/src/entities/dashboard/api/dashboardCafeQueries";
 import { useAdminStaffQuery } from "@/src/entities/dashboard/api/dashboardStaffQueries";
 import { useAdminFleetQuery } from "@/src/entities/dashboard/api/dashboardFleetQueries";
+import { useAdminScheduleQuery } from "@/src/entities/dashboard/api/dashboardScheduleQueries";
 import { usePermissionsQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
 import { useAuthSession } from "@/src/features/auth";
 import { formatPhone } from "@/src/shared/lib/formatters";
@@ -41,6 +42,9 @@ const DataMgmtPage = () => {
   });
   const { data: fleetData, isLoading: isFleetLoading } = useAdminFleetQuery({
     enabled: tab === "fleet",
+  });
+  const { data: scheduleData, isLoading: isScheduleLoading } = useAdminScheduleQuery({
+    enabled: tab === "routes",
   });
   const { data: permissions } = usePermissionsQuery();
   const cafeItemAvailMutation = useCafeItemUpdateMutation({ enabled: tab === "cafe" });
@@ -125,6 +129,18 @@ const DataMgmtPage = () => {
     },
   ];
 
+  const routesSections: DataSection[] =
+    scheduleData?.map((route) => ({
+      id: route.id,
+      title: route.name,
+      rows: route.schedules.map((s) => [
+        s.direction,
+        s.departureTime,
+        s.arrivalTime,
+        `${s.price} ₴`,
+      ]),
+    })) ?? [];
+
   const allTabs = [
     {
       value: "routes",
@@ -180,7 +196,9 @@ const DataMgmtPage = () => {
     const set = (s: DataSection[]) => {
       setSections(s);
     };
-    if (tab === "fleet") {
+    if (tab === "routes") {
+      set(routesSections);
+    } else if (tab === "fleet") {
       set(fleetSections);
     } else if (tab === "staff") {
       set(staffSections);
@@ -189,7 +207,7 @@ const DataMgmtPage = () => {
     } else {
       set(MOCK_DATA_BY_TAB[tab]?.sections ?? []);
     }
-  }, [tab, fleetData, staffData, cafeData]);
+  }, [tab, scheduleData, fleetData, staffData, cafeData]);
 
   useEffect(() => {
     const setT = (v: string) => setTab(v);
@@ -233,7 +251,7 @@ const DataMgmtPage = () => {
         }
       >
         <div className={styles.sections}>
-          {tab === "cafe" && isCafeLoading
+          {(tab === "cafe" && isCafeLoading) || (tab === "routes" && isScheduleLoading)
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className={styles.sectionSkeleton} />
               ))

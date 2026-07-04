@@ -109,9 +109,9 @@
   border-radius: 12px;
   background: linear-gradient(
     90deg,
-    var(--color-border-muted) 25%,
+    #dce8eb 25%,
     var(--color-surface-soft) 50%,
-    var(--color-border-muted) 75%
+    #dce8eb 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite linear;
