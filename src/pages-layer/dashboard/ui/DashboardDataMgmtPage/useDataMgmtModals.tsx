@@ -20,6 +20,11 @@ import {
   useUpdateDispatcherMutation,
   useDeleteDispatcherMutation,
 } from "@/src/entities/dashboard/api/dashboardStaffQueries";
+import {
+  useAddRouteMutation,
+  useUpdateRouteMutation,
+  useDeleteRouteMutation,
+} from "@/src/entities/dashboard/api/dashboardScheduleQueries";
 import { BusResponse } from "@/src/entities/dashboard/api/dashboardBusesApi";
 import { AdminStaffResponse } from "@/src/entities/dashboard/api/staffApi";
 import {
@@ -77,6 +82,9 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
   const addDispatcherMutation = useAddDispatcherMutation();
   const updateDispatcherMutation = useUpdateDispatcherMutation();
   const deleteDispatcherMutation = useDeleteDispatcherMutation();
+  const addRouteMutation = useAddRouteMutation();
+  const updateRouteMutation = useUpdateRouteMutation();
+  const deleteRouteMutation = useDeleteRouteMutation();
 
   const sectionModalByTab: Partial<Record<string, SectionModalConfig>> = {
     routes: {},
@@ -104,16 +112,40 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
       return null;
     }
     const config = sectionModalByTab[tab]!;
+    const sectionData = sectionModal.data!;
+    const route =
+      tab === "routes" && sectionData.mode === "edit" ? sections[sectionData.sectionIndex] : undefined;
     return (
       <RouteModal
-        mode={sectionModal.data!.mode}
+        mode={sectionData.mode}
         onClose={sectionModal.close}
-        onSubmit={sectionModal.close}
+        onSubmit={(formData) => {
+          sectionModal.close();
+          if (tab !== "routes") return;
+          const body = {
+            name: `${formData.departureCity} - ${formData.arrivalCity}`,
+            origin: formData.departureCity,
+            destination: formData.arrivalCity,
+          };
+          if (sectionData.mode === "create") {
+            addRouteMutation.mutate(body);
+          } else if (route) {
+            updateRouteMutation.mutate({ id: route.id, body });
+          }
+        }}
+        onDelete={
+          route
+            ? () => {
+                sectionModal.close();
+                deleteRouteMutation.mutate(route.id);
+              }
+            : undefined
+        }
         showImage={tab === "cafe"}
         showTwoCities={tab === "routes"}
         initialData={(() => {
-          if (sectionModal.data!.mode !== "edit") return undefined;
-          const section = sections[sectionModal.data!.sectionIndex];
+          if (sectionData.mode !== "edit") return undefined;
+          const section = sections[sectionData.sectionIndex];
           if (!section) return undefined;
           if (tab === "routes") {
             const [dep, arr] = section.title.split(" - ");
