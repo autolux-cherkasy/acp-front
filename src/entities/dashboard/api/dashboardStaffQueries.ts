@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import { showServerToast } from "@/src/shared/lib/toast";
+import { createOptimisticMutationHandlers } from "./optimisticMutation";
 import {
   addDispatcher,
   addDriver,
@@ -27,18 +27,52 @@ export const useAdminStaffQuery = (options?: { enabled?: boolean }) =>
     ...options,
   });
 
+function addDispatcherOptimistic(
+  old: AdminStaffResponse | undefined,
+  body: CreateDispatcherBody,
+): AdminStaffResponse | undefined {
+  if (!old) return old;
+  return {
+    ...old,
+    dispatchers: [
+      ...old.dispatchers,
+      { id: Date.now(), name: body.name, email: body.email, phone: body.phone },
+    ],
+  };
+}
+
+function addDriverOptimistic(
+  old: AdminStaffResponse | undefined,
+  body: CreateDriverBody,
+): AdminStaffResponse | undefined {
+  if (!old) return old;
+  return {
+    ...old,
+    drivers: [
+      ...old.drivers,
+      {
+        id: `temp-${Date.now()}`,
+        fullName: body.fullName,
+        phone: body.phone,
+        licenseValidUntil: body.licenseValidUntil,
+        licenseCategories: body.licenseCategories,
+      },
+    ],
+  };
+}
+
 export const useAddDispatcherMutation = () => {
   const queryClient = useQueryClient();
   const { t } = useI18n();
   return useMutation({
     mutationFn: (body: CreateDispatcherBody) => addDispatcher(body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_STAFF_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.dispatcherAddSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.dispatcherAddError") });
-    },
+    ...createOptimisticMutationHandlers<CreateDispatcherBody, AdminStaffResponse>({
+      queryClient,
+      queryKey: [ADMIN_STAFF_KEY],
+      updateCache: addDispatcherOptimistic,
+      successMessage: t("common.toast.dispatcherAddSuccess"),
+      errorMessage: t("common.toast.dispatcherAddError"),
+    }),
   });
 };
 
@@ -48,13 +82,20 @@ export const useUpdateDispatcherMutation = () => {
   return useMutation({
     mutationFn: ({ id, body }: { id: number; body: UpdateDispatcherBody }) =>
       updateDispatcher(id, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_STAFF_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.dispatcherUpdateSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.dispatcherUpdateError") });
-    },
+    ...createOptimisticMutationHandlers<
+      { id: number; body: UpdateDispatcherBody },
+      AdminStaffResponse
+    >({
+      queryClient,
+      queryKey: [ADMIN_STAFF_KEY],
+      updateCache: (old, { id, body }) =>
+        old && {
+          ...old,
+          dispatchers: old.dispatchers.map((d) => (d.id === id ? { ...d, ...body } : d)),
+        },
+      successMessage: t("common.toast.dispatcherUpdateSuccess"),
+      errorMessage: t("common.toast.dispatcherUpdateError"),
+    }),
   });
 };
 
@@ -63,13 +104,14 @@ export const useDeleteDispatcherMutation = () => {
   const { t } = useI18n();
   return useMutation({
     mutationFn: (id: number) => deleteDispatcher(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_STAFF_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.dispatcherDeleteSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.dispatcherDeleteError") });
-    },
+    ...createOptimisticMutationHandlers<number, AdminStaffResponse>({
+      queryClient,
+      queryKey: [ADMIN_STAFF_KEY],
+      updateCache: (old, id) =>
+        old && { ...old, dispatchers: old.dispatchers.filter((d) => d.id !== id) },
+      successMessage: t("common.toast.dispatcherDeleteSuccess"),
+      errorMessage: t("common.toast.dispatcherDeleteError"),
+    }),
   });
 };
 
@@ -78,13 +120,13 @@ export const useAddDriverMutation = () => {
   const { t } = useI18n();
   return useMutation({
     mutationFn: (body: CreateDriverBody) => addDriver(body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_STAFF_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.driverAddSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.driverAddError") });
-    },
+    ...createOptimisticMutationHandlers<CreateDriverBody, AdminStaffResponse>({
+      queryClient,
+      queryKey: [ADMIN_STAFF_KEY],
+      updateCache: addDriverOptimistic,
+      successMessage: t("common.toast.driverAddSuccess"),
+      errorMessage: t("common.toast.driverAddError"),
+    }),
   });
 };
 
@@ -92,15 +134,15 @@ export const useUpdateDriverMutation = () => {
   const queryClient = useQueryClient();
   const { t } = useI18n();
   return useMutation({
-    mutationFn: ({ id, body }: { id: string; body: UpdateDriverBody }) =>
-      updateDriver(id, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_STAFF_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.driverUpdateSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.driverUpdateError") });
-    },
+    mutationFn: ({ id, body }: { id: string; body: UpdateDriverBody }) => updateDriver(id, body),
+    ...createOptimisticMutationHandlers<{ id: string; body: UpdateDriverBody }, AdminStaffResponse>({
+      queryClient,
+      queryKey: [ADMIN_STAFF_KEY],
+      updateCache: (old, { id, body }) =>
+        old && { ...old, drivers: old.drivers.map((d) => (d.id === id ? { ...d, ...body } : d)) },
+      successMessage: t("common.toast.driverUpdateSuccess"),
+      errorMessage: t("common.toast.driverUpdateError"),
+    }),
   });
 };
 
@@ -109,12 +151,12 @@ export const useDeleteDriverMutation = () => {
   const { t } = useI18n();
   return useMutation({
     mutationFn: (id: string) => deleteDriver(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_STAFF_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.driverDeleteSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.driverDeleteError") });
-    },
+    ...createOptimisticMutationHandlers<string, AdminStaffResponse>({
+      queryClient,
+      queryKey: [ADMIN_STAFF_KEY],
+      updateCache: (old, id) => old && { ...old, drivers: old.drivers.filter((d) => d.id !== id) },
+      successMessage: t("common.toast.driverDeleteSuccess"),
+      errorMessage: t("common.toast.driverDeleteError"),
+    }),
   });
 };

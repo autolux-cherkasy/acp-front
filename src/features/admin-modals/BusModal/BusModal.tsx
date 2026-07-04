@@ -64,11 +64,6 @@ export default function BusModal({
         placeholder={t("dispatcherArea.dataMgmt.busModal.modelPlaceholder")}
         {...register("model")}
       />
-      <InputWithLabel
-        label={t("dispatcherArea.dataMgmt.busModal.yearLabel")}
-        placeholder={t("dispatcherArea.dataMgmt.busModal.yearPlaceholder")}
-        {...register("year")}
-      />
       <div className={styles.row}>
         <InputWithLabel
           label={t("dispatcherArea.dataMgmt.busModal.seatsLabel")}
