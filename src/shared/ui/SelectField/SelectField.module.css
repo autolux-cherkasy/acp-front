@@ -3,6 +3,7 @@
   width: 100%;
 }
 
+
 .trigger {
   box-sizing: border-box;
   width: 100%;
@@ -36,6 +37,21 @@
 .trigger:disabled {
   cursor: not-allowed;
   opacity: 0.72;
+}
+
+.triggerPlain {
+  width: 100%;
+  min-height: unset;
+  justify-content: space-between;
+  padding: 0;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.triggerPlain:focus-visible {
+  box-shadow: none;
 }
 
 .value {

@@ -891,18 +891,23 @@
         "newTitle": "Додати диспетчера",
         "editTitle": "Редагувати дані диспетчера",
         "nameLabel": "П.І.Б",
+        "namePlaceholder": "Введіть П.І.Б",
         "phoneLabel": "Телефон +380...",
         "phonePlaceholder": "+380...",
-        "emailLabel": "Email"
+        "emailLabel": "Email",
+        "emailPlaceholder": "example@email.com"
       },
       "driverModal": {
         "newTitle": "Додати водія",
         "editTitle": "Редагувати дані водія",
         "nameLabel": "П.І.Б",
+        "namePlaceholder": "Введіть П.І.Б",
         "phoneLabel": "Телефон +380...",
         "phonePlaceholder": "+380...",
         "licenseLabel": "Посвідчення водія до",
-        "categoryLabel": "Категорія"
+        "licensePlaceholder": "17.02.2042",
+        "categoryLabel": "Категорія",
+        "categoryPlaceholder": "B, C"
       },
       "cafeCategoryModal": {
         "newTitle": "Додати категорія меню",

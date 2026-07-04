@@ -7,21 +7,24 @@ import {
   DashboardTr,
   dashboardTableStyles,
 } from "@/src/shared/ui/DashboardComponents/DashboardTable";
+import SelectField from "@/src/shared/ui/SelectField/SelectField";
 import styles from "./DataTable.module.css";
 import { useI18n } from "../../i18n";
+import { isSelectCell, TableRow } from "@/src/pages-layer/dashboard/ui/DashboardDataMgmtPage/mockData";
 import { ColumnDef } from "@/src/pages-layer/dashboard/ui/DashboardDataMgmtPage/mockData";
 
 type Props = {
   columns: ColumnDef[];
-  rows: (string | boolean)[][];
+  rows: TableRow[];
   onEdit: (rowIndex: number) => void;
   onAdd: () => void;
+  onSelectCell?: (rowIndex: number, value: string) => void;
   isLoading?: boolean;
 };
 
 const SKELETON_ROWS = 4;
 
-export default function DataTable({ columns, rows, onEdit, onAdd, isLoading }: Props) {
+export default function DataTable({ columns, rows, onEdit, onAdd, onSelectCell, isLoading }: Props) {
   const { t } = useI18n();
   return (
     <DashboardTable className={styles.dataTable}>
@@ -81,6 +84,14 @@ export default function DataTable({ columns, rows, onEdit, onAdd, isLoading }: P
                     checked={cell}
                     readOnly
                     className={styles.switch}
+                  />
+                ) : isSelectCell(cell) ? (
+                  <SelectField
+                    value={cell.value}
+                    options={cell.options}
+                    onChange={(value) => onSelectCell?.(rowIdx, value)}
+                    menuZIndex={10001}
+                    variant="plain"
                   />
                 ) : (
                   cell

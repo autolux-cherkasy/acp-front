@@ -168,7 +168,15 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
           subcategoryOptions={subcategoryOptions}
           initialCategory={data.mode === "edit" ? section?.title : undefined}
           initialSubcategory={resolved?.groupLabel}
-          initialData={resolved?.row.filter((cell): cell is string => typeof cell === "string")}
+          initialData={
+            resolved
+              ? {
+                  name: typeof resolved.row[0] === "string" ? resolved.row[0] : "",
+                  price:
+                    typeof resolved.row[2] === "string" ? resolved.row[2].replace(" ₴", "") : "",
+                }
+              : undefined
+          }
         />
       );
     }
