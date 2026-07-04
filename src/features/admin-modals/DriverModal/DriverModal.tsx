@@ -55,6 +55,7 @@ export default function DriverModal({
     >
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.driverModal.nameLabel")}
+        placeholder={t("dispatcherArea.dataMgmt.driverModal.namePlaceholder")}
         {...register("fullName")}
       />
       <InputWithLabel
@@ -65,10 +66,12 @@ export default function DriverModal({
       <div className={styles.row}>
         <InputWithLabel
           label={t("dispatcherArea.dataMgmt.driverModal.licenseLabel")}
+          placeholder={t("dispatcherArea.dataMgmt.driverModal.licensePlaceholder")}
           {...register("licenseValidUntil")}
         />
         <InputWithLabel
           label={t("dispatcherArea.dataMgmt.driverModal.categoryLabel")}
+          placeholder={t("dispatcherArea.dataMgmt.driverModal.categoryPlaceholder")}
           {...register("licenseCategories")}
         />
       </div>

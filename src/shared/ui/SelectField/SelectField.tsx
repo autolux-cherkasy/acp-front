@@ -17,9 +17,18 @@ type Props = {
   placeholder?: string;
   disabled?: boolean;
   menuZIndex?: number;
+  variant?: "default" | "plain";
 };
 
-export default function SelectField({ value, options, onChange, placeholder, disabled, menuZIndex }: Props) {
+export default function SelectField({
+  value,
+  options,
+  onChange,
+  placeholder,
+  disabled,
+  menuZIndex,
+  variant = "default",
+}: Props) {
   const [open, setOpen] = useState(false);
 
   const selectedLabel = options.find((o) => o.value === value)?.label;
@@ -30,7 +39,7 @@ export default function SelectField({ value, options, onChange, placeholder, dis
         <Popover.Trigger asChild>
           <button
             type="button"
-            className={styles.trigger}
+            className={variant === "plain" ? `${styles.trigger} ${styles.triggerPlain}` : styles.trigger}
             disabled={disabled}
           >
             <span className={`${styles.value} ${!selectedLabel ? styles.placeholder : ""}`}>

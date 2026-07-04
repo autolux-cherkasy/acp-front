@@ -8,68 +8,45 @@ import { useEffect, useState } from "react";
 import styles from "./DataMgmtPage.module.css";
 import { DataSection, MOCK_DATA_BY_TAB } from "./mockData";
 import CollapsibleSection from "./CollapsibleSection";
-import { useDisclosure } from "@/src/shared/lib/useDisclosure";
-import RouteModal from "@/src/features/admin-modals/RouteModal/RouteModal";
-import DirectionModal from "@/src/features/admin-modals/DirectionModal/DirectionModal";
-import CafeDishModal from "@/src/features/admin-modals/CafeDishModal/CafeDishModal";
+import { useDataMgmtModals } from "./useDataMgmtModals";
 import {
   useAdminCafeQuery,
   useCafeItemUpdateMutation,
 } from "@/src/entities/dashboard/api/dashboardCafeQueries";
 import { useAdminStaffQuery } from "@/src/entities/dashboard/api/dashboardStaffQueries";
 import { useAdminFleetQuery } from "@/src/entities/dashboard/api/dashboardFleetQueries";
+import { useAdminScheduleQuery } from "@/src/entities/dashboard/api/dashboardScheduleQueries";
 import { usePermissionsQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
 import { useAuthSession } from "@/src/features/auth";
-import { formatPhone } from "@/src/shared/lib/formatters";
+import { formatLicenseDate, formatPhone } from "@/src/shared/lib/formatters";
 
 const DataMgmtPage = () => {
   const [tab, setTab] = useState("routes");
   const { t } = useI18n();
   const { role } = useAuthSession();
   const [sections, setSections] = useState(MOCK_DATA_BY_TAB.routes.sections);
-  const sectionModal = useDisclosure<{ mode: "create" } | { mode: "edit"; sectionIndex: number }>();
-  const categoryOptions = sections.map((s) => ({ value: s.title, label: s.title }));
-  const rowModal = useDisclosure<
-    | { mode: "create"; sectionIndex: number }
-    | { mode: "edit"; sectionIndex: number; rowIndex: number }
-  >();
   const { data: cafeData, isLoading: isCafeLoading } = useAdminCafeQuery({
     enabled: tab === "cafe",
   });
   const { data: staffData, isLoading: isStaffLoading } = useAdminStaffQuery({
-    enabled: tab === "staff",
+    enabled: tab === "staff" || tab === "fleet",
   });
   const { data: fleetData, isLoading: isFleetLoading } = useAdminFleetQuery({
     enabled: tab === "fleet",
   });
+  const { data: scheduleData, isLoading: isScheduleLoading } = useAdminScheduleQuery({
+    enabled: tab === "routes",
+  });
   const { data: permissions } = usePermissionsQuery();
   const cafeItemAvailMutation = useCafeItemUpdateMutation({ enabled: tab === "cafe" });
+  const { openSectionModal, openRowModal, closeModals, driverOptions, updateBusDriver, modalElement } =
+    useDataMgmtModals({
+      tab,
+      sections,
+      fleetData,
+      staffData,
+    });
 
-  const sectionModalByTab: Partial<
-    Record<
-      string,
-      {
-        icon?: string;
-        titles?: { create: string; edit: string };
-        labels?: { create: string; edit: string };
-        placeholder?: string;
-      }
-    >
-  > = {
-    routes: {},
-    cafe: {
-      icon: "/icons/cafe/coffee-cup.svg",
-      titles: {
-        create: t("dispatcherArea.dataMgmt.cafeCategoryModal.newTitle"),
-        edit: t("dispatcherArea.dataMgmt.cafeCategoryModal.editTitle"),
-      },
-      labels: {
-        create: t("dispatcherArea.dataMgmt.cafeCategoryModal.label"),
-        edit: t("dispatcherArea.dataMgmt.cafeCategoryModal.label"),
-      },
-      placeholder: t("dispatcherArea.dataMgmt.cafeCategoryModal.placeholder"),
-    },
-  };
   const cafeSections: DataSection[] = cafeData
     ? cafeData.map((section) => ({
         id: section.id,
@@ -83,12 +60,6 @@ const DataMgmtPage = () => {
         })),
       }))
     : [];
-
-  const formatLicenseDate = (date: string) => {
-    const stripped = date.replace(/^До\s+/, "");
-    const iso = stripped.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : stripped;
-  };
 
   const formatCategory = (cat: string) => (cat.startsWith("Категорія") ? cat : `Категорія ${cat}`);
 
@@ -120,10 +91,22 @@ const DataMgmtPage = () => {
           bus.model,
           String(bus.seatsCount),
           bus.registrationNumber,
-          bus.driver?.fullName ?? "—",
+          { type: "select" as const, value: bus.driverId ?? "", options: driverOptions },
         ]) ?? [],
     },
   ];
+
+  const routesSections: DataSection[] =
+    scheduleData?.map((route) => ({
+      id: route.id,
+      title: route.name,
+      rows: route.schedules.map((s) => [
+        s.direction,
+        s.departureTime,
+        s.arrivalTime,
+        `${s.price} ₴`,
+      ]),
+    })) ?? [];
 
   const allTabs = [
     {
@@ -172,15 +155,16 @@ const DataMgmtPage = () => {
   const handleTabChange = (value: string) => {
     setTab(value);
     setQuery("");
-    sectionModal.close();
-    rowModal.close();
+    closeModals();
   };
 
   useEffect(() => {
     const set = (s: DataSection[]) => {
       setSections(s);
     };
-    if (tab === "fleet") {
+    if (tab === "routes") {
+      set(routesSections);
+    } else if (tab === "fleet") {
       set(fleetSections);
     } else if (tab === "staff") {
       set(staffSections);
@@ -189,7 +173,7 @@ const DataMgmtPage = () => {
     } else {
       set(MOCK_DATA_BY_TAB[tab]?.sections ?? []);
     }
-  }, [tab, fleetData, staffData, cafeData]);
+  }, [tab, scheduleData, fleetData, staffData, cafeData]);
 
   useEffect(() => {
     const setT = (v: string) => setTab(v);
@@ -223,7 +207,7 @@ const DataMgmtPage = () => {
               size="fit"
               onClick={
                 tab === "routes" || tab === "cafe"
-                  ? () => sectionModal.open({ mode: "create" })
+                  ? () => openSectionModal({ mode: "create" })
                   : undefined
               }
               variant="secondary"
@@ -233,7 +217,7 @@ const DataMgmtPage = () => {
         }
       >
         <div className={styles.sections}>
-          {tab === "cafe" && isCafeLoading
+          {(tab === "cafe" && isCafeLoading) || (tab === "routes" && isScheduleLoading)
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className={styles.sectionSkeleton} />
               ))
@@ -246,15 +230,23 @@ const DataMgmtPage = () => {
                     initialOpenState={tab === "staff" || tab === "fleet" ? true : false}
                     onEditSection={
                       tab === "routes" || tab === "cafe"
-                        ? () => sectionModal.open({ mode: "edit", sectionIndex: index })
+                        ? () => openSectionModal({ mode: "edit", sectionIndex: index })
                         : undefined
                     }
-                    onAddRow={() => rowModal.open({ mode: "create", sectionIndex: index })}
+                    onAddRow={() => openRowModal({ mode: "create", sectionIndex: index })}
                     onEditRow={(rowIndex) =>
-                      rowModal.open({ mode: "edit", sectionIndex: index, rowIndex })
+                      openRowModal({ mode: "edit", sectionIndex: index, rowIndex })
                     }
                     onToggleSubCell={(id, value) =>
                       cafeItemAvailMutation.mutate({ id, body: { isAvailable: value } })
+                    }
+                    onSelectCell={
+                      tab === "fleet"
+                        ? (rowIndex, value) => {
+                            const bus = fleetData?.[rowIndex];
+                            if (bus) updateBusDriver(bus.id, value);
+                          }
+                        : undefined
                     }
                     isLoading={tab === "staff" ? isStaffLoading : tab === "fleet" ? isFleetLoading : undefined}
                   />
@@ -262,65 +254,7 @@ const DataMgmtPage = () => {
               ))}
         </div>
       </DashboardCard>
-      {sectionModal.isOpen && sectionModalByTab[tab] !== undefined && (
-        <RouteModal
-          mode={sectionModal.data!.mode}
-          onClose={sectionModal.close}
-          onSubmit={sectionModal.close}
-          showImage={tab === "cafe"}
-          showTwoCities={tab === "routes"}
-          initialData={(() => {
-            if (sectionModal.data!.mode !== "edit") return undefined;
-            const section = sections[sectionModal.data!.sectionIndex];
-            if (!section) return undefined;
-            if (tab === "routes") {
-              const [dep, arr] = section.title.split(" - ");
-              return { departureCity: dep ?? "", arrivalCity: arr ?? "" };
-            }
-            return { name: section.title, imageUrl: section.imageUrl };
-          })()}
-          {...sectionModalByTab[tab]}
-        />
-      )}
-      {rowModal.isOpen && tab === "routes" && (
-        <DirectionModal
-          mode={rowModal.data!.mode}
-          onClose={rowModal.close}
-          onSubmit={rowModal.close}
-          initialData={(() => {
-            if (rowModal.data!.mode !== "edit") return undefined;
-            const row = sections[rowModal.data!.sectionIndex]?.rows?.[rowModal.data!.rowIndex];
-            if (!row) return undefined;
-            const dirStr = typeof row[0] === "string" ? row[0] : "";
-            const [dep, arr] = dirStr.split(" - ");
-            return {
-              departurePlace: dep ?? "",
-              arrivalPlace: arr ?? "",
-              departureTime: typeof row[1] === "string" ? row[1] : "",
-              arrivalTime: typeof row[2] === "string" ? row[2] : "",
-              price: typeof row[3] === "string" ? row[3].replace(" ₴", "") : "",
-            };
-          })()}
-        />
-      )}
-      {rowModal.isOpen && tab === "cafe" && (
-        <CafeDishModal
-          mode={rowModal.data!.mode}
-          onClose={rowModal.close}
-          onSubmit={rowModal.close}
-          categoryOptions={categoryOptions}
-          initialCategory={
-            rowModal.data!.mode === "edit" ? sections[rowModal.data!.sectionIndex].title : undefined
-          }
-          initialData={
-            rowModal.data!.mode === "edit"
-              ? sections[rowModal.data!.sectionIndex].rows?.[rowModal.data!.rowIndex]?.filter(
-                  (cell): cell is string => typeof cell === "string",
-                )
-              : undefined
-          }
-        />
-      )}{" "}
+      {modalElement}
     </div>
   );
 };

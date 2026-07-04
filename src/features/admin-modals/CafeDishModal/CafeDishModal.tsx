@@ -10,6 +10,7 @@ import styles from "./CafeDishModal.module.css";
 
 type CafeDishFormState = {
   category: string;
+  subcategory: string;
   name: string;
   price: string;
 };
@@ -19,9 +20,11 @@ type CafeDishModalProps = {
   onClose: () => void;
   onSubmit: (data: CafeDishFormState) => void;
   onDelete?: () => void;
-  initialData?: string[];
+  initialData?: { name: string; price: string };
   initialCategory?: string;
+  initialSubcategory?: string;
   categoryOptions: SelectOption[];
+  subcategoryOptions?: SelectOption[];
 };
 
 export default function CafeDishModal({
@@ -31,15 +34,18 @@ export default function CafeDishModal({
   onDelete,
   initialData,
   initialCategory = "",
+  initialSubcategory = "",
   categoryOptions,
+  subcategoryOptions = [],
 }: CafeDishModalProps) {
   const { t } = useI18n();
 
   const { register, handleSubmit, control } = useForm<CafeDishFormState>({
     defaultValues: {
       category: initialCategory,
-      name: initialData?.[0] ?? "",
-      price: initialData?.[2] ?? "",
+      subcategory: initialSubcategory,
+      name: initialData?.name ?? "",
+      price: initialData?.price ?? "",
     },
   });
 
@@ -66,14 +72,16 @@ export default function CafeDishModal({
         menuZIndex={10001}
       />
 
-      <SelectWithLabel
-        control={control}
-        name="category"
-        label={t("dispatcherArea.dataMgmt.cafeDishModal.subcategoryLabel")}
-        options={categoryOptions}
-        placeholder={t("dispatcherArea.dataMgmt.cafeDishModal.categoryPlaceholder")}
-        menuZIndex={10001}
-      />
+      {subcategoryOptions.length > 1 && (
+        <SelectWithLabel
+          control={control}
+          name="subcategory"
+          label={t("dispatcherArea.dataMgmt.cafeDishModal.subcategoryLabel")}
+          options={subcategoryOptions}
+          placeholder={t("dispatcherArea.dataMgmt.cafeDishModal.categoryPlaceholder")}
+          menuZIndex={10001}
+        />
+      )}
 
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.cafeDishModal.nameLabel")}

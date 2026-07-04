@@ -59,14 +59,14 @@ export const useCafeItemUpdateMutation = (options?: { enabled?: boolean }) => {
       showServerToast({
         type: "error",
         error,
-        errorMessage: t("common.toast.dispatcherUpdateError"),
+        errorMessage: t("common.toast.cafeItemUpdateError"),
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [ADMIN_CAFE_KEY] });
       showServerToast({
         type: "success",
-        successMessage: t("common.toast.dispatcherUpdateSuccess"),
+        successMessage: t("common.toast.cafeItemUpdateSuccess"),
       });
     },
     ...options,

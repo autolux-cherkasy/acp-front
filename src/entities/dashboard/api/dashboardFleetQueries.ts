@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import { showServerToast } from "@/src/shared/lib/toast";
+import { createOptimisticMutationHandlers } from "./optimisticMutation";
 import {
   addBus,
   BusResponse,
@@ -21,18 +21,33 @@ export const useAdminFleetQuery = (options?: { enabled?: boolean }) =>
     ...options,
   });
 
+function addBusOptimistic(old: BusResponse[] | undefined, body: CreateBusBody): BusResponse[] {
+  return [
+    ...(old ?? []),
+    {
+      id: `temp-${Date.now()}`,
+      model: body.model,
+      seatsCount: body.seatsCount,
+      registrationNumber: body.registrationNumber,
+      driverId: body.driverId ?? null,
+      isActive: body.isActive ?? true,
+      driver: null,
+    },
+  ];
+}
+
 export const useAddBusMutation = () => {
   const queryClient = useQueryClient();
   const { t } = useI18n();
   return useMutation({
     mutationFn: (body: CreateBusBody) => addBus(body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_FLEET_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.busAddSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.busAddError") });
-    },
+    ...createOptimisticMutationHandlers<CreateBusBody, BusResponse[]>({
+      queryClient,
+      queryKey: [ADMIN_FLEET_KEY],
+      updateCache: addBusOptimistic,
+      successMessage: t("common.toast.busAddSuccess"),
+      errorMessage: t("common.toast.busAddError"),
+    }),
   });
 };
 
@@ -40,15 +55,15 @@ export const useUpdateBusMutation = () => {
   const queryClient = useQueryClient();
   const { t } = useI18n();
   return useMutation({
-    mutationFn: ({ id, body }: { id: string; body: UpdateBusBody }) =>
-      updateBus(id, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_FLEET_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.busUpdateSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.busUpdateError") });
-    },
+    mutationFn: ({ id, body }: { id: string; body: UpdateBusBody }) => updateBus(id, body),
+    ...createOptimisticMutationHandlers<{ id: string; body: UpdateBusBody }, BusResponse[]>({
+      queryClient,
+      queryKey: [ADMIN_FLEET_KEY],
+      updateCache: (old, { id, body }) =>
+        old?.map((bus) => (bus.id === id ? { ...bus, ...body } : bus)),
+      successMessage: t("common.toast.busUpdateSuccess"),
+      errorMessage: t("common.toast.busUpdateError"),
+    }),
   });
 };
 
@@ -57,12 +72,12 @@ export const useDeleteBusMutation = () => {
   const { t } = useI18n();
   return useMutation({
     mutationFn: (id: string) => deleteBus(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_FLEET_KEY] });
-      showServerToast({ type: "success", successMessage: t("common.toast.busDeleteSuccess") });
-    },
-    onError: (error) => {
-      showServerToast({ type: "error", error, errorMessage: t("common.toast.busDeleteError") });
-    },
+    ...createOptimisticMutationHandlers<string, BusResponse[]>({
+      queryClient,
+      queryKey: [ADMIN_FLEET_KEY],
+      updateCache: (old, id) => old?.filter((bus) => bus.id !== id),
+      successMessage: t("common.toast.busDeleteSuccess"),
+      errorMessage: t("common.toast.busDeleteError"),
+    }),
   });
 };

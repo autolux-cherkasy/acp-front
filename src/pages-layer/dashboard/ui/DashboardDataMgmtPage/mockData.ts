@@ -1,4 +1,14 @@
-export type TableRow = (string | boolean)[];
+export type SelectCell = {
+  type: "select";
+  value: string;
+  options: { value: string; label: string }[];
+};
+
+export type TableRow = (string | boolean | SelectCell)[];
+
+export function isSelectCell(cell: string | boolean | SelectCell): cell is SelectCell {
+  return typeof cell === "object" && cell !== null && cell.type === "select";
+}
 
 export type SubSection = {
   groupLabel: string;

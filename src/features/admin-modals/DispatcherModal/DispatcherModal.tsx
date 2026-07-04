@@ -52,6 +52,7 @@ export default function DispatcherModal({
     >
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.dispatcherModal.nameLabel")}
+        placeholder={t("dispatcherArea.dataMgmt.dispatcherModal.namePlaceholder")}
         {...register("name")}
       />
       <InputWithLabel
@@ -61,6 +62,7 @@ export default function DispatcherModal({
       />
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.dispatcherModal.emailLabel")}
+        placeholder={t("dispatcherArea.dataMgmt.dispatcherModal.emailPlaceholder")}
         {...register("email")}
       />
     </AdminModalFrame>

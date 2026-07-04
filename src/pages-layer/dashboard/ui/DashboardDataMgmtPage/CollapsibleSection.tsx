@@ -13,7 +13,7 @@ import Icon from "@/src/shared/ui/Icon/Icon";
 import * as Switch from "@radix-ui/react-switch";
 import React, { useState } from "react";
 import styles from "./DataMgmtPage.module.css";
-import { DataSection, SECTION_COLUMNS } from "./mockData";
+import { DataSection, isSelectCell, SECTION_COLUMNS } from "./mockData";
 
 type CollapsiblesectionProps = {
   section: DataSection;
@@ -23,6 +23,7 @@ type CollapsiblesectionProps = {
   onAddRow: () => void;
   onEditRow: (index: number) => void;
   onToggleSubCell?: (id: string, value: boolean) => void;
+  onSelectCell?: (rowIndex: number, value: string) => void;
   initialOpenState?: boolean;
   isLoading?: boolean;
 };
@@ -34,6 +35,7 @@ const CollapsibleSection = ({
   onEditRow,
   onEditSection,
   onToggleSubCell,
+  onSelectCell,
   initialOpenState,
   isLoading,
 }: CollapsiblesectionProps) => {
@@ -99,6 +101,8 @@ const CollapsibleSection = ({
                             >
                               <Switch.Thumb className={tableStyles.switchThumb} />
                             </Switch.Root>
+                          ) : isSelectCell(cell) ? (
+                            cell.options.find((o) => o.value === cell.value)?.label ?? ""
                           ) : (
                             cell
                           )}
@@ -156,6 +160,7 @@ const CollapsibleSection = ({
               columns={SECTION_COLUMNS[section.id] ?? SECTION_COLUMNS[tab] ?? []}
               onAdd={onAddRow}
               onEdit={onEditRow}
+              onSelectCell={onSelectCell}
               isLoading={isLoading}
             />
           ))}

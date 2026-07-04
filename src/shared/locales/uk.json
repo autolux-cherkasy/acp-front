@@ -315,7 +315,15 @@
       "busUpdateSuccess": "Автобус успішно оновлено.",
       "busUpdateError": "Не вдалося оновити автобус.",
       "busDeleteSuccess": "Автобус успішно видалено.",
-      "busDeleteError": "Не вдалося видалити автобус."
+      "busDeleteError": "Не вдалося видалити автобус.",
+      "cafeItemUpdateSuccess": "Товар успішно оновлено.",
+      "cafeItemUpdateError": "Не вдалося оновити товар.",
+      "routeAddSuccess": "Маршрут успішно додано.",
+      "routeAddError": "Не вдалося додати маршрут.",
+      "routeUpdateSuccess": "Маршрут успішно оновлено.",
+      "routeUpdateError": "Не вдалося оновити маршрут.",
+      "routeDeleteSuccess": "Маршрут успішно видалено.",
+      "routeDeleteError": "Не вдалося видалити маршрут."
     },
     "password": {
       "show": "Показати пароль",
@@ -879,7 +887,6 @@
         "editTitle": "Редагувати",
         "modelLabel": "Марка автобуса",
         "modelPlaceholder": "Mercedes-Benz Sprinter",
-        "yearLabel": "Рік випуску",
         "yearPlaceholder": "2021",
         "seatsLabel": "Місць",
         "seatsPlaceholder": "21",
@@ -892,18 +899,23 @@
         "newTitle": "Додати диспетчера",
         "editTitle": "Редагувати дані диспетчера",
         "nameLabel": "П.І.Б",
+        "namePlaceholder": "Введіть П.І.Б",
         "phoneLabel": "Телефон +380...",
         "phonePlaceholder": "+380...",
-        "emailLabel": "Email"
+        "emailLabel": "Email",
+        "emailPlaceholder": "example@email.com"
       },
       "driverModal": {
         "newTitle": "Додати водія",
         "editTitle": "Редагувати дані водія",
         "nameLabel": "П.І.Б",
+        "namePlaceholder": "Введіть П.І.Б",
         "phoneLabel": "Телефон +380...",
         "phonePlaceholder": "+380...",
         "licenseLabel": "Посвідчення водія до",
-        "categoryLabel": "Категорія"
+        "licensePlaceholder": "17.02.2042",
+        "categoryLabel": "Категорія",
+        "categoryPlaceholder": "B, C"
       },
       "cafeCategoryModal": {
         "newTitle": "Додати категорія меню",

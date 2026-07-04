@@ -25,7 +25,7 @@ export type CreateDispatcherBody = {
   name: string;
   phone: string;
   email: string;
-  password: string;
+  password?: string;
 };
 
 export type UpdateDispatcherBody = Partial<CreateDispatcherBody & { isBlocked: boolean }>;
@@ -33,7 +33,7 @@ export type UpdateDispatcherBody = Partial<CreateDispatcherBody & { isBlocked: b
 export type CreateDriverBody = {
   fullName: string;
   phone: string;
-  licenseNumber: string;
+  licenseNumber?: string;
   licenseValidUntil: string;
   licenseCategories: string;
   isActive?: boolean;
