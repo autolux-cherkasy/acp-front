@@ -65,7 +65,7 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
   const sectionModal = useDisclosure<SectionModalPayload>();
   const rowModal = useDisclosure<RowModalPayload>();
 
-  const categoryOptions = sections.map((s) => ({ value: s.title, label: s.title }));
+  const sectionOptions = sections.map((s) => ({ value: s.title, label: s.title }));
   const driverOptions = staffData?.drivers.map((d) => ({ value: d.id, label: d.fullName })) ?? [];
 
   const addBusMutation = useAddBusMutation();
@@ -136,6 +136,7 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
           mode={data.mode}
           onClose={rowModal.close}
           onSubmit={rowModal.close}
+          routeOptions={sectionOptions}
           initialData={(() => {
             if (data.mode !== "edit") return undefined;
             const row = sections[data.sectionIndex]?.rows?.[data.rowIndex];
@@ -143,6 +144,7 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
             const dirStr = typeof row[0] === "string" ? row[0] : "";
             const [dep, arr] = dirStr.split(" - ");
             return {
+              route: sections[data.sectionIndex]?.title,
               departurePlace: dep ?? "",
               arrivalPlace: arr ?? "",
               departureTime: typeof row[1] === "string" ? row[1] : "",
@@ -164,7 +166,7 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
           mode={data.mode}
           onClose={rowModal.close}
           onSubmit={rowModal.close}
-          categoryOptions={categoryOptions}
+          categoryOptions={sectionOptions}
           subcategoryOptions={subcategoryOptions}
           initialCategory={data.mode === "edit" ? section?.title : undefined}
           initialSubcategory={resolved?.groupLabel}

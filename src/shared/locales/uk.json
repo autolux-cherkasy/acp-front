@@ -315,7 +315,15 @@
       "busUpdateSuccess": "Автобус успішно оновлено.",
       "busUpdateError": "Не вдалося оновити автобус.",
       "busDeleteSuccess": "Автобус успішно видалено.",
-      "busDeleteError": "Не вдалося видалити автобус."
+      "busDeleteError": "Не вдалося видалити автобус.",
+      "cafeItemUpdateSuccess": "Товар успішно оновлено.",
+      "cafeItemUpdateError": "Не вдалося оновити товар.",
+      "routeAddSuccess": "Маршрут успішно додано.",
+      "routeAddError": "Не вдалося додати маршрут.",
+      "routeUpdateSuccess": "Маршрут успішно оновлено.",
+      "routeUpdateError": "Не вдалося оновити маршрут.",
+      "routeDeleteSuccess": "Маршрут успішно видалено.",
+      "routeDeleteError": "Не вдалося видалити маршрут."
     },
     "password": {
       "show": "Показати пароль",
