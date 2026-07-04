@@ -18,7 +18,7 @@ import { useAdminFleetQuery } from "@/src/entities/dashboard/api/dashboardFleetQ
 import { useAdminScheduleQuery } from "@/src/entities/dashboard/api/dashboardScheduleQueries";
 import { usePermissionsQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
 import { useAuthSession } from "@/src/features/auth";
-import { formatPhone } from "@/src/shared/lib/formatters";
+import { formatLicenseDate, formatPhone } from "@/src/shared/lib/formatters";
 
 const DataMgmtPage = () => {
   const [tab, setTab] = useState("routes");
@@ -39,12 +39,13 @@ const DataMgmtPage = () => {
   });
   const { data: permissions } = usePermissionsQuery();
   const cafeItemAvailMutation = useCafeItemUpdateMutation({ enabled: tab === "cafe" });
-  const { openSectionModal, openRowModal, closeModals, modalElement } = useDataMgmtModals({
-    tab,
-    sections,
-    fleetData,
-    staffData,
-  });
+  const { openSectionModal, openRowModal, closeModals, driverOptions, updateBusDriver, modalElement } =
+    useDataMgmtModals({
+      tab,
+      sections,
+      fleetData,
+      staffData,
+    });
 
   const cafeSections: DataSection[] = cafeData
     ? cafeData.map((section) => ({
@@ -59,12 +60,6 @@ const DataMgmtPage = () => {
         })),
       }))
     : [];
-
-  const formatLicenseDate = (date: string) => {
-    const stripped = date.replace(/^До\s+/, "");
-    const iso = stripped.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : stripped;
-  };
 
   const formatCategory = (cat: string) => (cat.startsWith("Категорія") ? cat : `Категорія ${cat}`);
 
@@ -96,7 +91,7 @@ const DataMgmtPage = () => {
           bus.model,
           String(bus.seatsCount),
           bus.registrationNumber,
-          bus.driver?.fullName ?? "—",
+          { type: "select" as const, value: bus.driverId ?? "", options: driverOptions },
         ]) ?? [],
     },
   ];
@@ -244,6 +239,14 @@ const DataMgmtPage = () => {
                     }
                     onToggleSubCell={(id, value) =>
                       cafeItemAvailMutation.mutate({ id, body: { isAvailable: value } })
+                    }
+                    onSelectCell={
+                      tab === "fleet"
+                        ? (rowIndex, value) => {
+                            const bus = fleetData?.[rowIndex];
+                            if (bus) updateBusDriver(bus.id, value);
+                          }
+                        : undefined
                     }
                     isLoading={tab === "staff" ? isStaffLoading : tab === "fleet" ? isFleetLoading : undefined}
                   />

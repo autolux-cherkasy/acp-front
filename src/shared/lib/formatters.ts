@@ -10,6 +10,22 @@ export function unformatPhone(value: string): string {
   return value.replace(/\s/g, "");
 }
 
+// 2042-02-17T00:00:00.000 → 17.02.2042
+export function formatLicenseDate(value: string | null | undefined): string {
+  if (!value) return "";
+  const stripped = value.replace(/^До\s+/, "");
+  const iso = stripped.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : stripped;
+}
+
+// 17.02.2042 → 2042-02-17
+export function unformatLicenseDate(value: string): string {
+  const match = value.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (!match) return value;
+  const [, day, month, year] = match;
+  return `${year}-${month}-${day}`;
+}
+
 export function formatCurrency(value: number): string {
   return new Intl.NumberFormat("uk-UA").format(value) + "\u00A0₴";
 }

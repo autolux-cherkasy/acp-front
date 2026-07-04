@@ -22,7 +22,13 @@ import {
 } from "@/src/entities/dashboard/api/dashboardStaffQueries";
 import { BusResponse } from "@/src/entities/dashboard/api/dashboardBusesApi";
 import { AdminStaffResponse } from "@/src/entities/dashboard/api/staffApi";
-import { DataSection } from "./mockData";
+import {
+  formatLicenseDate,
+  formatPhone,
+  unformatLicenseDate,
+  unformatPhone,
+} from "@/src/shared/lib/formatters";
+import { DataSection, TableRow } from "./mockData";
 
 type SectionModalPayload = { mode: "create" } | { mode: "edit"; sectionIndex: number };
 type RowModalPayload =
@@ -42,6 +48,17 @@ type SectionModalConfig = {
   labels?: { create: string; edit: string };
   placeholder?: string;
 };
+
+function resolveCafeRow(section: DataSection | undefined, rowIndex: number) {
+  let cursor = 0;
+  for (const sub of section?.subSections ?? []) {
+    if (rowIndex < cursor + sub.rows.length) {
+      return { groupLabel: sub.groupLabel, row: sub.rows[rowIndex - cursor] as TableRow };
+    }
+    cursor += sub.rows.length;
+  }
+  return undefined;
+}
 
 export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDataMgmtModalsParams) {
   const { t } = useI18n();
@@ -138,20 +155,20 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
     }
 
     if (tab === "cafe") {
+      const section = sections[data.sectionIndex];
+      const subcategoryOptions =
+        section?.subSections?.map((sub) => ({ value: sub.groupLabel, label: sub.groupLabel })) ?? [];
+      const resolved = data.mode === "edit" ? resolveCafeRow(section, data.rowIndex) : undefined;
       return (
         <CafeDishModal
           mode={data.mode}
           onClose={rowModal.close}
           onSubmit={rowModal.close}
           categoryOptions={categoryOptions}
-          initialCategory={data.mode === "edit" ? sections[data.sectionIndex].title : undefined}
-          initialData={
-            data.mode === "edit"
-              ? sections[data.sectionIndex].rows?.[data.rowIndex]?.filter(
-                  (cell): cell is string => typeof cell === "string",
-                )
-              : undefined
-          }
+          subcategoryOptions={subcategoryOptions}
+          initialCategory={data.mode === "edit" ? section?.title : undefined}
+          initialSubcategory={resolved?.groupLabel}
+          initialData={resolved?.row.filter((cell): cell is string => typeof cell === "string")}
         />
       );
     }
@@ -169,14 +186,20 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
               registrationNumber: formData.registrationNumber,
               driverId: formData.driverId || undefined,
             };
+            closeModals();
             if (data.mode === "create") {
-              addBusMutation.mutate(body, { onSuccess: closeModals });
+              addBusMutation.mutate(body);
             } else if (bus) {
-              updateBusMutation.mutate({ id: bus.id, body }, { onSuccess: closeModals });
+              updateBusMutation.mutate({ id: bus.id, body });
             }
           }}
           onDelete={
-            bus ? () => deleteBusMutation.mutate(bus.id, { onSuccess: closeModals }) : undefined
+            bus
+              ? () => {
+                  closeModals();
+                  deleteBusMutation.mutate(bus.id);
+                }
+              : undefined
           }
           driverOptions={driverOptions}
           initialData={
@@ -203,23 +226,32 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
             mode={data.mode}
             onClose={rowModal.close}
             onSubmit={(formData) => {
+              const body = {
+                ...formData,
+                phone: unformatPhone(formData.phone),
+                licenseValidUntil: unformatLicenseDate(formData.licenseValidUntil),
+              };
+              closeModals();
               if (data.mode === "create") {
-                addDriverMutation.mutate(formData, { onSuccess: closeModals });
+                addDriverMutation.mutate(body);
               } else if (driver) {
-                updateDriverMutation.mutate({ id: driver.id, body: formData }, { onSuccess: closeModals });
+                updateDriverMutation.mutate({ id: driver.id, body });
               }
             }}
             onDelete={
               driver
-                ? () => deleteDriverMutation.mutate(driver.id, { onSuccess: closeModals })
+                ? () => {
+                    closeModals();
+                    deleteDriverMutation.mutate(driver.id);
+                  }
                 : undefined
             }
             initialData={
               driver
                 ? {
                     fullName: driver.fullName,
-                    phone: driver.phone,
-                    licenseValidUntil: driver.licenseValidUntil,
+                    phone: formatPhone(driver.phone),
+                    licenseValidUntil: formatLicenseDate(driver.licenseValidUntil),
                     licenseCategories: driver.licenseCategories,
                   }
                 : undefined
@@ -235,23 +267,29 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
             mode={data.mode}
             onClose={rowModal.close}
             onSubmit={(formData) => {
+              const body = { ...formData, phone: unformatPhone(formData.phone) };
+              closeModals();
               if (data.mode === "create") {
-                addDispatcherMutation.mutate(formData, { onSuccess: closeModals });
+                addDispatcherMutation.mutate(body);
               } else if (dispatcher) {
-                updateDispatcherMutation.mutate(
-                  { id: dispatcher.id, body: formData },
-                  { onSuccess: closeModals },
-                );
+                updateDispatcherMutation.mutate({ id: dispatcher.id, body });
               }
             }}
             onDelete={
               dispatcher
-                ? () => deleteDispatcherMutation.mutate(dispatcher.id, { onSuccess: closeModals })
+                ? () => {
+                    closeModals();
+                    deleteDispatcherMutation.mutate(dispatcher.id);
+                  }
                 : undefined
             }
             initialData={
               dispatcher
-                ? { name: dispatcher.name, phone: dispatcher.phone ?? "", email: dispatcher.email }
+                ? {
+                    name: dispatcher.name,
+                    phone: formatPhone(dispatcher.phone ?? ""),
+                    email: dispatcher.email,
+                  }
                 : undefined
             }
           />
@@ -262,10 +300,16 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
     return null;
   };
 
+  const updateBusDriver = (busId: string, driverId: string) => {
+    updateBusMutation.mutate({ id: busId, body: { driverId: driverId || undefined } });
+  };
+
   return {
     openSectionModal: sectionModal.open,
     openRowModal: rowModal.open,
     closeModals,
+    driverOptions,
+    updateBusDriver,
     modalElement: (
       <>
         {renderSectionModal()}
