@@ -28,6 +28,16 @@ const rawApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 
 export const API_URL = rawApiUrl ? normalizeApiUrl(rawApiUrl) : null;
 
+// Static assets (e.g. /uploads/...) are served from the API origin directly,
+// bypassing the /api/v1 prefix used by apiFetch.
+export const API_ORIGIN = API_URL ? API_URL.replace(/\/api\/v1$/, "") : null;
+
+export function resolveAssetUrl(path?: string | null): string | undefined {
+  if (!path) return undefined;
+  if (/^https?:\/\//.test(path)) return path;
+  return API_ORIGIN ? `${API_ORIGIN}${path}` : path;
+}
+
 type ApiFetchOptions = RequestInit & {
   includeAuth?: boolean;
   skipAuthRefresh?: boolean;

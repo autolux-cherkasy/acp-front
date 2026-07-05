@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { useCafeQuery } from "@/src/entities/cafe/api/useCafeQueries";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { resolveAssetUrl } from "@/src/shared";
 import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import { DecorativeBorder } from "@/src/shared/ui/DecorativeBorder/DecorativeBorder";
 import styles from "./cafe-page.module.css";
@@ -63,16 +64,16 @@ export default function CafePage() {
   const renderCard = (menu: CafeSectionResponse) => {
     const cardSideClass =
       menu.displayOrder % 2 !== 0 ? styles.cardImageLeft : styles.cardImageRight;
-    const imageSrc = `${menu.imageUrl ?? ""}+${menu.id}`;
     const isSplitLayout = menu.categories.length > 1;
     const layoutClass = isSplitLayout ? styles.cardSplit : styles.cardSingle;
+    const photoSrc = resolveAssetUrl(menu.imageUrl) ?? "/icons/cafe/coffe.svg";
 
     return (
-      <article key={imageSrc} className={`${styles.card} ${cardSideClass} ${layoutClass}`}>
+      <article key={menu.id} className={`${styles.card} ${cardSideClass} ${layoutClass}`}>
         <div className={styles.photoWrap}>
           <Image
-            src={"/icons/cafe/coffe.svg"}
-            alt={"photo"}
+            src={photoSrc}
+            alt={menu.name}
             priority
             fill
             sizes="(max-width: 430px) 200px, (max-width: 1239px) 300px, 360px"

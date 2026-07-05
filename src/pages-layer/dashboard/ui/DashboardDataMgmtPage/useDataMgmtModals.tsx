@@ -1,5 +1,5 @@
 "use client";
-import { useI18n } from "@/src/shared";
+import { useI18n, resolveAssetUrl } from "@/src/shared";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import RouteModal from "@/src/features/admin-modals/RouteModal/RouteModal";
 import DirectionModal from "@/src/features/admin-modals/DirectionModal/DirectionModal";
@@ -26,6 +26,7 @@ import {
   useDeleteRouteMutation,
 } from "@/src/entities/dashboard/api/dashboardScheduleQueries";
 import {
+  uploadCafeImage,
   useAddCafeItemMutation,
   useAddCafeSectionMutation,
   useCafeItemUpdateMutation,
@@ -143,7 +144,7 @@ export function useDataMgmtModals({
       <RouteModal
         mode={sectionData.mode}
         onClose={sectionModal.close}
-        onSubmit={(formData) => {
+        onSubmit={async (formData) => {
           sectionModal.close();
           if (tab === "routes") {
             const body = {
@@ -157,12 +158,15 @@ export function useDataMgmtModals({
               updateRouteMutation.mutate({ id: route.id, body });
             }
           } else if (tab === "cafe") {
+            const imageUrl = formData.imageFile
+              ? (await uploadCafeImage(formData.imageFile)).imageUrl
+              : undefined;
             if (sectionData.mode === "create") {
-              addCafeSectionMutation.mutate({ name: formData.name });
+              addCafeSectionMutation.mutate({ name: formData.name, imageUrl });
             } else if (cafeSection) {
               updateCafeSectionMutation.mutate({
                 id: cafeSection.id,
-                body: { name: formData.name },
+                body: { name: formData.name, ...(imageUrl && { imageUrl }) },
               });
             }
           }
@@ -185,7 +189,7 @@ export function useDataMgmtModals({
             const [dep, arr] = section.title.split(" - ");
             return { departureCity: dep ?? "", arrivalCity: arr ?? "" };
           }
-          return { name: section.title, imageUrl: section.imageUrl };
+          return { name: section.title, imageUrl: resolveAssetUrl(section.imageUrl) };
         })()}
         {...config}
       />

@@ -19,6 +19,15 @@ export const getAdminMenu = () => {
   return apiFetch<CafeSectionWithCategoriesResponse[]>(`${ADMIN_CAFE_URL}/menu`);
 };
 
+export const uploadCafeImage = (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return apiFetch<{ imageUrl: string }>(`${ADMIN_CAFE_URL}/upload-photo`, {
+    method: "POST",
+    body: formData,
+  });
+};
+
 export const createCafeSection = (body: CreateCafeSectionPayload) => {
   return apiFetch<CafeSectionWithCategoriesResponse>(`${ADMIN_CAFE_URL}/sections`, {
     method: "POST",
