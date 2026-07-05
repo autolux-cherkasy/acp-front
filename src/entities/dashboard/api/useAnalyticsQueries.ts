@@ -22,10 +22,10 @@ export function useAnalyticsSummaryQuery(date?: string) {
   });
 }
 
-export function useAllRoutesAnalyticsQuery() {
+export function useAllRoutesAnalyticsQuery(date?: string) {
   return useQuery({
-    queryFn: getAllRoutesAnalytics,
-    queryKey: [ANALYTICS_ALL_ROUTES_KEY],
+    queryFn: () => getAllRoutesAnalytics(date),
+    queryKey: [ANALYTICS_ALL_ROUTES_KEY, date ?? "today"],
   });
 }
 

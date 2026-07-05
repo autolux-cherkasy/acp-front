@@ -38,9 +38,17 @@ export default function AllRoutesPage() {
   const { t } = useI18n();
   const router = useRouter();
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
+  const [date, setDate] = useState<string | undefined>(undefined);
 
-  const { data: routesData } = useAllRoutesAnalyticsQuery();
+  const { data: routesData } = useAllRoutesAnalyticsQuery(date);
   const { data: routeDetail } = useRouteAnalyticsQuery(selectedDirection);
+
+  function handleCalendarChange(d: Date) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    setDate(`${yyyy}-${mm}-${dd}`);
+  }
 
   const allRoutes: AllRouteRow[] = (routesData ?? []).map((r, i) => ({
     id: i,
@@ -118,7 +126,7 @@ export default function AllRoutesPage() {
         title={`${t("dispatcherArea.sidebar.menu.analytics")} / ${t("dispatcherArea.analytics.allRoutes")}`}
         subtitle={t("dispatcherArea.analytics.subtitle")}
         onBack={() => router.back()}
-        onCalendarChange={() => {}}
+        onCalendarChange={handleCalendarChange}
       />
       <div
         ref={cardRef}

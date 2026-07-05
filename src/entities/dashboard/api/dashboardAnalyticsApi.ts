@@ -80,8 +80,9 @@ export function getAnalyticsSummary(date?: string) {
   return apiFetch<GetSummaryAnalyticsResponse>(`${ADMIN_ANALYTICS_URL}/summary${qs}`);
 }
 
-export function getAllRoutesAnalytics() {
-  return apiFetch<AllRoutesResponse[]>(`${ADMIN_ANALYTICS_URL}`);
+export function getAllRoutesAnalytics(date?: string) {
+  const qs = date ? `?date=${encodeURIComponent(date)}` : "";
+  return apiFetch<AllRoutesResponse[]>(`${ADMIN_ANALYTICS_URL}${qs}`);
 }
 
 export function getRouteAnalytics(direction: string) {
