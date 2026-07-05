@@ -28,13 +28,13 @@ export default function ProfileArchivePage() {
         </h1>
         <div className={styles.blocks}>
           {tickets.map((ticket) => {
-            const isUnpaid = ticket.status === "booked";
+            const isUnpaid = ticket.status === "reserved";
             const isActionDisabled =
-              ticket.status === "paid" || ticket.status === "cancelled";
+              ticket.status === "completed" || ticket.status === "cancelled";
             const statusLabel = t(`profile.archive.status.${ticket.status}`);
             const badgeClassName = isUnpaid
               ? styles.ticketBadgeWarning
-              : ticket.status === "paid"
+              : ticket.status === "completed"
                 ? styles.ticketBadgeSuccess
                 : styles.ticketBadgeMuted;
 

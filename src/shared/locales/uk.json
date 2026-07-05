@@ -600,14 +600,19 @@
         "columns": {
           "data": "Дані",
           "timer": "Таймер",
-          "actions": "Дії"
+          "trip": "Рейс",
+          "actions": "Редагувати"
         }
       },
       "statuses": {
-        "booked": "Заброньовано",
+        "booked": "Бронь",
         "bookedShort": "Бронь",
         "paid": "Оплачено",
-        "cancelled": "Скасовано"
+        "reserved": "Бронь",
+        "pending": "Очікує",
+        "completed": "Оплачено",
+        "cancelled": "Скасовано",
+        "expired": "Протерміновано"
       },
       "timer": {
         "noneAria": "Таймер відсутній",

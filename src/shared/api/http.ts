@@ -42,6 +42,14 @@ type AccessTokenResponse = {
 };
 
 let refreshPromise: Promise<string | null> | null = null;
+function getCookie(name: string) {
+  if (typeof document === "undefined") return null;
+
+  return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split("=")[1] ?? null;
+}
 
 function buildHeaders(
   headersInit: HeadersInit | undefined,
@@ -82,9 +90,9 @@ async function getErrorMessage(response: Response) {
 }
 
 async function sendRequest(
-  path: string,
-  options: ApiFetchOptions,
-  accessToken: string | null,
+    path: string,
+    options: ApiFetchOptions,
+    accessToken: string | null,
 ) {
   const { includeAuth = true, ...requestInit } = options;
 
@@ -92,9 +100,22 @@ async function sendRequest(
     throw new Error("NEXT_PUBLIC_API_URL is not configured");
   }
 
+  const method = requestInit.method?.toUpperCase() ?? "GET";
+
+  const headers = buildHeaders(
+      requestInit.headers,
+      requestInit.body,
+      includeAuth ? accessToken : null,
+  );
+
+  const csrfToken = getCookie("csrf_token");
+  if (csrfToken && ["POST", "PATCH", "PUT", "DELETE"].includes(method)) {
+    headers.set("X-CSRF-Token", csrfToken);
+  }
+
   return fetch(`${API_URL}${path}`, {
     ...requestInit,
-    headers: buildHeaders(requestInit.headers, requestInit.body, includeAuth ? accessToken : null),
+    headers,
     cache: "no-store",
     credentials: "include",
   });
