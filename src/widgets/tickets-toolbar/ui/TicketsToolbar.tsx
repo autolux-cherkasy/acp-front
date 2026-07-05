@@ -6,7 +6,6 @@ import type { SortOption } from "@/src/features/sort-tickets";
 import { Button, DashboardDateText } from "@/src/shared";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import MiniCalendarTrigger from "@/src/widgets/MiniCalendar/MiniCalendarTrigger";
-import { useState } from "react";
 import styles from "./TicketsToolbar.module.css";
 
 type Props = {
@@ -14,6 +13,8 @@ type Props = {
   onSearchChange: (query: string) => void;
   sortOption: SortOption | "";
   onSortChange: (option: SortOption) => void;
+  chosenDate: Date;
+  setChosenDate: (date: Date) => void;
   onAddOrder: () => void;
 };
 
@@ -22,10 +23,11 @@ export default function TicketsToolbar({
   onSearchChange,
   sortOption,
   onSortChange,
+  chosenDate,
+  setChosenDate,
   onAddOrder,
 }: Props) {
   const { t } = useI18n();
-  const [chosenDate, setChosenDate] = useState(new Date());
 
   return (
     <div

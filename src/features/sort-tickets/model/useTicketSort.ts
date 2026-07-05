@@ -29,9 +29,9 @@ export function useTicketSort() {
               parseDatetime(a.departureDate, a.departureTime),
           );
         case "filter-booked":
-          return tickets.filter((t) => t.status === "booked");
+          return tickets.filter((t) => t.status === "reserved");
         case "filter-paid":
-          return tickets.filter((t) => t.status === "paid");
+          return tickets.filter((t) => t.status === "completed");
         case "filter-cancelled":
           return tickets.filter((t) => t.status === "cancelled");
         default:

@@ -4,6 +4,7 @@ import { useMemo, type RefObject } from "react";
 import { useForm } from "react-hook-form";
 import MiniCalendar from "@/src/widgets/MiniCalendar/MiniCalendar";
 import { useClickOutside } from "@/src/shared/lib/useClickOutside";
+import { createAdminBooking } from "@/src/entities/ticket";
 import type { TicketStatus } from "@/src/entities/ticket";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
@@ -74,7 +75,7 @@ function NewOrderModalBody({
   const { t } = useI18n();
   const requestClose = useModalClose();
 
-  const { register, setValue, watch } = useForm<FormState>({
+  const { register, setValue, watch, handleSubmit} = useForm<FormState>({
     defaultValues: {
       passengerName: routeInfo?.passengerName ?? "",
       passengerPhone: routeInfo?.passengerPhone ?? "",
@@ -83,7 +84,7 @@ function NewOrderModalBody({
       departureTime: routeInfo?.departureTime ?? "",
       ticketCount: routeInfo?.ticketCount ?? "0",
       totalPrice: routeInfo?.totalPrice ?? "0",
-      status: routeInfo?.status ?? "booked",
+      status: routeInfo?.status ?? "reserved",
     },
   });
   const status = watch("status");
@@ -104,6 +105,22 @@ function NewOrderModalBody({
   const modalTitle = isEditMode
     ? t("dispatcherArea.tickets.modal.editOrderTitle")
     : t("dispatcherArea.tickets.modal.newOrderTitle");
+
+  async function onSubmit(data: FormState) {
+    console.log("submit data:", data);
+
+    // Тут поки не вистачає tripId / boardingStopId / alightingStopId
+    // createAdminBooking({
+    //   customerData: {
+    //     name: data.passengerName,
+    //     phone: data.passengerPhone,
+    //   },
+    //   tripId: "...",
+    //   boardingStopId: "...",
+    //   alightingStopId: "...",
+    //   ticketsCount: Number(data.ticketCount),
+    // });
+  }
 
   return (
     <>
@@ -179,15 +196,15 @@ function NewOrderModalBody({
         <div className={styles.statusRow}>
           <Button
             text={t("dispatcherArea.tickets.statuses.bookedShort")}
-            variant={status === "booked" ? "yellow" : "outlined"}
+            variant={status === "reserved" ? "yellow" : "outlined"}
             size="full"
-            onClick={() => setValue("status", "booked")}
+            onClick={() => setValue("status", "reserved")}
           />
           <Button
             text={t("dispatcherArea.tickets.statuses.paid")}
-            variant={status === "paid" ? "success" : "outlined"}
+            variant={status === "completed" ? "success" : "outlined"}
             size="full"
-            onClick={() => setValue("status", "paid")}
+            onClick={() => setValue("status", "completed")}
           />
         </div>
 
@@ -203,7 +220,11 @@ function NewOrderModalBody({
           text={t("dispatcherArea.tickets.actions.saveChanges")}
           variant="secondary"
           size="full"
+<<<<<<< HEAD
           onClick={requestClose}
+=======
+          onClick={handleSubmit(onSubmit)}
+>>>>>>> d4fcbc5 (feat(admin): connect bookings API and ticket status management)
         />
       </div>
     </>

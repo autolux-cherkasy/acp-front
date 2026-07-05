@@ -52,7 +52,19 @@ type RefreshResponse = {
   csrf_token?: string;
 };
 
+<<<<<<< HEAD
 let refreshPromise: Promise<boolean> | null = null;
+=======
+let refreshPromise: Promise<string | null> | null = null;
+function getCookie(name: string) {
+  if (typeof document === "undefined") return null;
+
+  return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split("=")[1] ?? null;
+}
+>>>>>>> d4fcbc5 (feat(admin): connect bookings API and ticket status management)
 
 function buildHeaders(headersInit: HeadersInit | undefined, body: BodyInit | null | undefined) {
   const headers = new Headers(headersInit);
@@ -84,8 +96,17 @@ async function getErrorMessage(response: Response) {
   return message;
 }
 
+<<<<<<< HEAD
 async function sendRequest(path: string, options: ApiFetchOptions) {
   const { includeAuth: _includeAuth, ...requestInit } = options;
+=======
+async function sendRequest(
+    path: string,
+    options: ApiFetchOptions,
+    accessToken: string | null,
+) {
+  const { includeAuth = true, ...requestInit } = options;
+>>>>>>> d4fcbc5 (feat(admin): connect bookings API and ticket status management)
 
   if (!API_URL) {
     throw new Error("NEXT_PUBLIC_API_URL is not configured");

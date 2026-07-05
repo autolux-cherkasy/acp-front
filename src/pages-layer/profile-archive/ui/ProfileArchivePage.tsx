@@ -34,9 +34,7 @@ export default function ProfileArchivePage() {
           {t("profile.tabs.archive")}
         </h1>
 
-        {historyQuery.isPending ? (
-          <p className={styles.notice}>{t("common.loading")}</p>
-        ) : null}
+        {historyQuery.isPending ? <p className={styles.notice}>{t("common.loading")}</p> : null}
 
         {historyQuery.isError ? (
           <div className={`${styles.notice} ${styles.noticeError}`} role="alert">
@@ -57,12 +55,16 @@ export default function ProfileArchivePage() {
 
         <div className={styles.blocks}>
           {tickets.map((ticket) => {
-            const isUnpaid = ticket.status === "booked";
+            const isUnpaid = ticket.status === "reserved";
             const isActionDisabled =
               ticket.status === "paid" ||
               ticket.status === "cancelled" ||
               ticket.status === "expired";
-            const statusVariant = isUnpaid ? "warning" : ticket.status === "paid" ? "success" : "muted";
+            const statusVariant = isUnpaid
+              ? "warning"
+              : ticket.status === "paid"
+                ? "success"
+                : "muted";
 
             return (
               <BookingSummaryCard

@@ -655,15 +655,24 @@
         "columns": {
           "data": "Дані",
           "timer": "Таймер",
-          "actions": "Дії"
+          "trip": "Рейс",
+          "actions": "Редагувати"
         }
       },
       "statuses": {
-        "booked": "Заброньовано",
+        "booked": "Бронь",
         "bookedShort": "Бронь",
         "paid": "Оплачено",
+<<<<<<< HEAD
         "cancelled": "Скасовано",
         "expired": "Прострочено"
+=======
+        "reserved": "Бронь",
+        "pending": "Очікує",
+        "completed": "Оплачено",
+        "cancelled": "Скасовано",
+        "expired": "Протерміновано"
+>>>>>>> d4fcbc5 (feat(admin): connect bookings API and ticket status management)
       },
       "timer": {
         "noneAria": "Таймер відсутній",
