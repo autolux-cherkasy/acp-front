@@ -25,6 +25,13 @@ import {
   useUpdateRouteMutation,
   useDeleteRouteMutation,
 } from "@/src/entities/dashboard/api/dashboardScheduleQueries";
+import {
+  useAddCafeItemMutation,
+  useAddCafeSectionMutation,
+  useCafeItemUpdateMutation,
+  useUpdateCafeSectionMutation,
+} from "@/src/entities/dashboard/api/dashboardCafeQueries";
+import { CafeSectionWithCategoriesResponse } from "@/src/entities/dashboard/types";
 import { BusResponse } from "@/src/entities/dashboard/api/dashboardBusesApi";
 import { AdminStaffResponse } from "@/src/entities/dashboard/api/staffApi";
 import {
@@ -45,6 +52,7 @@ type UseDataMgmtModalsParams = {
   sections: DataSection[];
   fleetData?: BusResponse[];
   staffData?: AdminStaffResponse;
+  cafeData?: CafeSectionWithCategoriesResponse[];
 };
 
 type SectionModalConfig = {
@@ -58,14 +66,24 @@ function resolveCafeRow(section: DataSection | undefined, rowIndex: number) {
   let cursor = 0;
   for (const sub of section?.subSections ?? []) {
     if (rowIndex < cursor + sub.rows.length) {
-      return { groupLabel: sub.groupLabel, row: sub.rows[rowIndex - cursor] as TableRow };
+      return {
+        groupLabel: sub.groupLabel,
+        row: sub.rows[rowIndex - cursor] as TableRow,
+        id: sub.ids[rowIndex - cursor],
+      };
     }
     cursor += sub.rows.length;
   }
   return undefined;
 }
 
-export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDataMgmtModalsParams) {
+export function useDataMgmtModals({
+  tab,
+  sections,
+  fleetData,
+  staffData,
+  cafeData,
+}: UseDataMgmtModalsParams) {
   const { t } = useI18n();
   const sectionModal = useDisclosure<SectionModalPayload>();
   const rowModal = useDisclosure<RowModalPayload>();
@@ -85,6 +103,10 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
   const addRouteMutation = useAddRouteMutation();
   const updateRouteMutation = useUpdateRouteMutation();
   const deleteRouteMutation = useDeleteRouteMutation();
+  const addCafeSectionMutation = useAddCafeSectionMutation();
+  const updateCafeSectionMutation = useUpdateCafeSectionMutation();
+  const addCafeItemMutation = useAddCafeItemMutation();
+  const cafeItemUpdateMutation = useCafeItemUpdateMutation();
 
   const sectionModalByTab: Partial<Record<string, SectionModalConfig>> = {
     routes: {},
@@ -115,22 +137,34 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
     const sectionData = sectionModal.data!;
     const route =
       tab === "routes" && sectionData.mode === "edit" ? sections[sectionData.sectionIndex] : undefined;
+    const cafeSection =
+      tab === "cafe" && sectionData.mode === "edit" ? sections[sectionData.sectionIndex] : undefined;
     return (
       <RouteModal
         mode={sectionData.mode}
         onClose={sectionModal.close}
         onSubmit={(formData) => {
           sectionModal.close();
-          if (tab !== "routes") return;
-          const body = {
-            name: `${formData.departureCity} - ${formData.arrivalCity}`,
-            origin: formData.departureCity,
-            destination: formData.arrivalCity,
-          };
-          if (sectionData.mode === "create") {
-            addRouteMutation.mutate(body);
-          } else if (route) {
-            updateRouteMutation.mutate({ id: route.id, body });
+          if (tab === "routes") {
+            const body = {
+              name: `${formData.departureCity} - ${formData.arrivalCity}`,
+              origin: formData.departureCity,
+              destination: formData.arrivalCity,
+            };
+            if (sectionData.mode === "create") {
+              addRouteMutation.mutate(body);
+            } else if (route) {
+              updateRouteMutation.mutate({ id: route.id, body });
+            }
+          } else if (tab === "cafe") {
+            if (sectionData.mode === "create") {
+              addCafeSectionMutation.mutate({ name: formData.name });
+            } else if (cafeSection) {
+              updateCafeSectionMutation.mutate({
+                id: cafeSection.id,
+                body: { name: formData.name },
+              });
+            }
           }
         }}
         onDelete={
@@ -193,11 +227,31 @@ export function useDataMgmtModals({ tab, sections, fleetData, staffData }: UseDa
       const subcategoryOptions =
         section?.subSections?.map((sub) => ({ value: sub.groupLabel, label: sub.groupLabel })) ?? [];
       const resolved = data.mode === "edit" ? resolveCafeRow(section, data.rowIndex) : undefined;
+      const resolveCategoryId = (sectionName: string, categoryName: string) => {
+        const targetSection = cafeData?.find((cd) => cd.name === sectionName);
+        if (!targetSection) return undefined;
+        return categoryName
+          ? targetSection.categories.find((c) => c.name === categoryName)?.id
+          : targetSection.categories[0]?.id;
+      };
       return (
         <CafeDishModal
           mode={data.mode}
           onClose={rowModal.close}
-          onSubmit={rowModal.close}
+          onSubmit={(formData) => {
+            closeModals();
+            const categoryId = resolveCategoryId(formData.category, formData.subcategory);
+            if (!categoryId) return;
+            const price = Number(formData.price);
+            if (data.mode === "create") {
+              addCafeItemMutation.mutate({ categoryId, name: formData.name, price });
+            } else if (resolved) {
+              cafeItemUpdateMutation.mutate({
+                id: resolved.id,
+                body: { categoryId, name: formData.name, price },
+              });
+            }
+          }}
           categoryOptions={sectionOptions}
           subcategoryOptions={subcategoryOptions}
           initialCategory={data.mode === "edit" ? section?.title : undefined}

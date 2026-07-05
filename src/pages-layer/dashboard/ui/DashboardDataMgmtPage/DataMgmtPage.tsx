@@ -45,6 +45,7 @@ const DataMgmtPage = () => {
       sections,
       fleetData,
       staffData,
+      cafeData,
     });
 
   const cafeSections: DataSection[] = cafeData

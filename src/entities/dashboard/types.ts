@@ -18,6 +18,16 @@ export type UpdateCafeItemPayload = {
   displayOrder?: number;
   isAvailable?: boolean;
 };
+
+export type CreateCafeItemPayload = {
+  categoryId: string;
+  name: string;
+  description?: string;
+  price: number;
+  displayOrder?: number;
+  isAvailable?: boolean;
+};
+
 export type CafeCategoryResponse = {
   id: string;
   sectionId: string;
@@ -31,6 +41,15 @@ export type CafeCategoryResponse = {
 export type CafeCategoryWithItemsResponse = CafeCategoryResponse & {
   items: CafeItemResponse[];
 };
+
+export type CreateCafeCategoryPayload = {
+  sectionId: string;
+  name: string;
+  displayOrder?: number;
+  isActive?: boolean;
+};
+
+export type UpdateCafeCategoryPayload = Partial<CreateCafeCategoryPayload>;
 
 export type CafeSectionResponse = {
   id: string;
@@ -46,3 +65,13 @@ export type CafeSectionResponse = {
 export type CafeSectionWithCategoriesResponse = CafeSectionResponse & {
   categories: CafeCategoryWithItemsResponse[];
 };
+
+export type CreateCafeSectionPayload = {
+  name: string;
+  slug?: string;
+  displayOrder?: number;
+  imageUrl?: string | null;
+  isActive?: boolean;
+};
+
+export type UpdateCafeSectionPayload = Partial<CreateCafeSectionPayload>;
