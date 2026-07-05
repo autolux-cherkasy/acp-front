@@ -32,7 +32,7 @@ export default function TicketsTable({ tickets, onDetails }: Props) {
             </th>
             <th className={styles.th}>{t("dispatcherArea.tickets.table.columns.data")}</th>
             <th className={styles.th}>
-              {t("dispatcherArea.analytics.popularRoutes.columns.route")}
+                {t("dispatcherArea.tickets.table.columns.trip")}
             </th>
             <th className={styles.th}>{t("bookingForm.date.placeholder")}</th>
             <th className={styles.th}>{t("dispatcherArea.sidebar.menu.tickets")}</th>

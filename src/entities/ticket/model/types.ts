@@ -1,4 +1,11 @@
-export type TicketStatus = "booked" | "paid" | "cancelled";
+export type BookingStatus =
+    | "reserved"
+    | "pending"
+    | "completed"
+    | "cancelled"
+    | "expired";
+
+export type TicketStatus = BookingStatus;
 
 export type Ticket = {
   id: string;
@@ -7,13 +14,36 @@ export type Ticket = {
   passengerPhone: string;
   routeFrom: string;
   routeTo: string;
-  /** Boarding stop shown in parentheses under the route */
   routeStop: string | null;
-  departureTime: string; // "HH:MM"
-  departureDate: string; // "DD.MM.YYYY"
+  departureTime: string;
+  departureDate: string;
   ticketCount: number;
   totalPrice: number;
-  status: TicketStatus;
-  /** Remaining seconds for the reservation hold timer. null = no timer */
+  status: BookingStatus;
   timerSeconds: number | null;
+};
+
+export type AdminBookingDto = {
+  id: string;
+  bookingNumber: string;
+  passengerName: string;
+  phone: string;
+  route: string;
+  departureTime: string;
+  arrivalTime: string;
+  ticketsCount: number;
+  totalPrice: number;
+  status: BookingStatus;
+  createdAt: string;
+  expiresAt: string | null;
+};
+
+export type AdminBookingsResponse = {
+  data: AdminBookingDto[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };

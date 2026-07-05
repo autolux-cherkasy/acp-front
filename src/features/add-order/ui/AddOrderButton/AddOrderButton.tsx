@@ -4,7 +4,7 @@ import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import styles from "./AddOrderButton.module.css";
 
 type Props = {
-  onClick: () => void;
+    onClick: () => void;
 };
 
 export default function AddOrderButton({ onClick }: Props) {

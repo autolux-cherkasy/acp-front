@@ -40,7 +40,6 @@ const MiniCalendarTrigger = ({
               setIsCalendarOpen(false);
             }}
             onClose={() => setIsCalendarOpen(false)}
-            maxDate={new Date()}
           />
         </div>
       )}

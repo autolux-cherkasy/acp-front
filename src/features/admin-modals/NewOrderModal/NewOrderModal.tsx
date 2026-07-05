@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import MiniCalendar from "@/src/widgets/MiniCalendar/MiniCalendar";
 import { useClickOutside } from "@/src/shared/lib/useClickOutside";
+import { createAdminBooking } from "@/src/entities/ticket";
 import type { TicketStatus } from "@/src/entities/ticket";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
@@ -54,7 +55,7 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
     };
   }, [onClose, showCalendar]);
 
-  const { register, setValue, watch } = useForm<FormState>({
+  const { register, setValue, watch, handleSubmit} = useForm<FormState>({
     defaultValues: {
       passengerName: routeInfo?.passengerName ?? "",
       passengerPhone: routeInfo?.passengerPhone ?? "",
@@ -63,7 +64,7 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
       departureTime: routeInfo?.departureTime ?? "",
       ticketCount: routeInfo?.ticketCount ?? "0",
       totalPrice: routeInfo?.totalPrice ?? "0",
-      status: routeInfo?.status ?? "booked",
+      status: routeInfo?.status ?? "reserved",
     },
   });
   const status = watch("status");
@@ -84,6 +85,22 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
   const modalTitle = isEditMode
     ? t("dispatcherArea.tickets.modal.editOrderTitle")
     : t("dispatcherArea.tickets.modal.newOrderTitle");
+
+  async function onSubmit(data: FormState) {
+    console.log("submit data:", data);
+
+    // Тут поки не вистачає tripId / boardingStopId / alightingStopId
+    // createAdminBooking({
+    //   customerData: {
+    //     name: data.passengerName,
+    //     phone: data.passengerPhone,
+    //   },
+    //   tripId: "...",
+    //   boardingStopId: "...",
+    //   alightingStopId: "...",
+    //   ticketsCount: Number(data.ticketCount),
+    // });
+  }
 
   return (
     <ModalFrame
@@ -164,15 +181,15 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
         <div className={styles.statusRow}>
           <Button
             text={t("dispatcherArea.tickets.statuses.bookedShort")}
-            variant={status === "booked" ? "yellow" : "outlined"}
+            variant={status === "reserved" ? "yellow" : "outlined"}
             size="full"
-            onClick={() => setValue("status", "booked")}
+            onClick={() => setValue("status", "reserved")}
           />
           <Button
             text={t("dispatcherArea.tickets.statuses.paid")}
-            variant={status === "paid" ? "success" : "outlined"}
+            variant={status === "completed" ? "success" : "outlined"}
             size="full"
-            onClick={() => setValue("status", "paid")}
+            onClick={() => setValue("status", "completed")}
           />
         </div>
 
@@ -188,7 +205,7 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
           text={t("dispatcherArea.tickets.actions.saveChanges")}
           variant="secondary"
           size="full"
-          onClick={onClose}
+          onClick={handleSubmit(onSubmit)}
         />
       </div>
     </ModalFrame>

@@ -48,7 +48,7 @@ export const ARCHIVED_TICKETS: ArchivedTicket[] = [
     passengerPhone: "+38067 295 32 12",
     seatCount: 1,
     price: "500 ₴",
-    status: "booked",
+    status: "reserved",
     routeFrom: {
       city: "м.Черкаси",
       station: "(пл.Дружби Народів)",
@@ -68,7 +68,7 @@ export const ARCHIVED_TICKETS: ArchivedTicket[] = [
     passengerPhone: "+38067 295 32 12",
     seatCount: 1,
     price: "500 ₴",
-    status: "paid",
+    status: "completed",
     routeFrom: {
       city: "м.Черкаси",
       station: "(пл.Дружби Народів)",
