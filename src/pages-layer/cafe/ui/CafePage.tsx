@@ -74,7 +74,7 @@ export default function CafePage() {
           <Image
             src={photoSrc}
             alt={menu.name}
-            priority
+            // priority
             fill
             sizes="(max-width: 430px) 200px, (max-width: 1239px) 300px, 360px"
             className={styles.photo}
