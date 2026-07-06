@@ -1,7 +1,7 @@
 "use client";
 
 import type { LoadAnalyticsItem } from "@/src/entities/dashboard/api/dashboardAnalyticsApi";
-import { DashboardCard, EmptyState } from "@/src/shared";
+import { DashboardCard, EmptyState, LoadingState } from "@/src/shared";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import {
   Area,
@@ -14,9 +14,9 @@ import {
 } from "recharts";
 import styles from "./LoadChart.module.css";
 
-type Props = { data?: LoadAnalyticsItem[] };
+type Props = { data?: LoadAnalyticsItem[]; isLoading?: boolean };
 
-export default function LoadChart({ data }: Props) {
+export default function LoadChart({ data, isLoading }: Props) {
   const { t } = useI18n();
   const chartData = (data ?? []).map(({ hour, ticketsBought }) => ({
     time: `${hour}:00`,
@@ -30,7 +30,9 @@ export default function LoadChart({ data }: Props) {
       subtitle={t("dispatcherArea.analytics.load.subtitle")}
     >
       <div className={styles.chartWrapper}>
-        {chartData.length > 0 ? (
+        {isLoading ? (
+          <LoadingState />
+        ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 20, right: 8, left: 0, bottom: 0 }}>
               <defs>

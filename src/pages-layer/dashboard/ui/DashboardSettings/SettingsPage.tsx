@@ -6,7 +6,6 @@ import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPage
 import styles from "./SettingsPage.module.css";
 import { Button, DashboardCard, useI18n } from "@/src/shared";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
-import Loader from "@/src/shared/ui/Loader/Loader";
 import { getCompanyFields, type CompanyForm, type ModulePermissions } from "./types";
 import { formatPhone, unformatPhone } from "@/src/shared/lib/formatters";
 import * as Switch from "@radix-ui/react-switch";
@@ -121,10 +120,28 @@ const DashboardSettingsPage = () => {
       <div className={styles.infoContainer}>
         <DashboardCard
           className={styles.card}
+          style={isLoading ? { minHeight: 620 } : undefined}
           title={t("dispatcherArea.settingsCards.company.title")}
         >
           {isLoading ? (
-            <Loader />
+            <div className={styles.inputsContainer}>
+              <div className={styles.formSection}>
+                <div className={styles.fieldSkeleton} />
+                <div className={styles.phoneRow}>
+                  <div className={styles.fieldSkeleton} />
+                  <div className={styles.fieldSkeleton} />
+                  <div className={styles.fieldSkeleton} />
+                </div>
+                <div className={styles.fieldSkeleton} />
+                <div className={styles.fieldSkeleton} />
+                <div className={styles.fieldSkeleton} />
+                <div className={styles.fieldSkeleton} />
+              </div>
+              <div className={styles.buttonsCont}>
+                <div className={styles.buttonSkeleton} />
+                <div className={styles.buttonSkeleton} />
+              </div>
+            </div>
           ) : (
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className={styles.inputsContainer}>
@@ -178,11 +195,18 @@ const DashboardSettingsPage = () => {
 
         <DashboardCard
           className={styles.card}
-          style={{ height: "fit-content" }}
+          style={isLoading ? { minHeight: 280 } : { height: "fit-content" }}
           title={t("dispatcherArea.settingsCards.dataAccess.title")}
         >
           {isLoading ? (
-            <Loader />
+            <ul className={(styles.inputsContainer, styles.formSection)}>
+              {MODULE_NAMES.map((name) => (
+                <li key={name} className={styles.modulesItem}>
+                  <div className={styles.labelSkeleton} />
+                  <div className={styles.switchSkeleton} />
+                </li>
+              ))}
+            </ul>
           ) : (
             <ul className={(styles.inputsContainer, styles.formSection)}>
               {MODULE_NAMES.map((name) => (

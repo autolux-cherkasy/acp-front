@@ -1,7 +1,7 @@
 "use client";
 
 import type { FinanceAnalytics } from "@/src/entities/dashboard/api/dashboardAnalyticsApi";
-import { DashboardCard } from "@/src/shared";
+import { DashboardCard, LoadingState } from "@/src/shared";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { formatCurrency, formatYAxis } from "@/src/shared/lib/formatters";
 import {
@@ -41,7 +41,7 @@ const FINANCE_TEMPLATE: Omit<FinanceEntry, "value">[] = [
   },
 ];
 
-type Props = { data?: FinanceAnalytics };
+type Props = { data?: FinanceAnalytics; isLoading?: boolean };
 
 function getNiceAxisConfig(maxValue: number, tickCount = 6) {
   const rawInterval = maxValue / tickCount;
@@ -52,7 +52,7 @@ function getNiceAxisConfig(maxValue: number, tickCount = 6) {
   return { domain: [0, maxTick] as [number, number], ticks };
 }
 
-export default function FinanceCard({ data }: Props) {
+export default function FinanceCard({ data, isLoading }: Props) {
   const { t } = useI18n();
   const values = [data?.activeBookings ?? 0, data?.paidBookings ?? 0, data?.canceledBookings ?? 0];
   const FINANCE_DATA: FinanceEntry[] = FINANCE_TEMPLATE.map((entry, i) => ({
@@ -68,70 +68,76 @@ export default function FinanceCard({ data }: Props) {
       title={t("dispatcherArea.analytics.finance.title")}
       subtitle={t("dispatcherArea.analytics.finance.subtitle")}
     >
-      <div className={styles.badgesRow}>
-        {FINANCE_DATA.map(({ key, value, color, icon }) => (
-          <div key={key} className={styles.badge} style={{ background: `${color}cc` }}>
-            <div className={styles.badgeTop}>
-              <span
-                className={styles.badgeIcon}
-                aria-hidden="true"
-                style={{
-                  WebkitMaskImage: `url(${icon})`,
-                  maskImage: `url(${icon})`,
-                  backgroundColor: key === "reserved" ? "#11313d" : "#ffffff",
-                }}
-              />
-              <span
-                className={styles.badgeLabel}
-                style={{ color: key === "reserved" ? "#11313d" : "#ffffff" }}
-              >
-                {t(`dispatcherArea.analytics.finance.${key}`)}
-              </span>
-            </div>
-            <span
-              className={styles.badgeValue}
-              style={{ color: key === "reserved" ? "#11313d" : "#ffffff" }}
-            >
-              {formatCurrency(value)}
-            </span>
+      {isLoading ? (
+        <LoadingState />
+      ) : (
+        <>
+          <div className={styles.badgesRow}>
+            {FINANCE_DATA.map(({ key, value, color, icon }) => (
+              <div key={key} className={styles.badge} style={{ background: `${color}cc` }}>
+                <div className={styles.badgeTop}>
+                  <span
+                    className={styles.badgeIcon}
+                    aria-hidden="true"
+                    style={{
+                      WebkitMaskImage: `url(${icon})`,
+                      maskImage: `url(${icon})`,
+                      backgroundColor: key === "reserved" ? "#11313d" : "#ffffff",
+                    }}
+                  />
+                  <span
+                    className={styles.badgeLabel}
+                    style={{ color: key === "reserved" ? "#11313d" : "#ffffff" }}
+                  >
+                    {t(`dispatcherArea.analytics.finance.${key}`)}
+                  </span>
+                </div>
+                <span
+                  className={styles.badgeValue}
+                  style={{ color: key === "reserved" ? "#11313d" : "#ffffff" }}
+                >
+                  {formatCurrency(value)}
+                </span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className={styles.chartSection}>
-        <span className={styles.chartTitle}>
-          {t("dispatcherArea.analytics.finance.totalIncome")}
-        </span>
-        <div className={styles.chartArea}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={FINANCE_DATA} margin={{ top: 24, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid vertical={false} stroke="#d6e4e8" />
-              <XAxis dataKey="key" hide />
-              <YAxis
-                domain={domain}
-                ticks={ticks}
-                interval={0}
-                tickFormatter={formatYAxis}
-                tick={{ fontSize: 11, fill: "#7b98a3" }}
-                axisLine={false}
-                tickLine={false}
-                width={56}
-              />
-              <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={72}>
-                {FINANCE_DATA.map(({ key, color }) => (
-                  <Cell key={key} fill={color} />
-                ))}
-                <LabelList
-                  dataKey="value"
-                  position="top"
-                  formatter={(value) => formatCurrency(Number(value ?? 0))}
-                  style={{ fontSize: 11, fill: "#226078", fontWeight: 500 }}
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+          <div className={styles.chartSection}>
+            <span className={styles.chartTitle}>
+              {t("dispatcherArea.analytics.finance.totalIncome")}
+            </span>
+            <div className={styles.chartArea}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={FINANCE_DATA} margin={{ top: 24, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid vertical={false} stroke="#d6e4e8" />
+                  <XAxis dataKey="key" hide />
+                  <YAxis
+                    domain={domain}
+                    ticks={ticks}
+                    interval={0}
+                    tickFormatter={formatYAxis}
+                    tick={{ fontSize: 11, fill: "#7b98a3" }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={56}
+                  />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={72}>
+                    {FINANCE_DATA.map(({ key, color }) => (
+                      <Cell key={key} fill={color} />
+                    ))}
+                    <LabelList
+                      dataKey="value"
+                      position="top"
+                      formatter={(value) => formatCurrency(Number(value ?? 0))}
+                      style={{ fontSize: 11, fill: "#226078", fontWeight: 500 }}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
+      )}
     </DashboardCard>
   );
 }

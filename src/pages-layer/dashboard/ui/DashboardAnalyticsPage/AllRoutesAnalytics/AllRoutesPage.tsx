@@ -7,6 +7,7 @@ import {
   DashboardThead,
   DashboardTr,
   EmptyState,
+  LoadingState,
   TablePagination,
   useI18n,
 } from "@/src/shared";
@@ -40,8 +41,9 @@ export default function AllRoutesPage() {
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
   const [date, setDate] = useState<string | undefined>(undefined);
 
-  const { data: routesData } = useAllRoutesAnalyticsQuery(date);
-  const { data: routeDetail } = useRouteAnalyticsQuery(selectedDirection);
+  const { data: routesData, isLoading: isRoutesLoading } = useAllRoutesAnalyticsQuery(date);
+  const { data: routeDetail, isLoading: isRouteDetailLoading } =
+    useRouteAnalyticsQuery(selectedDirection);
 
   function handleCalendarChange(d: Date) {
     const yyyy = d.getFullYear();
@@ -140,7 +142,9 @@ export default function AllRoutesPage() {
           headerRef={headerRef}
         >
           <div ref={tableAreaRef} className={styles.tableArea}>
-            {allRoutes.length === 0 ? (
+            {isRoutesLoading ? (
+              <LoadingState />
+            ) : allRoutes.length === 0 ? (
               <EmptyState
                 iconUrl="/icons/workspace/sidebar/routes.svg"
                 description="Список порожній"
@@ -233,6 +237,7 @@ export default function AllRoutesPage() {
           trendTitle={t("dispatcherArea.analytics.allRoutesPage.details.dynamicsTitle")}
           trendChartData={trendChartData}
           ticketStatsData={ticketStatsData}
+          isLoading={isRouteDetailLoading}
         />
       </div>
     </div>

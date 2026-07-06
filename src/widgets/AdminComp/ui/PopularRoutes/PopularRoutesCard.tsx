@@ -7,6 +7,7 @@ import {
   DashboardThead,
   DashboardTr,
   EmptyState,
+  LoadingState,
 } from "@/src/shared";
 import styles from "./PopularRoutesCard.module.css";
 
@@ -16,9 +17,9 @@ type RouteEntry = {
   tickets: number;
 };
 
-type Props = { routes?: RouteEntry[] };
+type Props = { routes?: RouteEntry[]; isLoading?: boolean };
 
-export default function PopularRoutesCard({ routes }: Props) {
+export default function PopularRoutesCard({ routes, isLoading }: Props) {
   const { t } = useI18n();
   const hasRoutes = Array.isArray(routes) && routes.length > 0;
 
@@ -28,7 +29,9 @@ export default function PopularRoutesCard({ routes }: Props) {
       title={t("dispatcherArea.analytics.popularRoutes.title")}
       subtitle={t("dispatcherArea.analytics.popularRoutes.subtitle")}
     >
-      {hasRoutes ? (
+      {isLoading ? (
+        <LoadingState />
+      ) : hasRoutes ? (
         <div className={styles.tableWrapper}>
           <DashboardTable className={styles.table}>
             <DashboardThead className={styles.theadRow}>

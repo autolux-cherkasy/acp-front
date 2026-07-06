@@ -27,7 +27,7 @@ export default function AnalyticsPage() {
   const pathname = usePathname();
   const [date, setDate] = useState<string | undefined>(undefined);
 
-  const { data: summary } = useAnalyticsSummaryQuery(date);
+  const { data: summary, isLoading } = useAnalyticsSummaryQuery(date);
   const blockMutation = useBlockUserMutation();
 
   const noShowRows = summary?.noShow.map((item) => ({
@@ -63,13 +63,22 @@ export default function AnalyticsPage() {
         onCalendarChange={handleCalendarChange}
       />
       <div className={styles.grid}>
-        <NoShowReport
-          rows={noShowRows}
-          onBlockUser={(id) => blockMutation.mutate({ userId: id, block: true })}
-        />
-        <FinanceCard data={summary?.finance} />
-        <LoadChart data={summary?.load} />
-        <PopularRoutesCard routes={popularRoutes} />
+        <div className={styles.noShowArea}>
+          <NoShowReport
+            rows={noShowRows}
+            isLoading={isLoading}
+            onBlockUser={(id) => blockMutation.mutate({ userId: id, block: true })}
+          />
+        </div>
+        <div className={styles.financeArea}>
+          <FinanceCard data={summary?.finance} isLoading={isLoading} />
+        </div>
+        <div className={styles.loadArea}>
+          <LoadChart data={summary?.load} isLoading={isLoading} />
+        </div>
+        <div className={styles.popularArea}>
+          <PopularRoutesCard routes={popularRoutes} isLoading={isLoading} />
+        </div>
       </div>
     </div>
   );

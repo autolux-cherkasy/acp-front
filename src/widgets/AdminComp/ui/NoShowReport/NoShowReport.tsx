@@ -7,6 +7,7 @@ import {
   DashboardThead,
   DashboardTr,
   EmptyState,
+  LoadingState,
 } from "@/src/shared";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
@@ -22,57 +23,13 @@ type NoShowRow = {
   isBlocked: boolean;
 };
 
-const MOCK_ROWS: NoShowRow[] = [
-  {
-    id: 1,
-    name: "Денисенко Сергій",
-    phone: "+380675494578",
-    ratio: "8/6",
-    isBlocked: false,
-  },
-  {
-    id: 3,
-    name: "Сисоева Інна",
-    phone: "+380675494578",
-    ratio: "12/7",
-    isBlocked: true,
-  },
-  {
-    id: 4,
-    name: "Трайтак Ігор",
-    phone: "+380675494578",
-    ratio: "14/12",
-    isBlocked: false,
-  },
-  {
-    id: 5,
-    name: "Юнак Людмила",
-    phone: "+380675494578",
-    ratio: "17/6",
-    isBlocked: false,
-  },
-  {
-    id: 6,
-    name: "Науменко Ольга",
-    phone: "+380675494578",
-    ratio: "19/12",
-    isBlocked: true,
-  },
-  {
-    id: 7,
-    name: "Ковтун Максим",
-    phone: "+380675494578",
-    ratio: "12/6",
-    isBlocked: false,
-  },
-];
-
 type Props = {
   rows?: NoShowRow[];
   onBlockUser?: (userId: number) => void;
+  isLoading?: boolean;
 };
 
-export default function NoShowReport({ rows = [], onBlockUser }: Props) {
+export default function NoShowReport({ rows = [], onBlockUser, isLoading }: Props) {
   const { t } = useI18n();
   const [blocked, setBlocked] = useState<Set<number>>(new Set());
   const blockedUserModal = useDisclosure<number>();
@@ -88,7 +45,9 @@ export default function NoShowReport({ rows = [], onBlockUser }: Props) {
       title={t("dispatcherArea.analytics.noShowReport.title")}
       subtitle={t("dispatcherArea.analytics.noShowReport.subtitle")}
     >
-      {rows.length === 0 ? (
+      {isLoading ? (
+        <LoadingState />
+      ) : rows.length === 0 ? (
         <EmptyState
           iconUrl="/icons/no-person.svg"
           title={t("dispatcherArea.analytics.noShowReport.empty.title")}

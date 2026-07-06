@@ -1,6 +1,6 @@
 "use client";
 
-import { DashboardCard, EmptyState } from "@/src/shared";
+import { DashboardCard, EmptyState, LoadingState } from "@/src/shared";
 import type { PieLabelRenderProps } from "recharts";
 import {
   Area,
@@ -32,6 +32,7 @@ type RouteAnalyticsDetailsProps = {
     value: number;
     label: string;
   }>;
+  isLoading?: boolean;
 };
 
 const PIE_STAT_COLORS: Record<TicketStatKey, string> = {
@@ -104,6 +105,7 @@ export default function RouteAnalyticsDetails({
   trendTitle,
   trendChartData,
   ticketStatsData,
+  isLoading,
 }: RouteAnalyticsDetailsProps) {
   return (
     <>
@@ -112,7 +114,9 @@ export default function RouteAnalyticsDetails({
         title={trendTitle.replace("{{route}}", routeTitle)}
       >
         <div className={styles.chartWrapper}>
-          {trendChartData.length === 0 ? (
+          {isLoading ? (
+            <LoadingState />
+          ) : trendChartData.length === 0 ? (
             <EmptyState
               iconUrl="/icons/workspace/sidebar/analytics.svg"
               title={`Немає даних по маршруту ${routeTitle}`}
@@ -174,7 +178,9 @@ export default function RouteAnalyticsDetails({
         title={statisticsTitle}
       >
         <div className={styles.statisticsContent}>
-          {ticketStatsData.length === 0 ? (
+          {isLoading ? (
+            <LoadingState />
+          ) : ticketStatsData.length === 0 ? (
             <EmptyState iconUrl="/pie-chart.svg" />
           ) : (
             <>
