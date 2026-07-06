@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPageHeader";
@@ -29,6 +29,10 @@ export default function AnalyticsPage() {
 
   const { data: summary, isLoading } = useAnalyticsSummaryQuery(date);
   const blockMutation = useBlockUserMutation();
+
+  useEffect(() => {
+    router.prefetch(`${pathname}/all`);
+  }, [router, pathname]);
 
   const noShowRows = summary?.noShow.map((item) => ({
     id: item.userId,

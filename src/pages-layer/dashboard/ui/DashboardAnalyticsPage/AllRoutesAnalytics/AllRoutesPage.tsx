@@ -15,13 +15,15 @@ import { useResizeTableHook } from "@/src/shared/lib/resizeTableHook";
 import { useRouter } from "next/navigation";
 import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPageHeader";
 import { useState } from "react";
-import RouteAnalyticsDetails from "./RouteAnalyticsDetails";
+import dynamic from "next/dynamic";
 import styles from "../analytics.module.css";
 import { formatCurrency } from "@/src/shared/lib/formatters";
 import {
   useAllRoutesAnalyticsQuery,
   useRouteAnalyticsQuery,
 } from "@/src/entities/dashboard/api/useAnalyticsQueries";
+
+const RouteAnalyticsDetails = dynamic(() => import("./RouteAnalyticsDetails"), { ssr: false });
 
 type AllRouteRow = {
   id: number;

@@ -52,6 +52,17 @@ export default function Header() {
   const phoneMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    router.prefetch(resolveHref("/"));
+    router.prefetch(resolveHref("/cafe"));
+  }, [router, resolveHref]);
+
+  useEffect(() => {
+    if (isAuthorized) {
+      router.prefetch(resolveHref(workspaceHref));
+    }
+  }, [isAuthorized, router, resolveHref, workspaceHref]);
+
+  useEffect(() => {
     const syncActiveFromHash = () => {
       const hash = window.location.hash;
       setActiveMenuHref(sectionHrefs.includes(hash) ? hash : "#home");

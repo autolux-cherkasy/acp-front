@@ -62,6 +62,11 @@ export default function BookingForm() {
     [timeOptions, selectedTripId],
   );
 
+  useEffect(() => {
+    if (!selectedTrip) return;
+    router.prefetch(resolveHref(`/tickets/${selectedTrip.slug ?? selectedTrip.id}`));
+  }, [router, resolveHref, selectedTrip]);
+
   const isBootstrapping = isRoutesLoading || isDatesLoading || isTripsLoading;
   const statusMessage =
     isTripsError || isDatesError ? t("bookingForm.status.loadError") : (submitError ?? "");
