@@ -1,12 +1,29 @@
 "use client";
+import dynamic from "next/dynamic";
 import { useI18n, resolveAssetUrl } from "@/src/shared";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
-import RouteModal from "@/src/features/admin-modals/RouteModal/RouteModal";
-import DirectionModal from "@/src/features/admin-modals/DirectionModal/DirectionModal";
-import CafeDishModal from "@/src/features/admin-modals/CafeDishModal/CafeDishModal";
-import BusModal from "@/src/features/admin-modals/BusModal/BusModal";
-import DriverModal from "@/src/features/admin-modals/DriverModal/DriverModal";
-import DispatcherModal from "@/src/features/admin-modals/DispatcherModal/DispatcherModal";
+
+const RouteModal = dynamic(() => import("@/src/features/admin-modals/RouteModal/RouteModal"), {
+  ssr: false,
+});
+const DirectionModal = dynamic(
+  () => import("@/src/features/admin-modals/DirectionModal/DirectionModal"),
+  { ssr: false },
+);
+const CafeDishModal = dynamic(
+  () => import("@/src/features/admin-modals/CafeDishModal/CafeDishModal"),
+  { ssr: false },
+);
+const BusModal = dynamic(() => import("@/src/features/admin-modals/BusModal/BusModal"), {
+  ssr: false,
+});
+const DriverModal = dynamic(() => import("@/src/features/admin-modals/DriverModal/DriverModal"), {
+  ssr: false,
+});
+const DispatcherModal = dynamic(
+  () => import("@/src/features/admin-modals/DispatcherModal/DispatcherModal"),
+  { ssr: false },
+);
 import {
   useAddBusMutation,
   useUpdateBusMutation,

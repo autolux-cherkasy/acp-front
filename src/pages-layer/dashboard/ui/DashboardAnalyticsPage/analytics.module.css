@@ -10,7 +10,10 @@
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-  grid-auto-rows: 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "noShow finance"
+    "load popular";
   flex: 1;
   min-height: 0;
   gap: 16px;
@@ -23,6 +26,31 @@
     opacity 180ms ease,
     transform 220ms ease,
     visibility 0s linear 220ms;
+}
+
+.noShowArea,
+.financeArea,
+.loadArea,
+.popularArea {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+}
+
+.noShowArea {
+  grid-area: noShow;
+}
+
+.financeArea {
+  grid-area: finance;
+}
+
+.loadArea {
+  grid-area: load;
+}
+
+.popularArea {
+  grid-area: popular;
 }
 
 .header {
@@ -140,6 +168,11 @@
   .grid {
     grid-template-columns: 1fr;
     grid-template-rows: none;
+    grid-template-areas:
+      "noShow"
+      "finance"
+      "load"
+      "popular";
     grid-auto-rows: minmax(300px, auto);
   }
 
