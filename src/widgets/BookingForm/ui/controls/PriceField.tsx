@@ -7,12 +7,16 @@ import styles from "../BookingForm.module.css";
 type PriceFieldProps = {
   placeholder: string;
   value: string;
+  disabled?: boolean;
 };
 
-export default function PriceField({ placeholder, value }: PriceFieldProps) {
+export default function PriceField({ placeholder, value, disabled = false }: PriceFieldProps) {
   return (
-    <div className={styles.controlWithIconHalf}>
+    <div
+      className={`${styles.controlWithIconHalf} ${disabled ? styles.controlWithIconHalfDisabled : ""}`}
+    >
       <input
+        disabled={disabled}
         className={styles.controlInner}
         type="text"
         placeholder={placeholder}

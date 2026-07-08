@@ -3,7 +3,7 @@
   flex-shrink: 0;
   width: 12px;
   height: 12px;
-  background-color: var(--DarkSlateGray, #226078);
+  background-color: var(--color-text-strong, #11313d);
   mask-image: url("/icons/down-arrow.svg");
   mask-repeat: no-repeat;
   mask-position: center;

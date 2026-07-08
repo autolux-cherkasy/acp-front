@@ -514,13 +514,13 @@
 .controlWithIconBtn {
   box-sizing: border-box;
   width: 100%;
-  height: 48px;
+  height: 44px;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  padding: 10px 16px;
+  padding: 8px 12px;
   gap: 10px;
 
   background: var(--bg, var(--color-page-bg));
@@ -766,7 +766,9 @@
 .control:disabled,
 .controlHalf:disabled,
 .select:disabled,
-.controlWithIconBtn:disabled {
+.controlWithIconBtn:disabled,
+.seatsDropdownTrigger:disabled,
+.controlWithIconHalfDisabled {
   cursor: not-allowed;
   opacity: 0.72;
 }

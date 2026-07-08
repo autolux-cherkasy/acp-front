@@ -15,6 +15,7 @@ type DateFieldProps = {
   months: string[];
   weekdays: string[];
   availableDateKeys?: string[];
+  disabled: boolean;
 };
 
 export default function DateField({
@@ -24,6 +25,7 @@ export default function DateField({
   months,
   weekdays,
   availableDateKeys,
+  disabled,
 }: DateFieldProps) {
   const { isOpen, setIsOpen, fieldRef } = useClickOutside();
   const minDate = useMemo(() => {
@@ -36,6 +38,7 @@ export default function DateField({
     <div className={styles.dateWrap} ref={fieldRef}>
       <button
         type="button"
+        disabled={disabled}
         className={styles.controlWithIconBtn}
         onClick={() => setIsOpen((currentValue) => !currentValue)}
         aria-haspopup="dialog"

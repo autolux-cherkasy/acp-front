@@ -191,6 +191,7 @@ export default function BookingForm() {
             placeholder={t("bookingForm.date.placeholder")}
             months={months}
             weekdays={weekdays}
+            disabled={!selectedRoute || isTripsLoading}
             availableDateKeys={availableDateKeys}
           />
 
@@ -208,12 +209,17 @@ export default function BookingForm() {
               availableSeats={
                 trips.find((i) => i.id === selectedTripId)?.availableSeats ?? undefined
               }
+              disabled={!selectedRoute || isTripsLoading || timeOptions.length === 0}
               value={seatsValue}
               placeholder={t("bookingForm.qty.placeholder")}
               onChange={setSeatsValue}
             />
 
-            <PriceField placeholder={t("bookingForm.price.placeholder")} value={priceText} />
+            <PriceField
+              placeholder={t("bookingForm.price.placeholder")}
+              value={priceText}
+              disabled={!selectedRoute || isTripsLoading || timeOptions.length === 0}
+            />
           </div>
         </div>
 

@@ -15,6 +15,7 @@ type SeatsSelectProps = {
   value: string;
   placeholder: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 };
 
 export default function SeatsSelect({
@@ -22,6 +23,7 @@ export default function SeatsSelect({
   value,
   placeholder,
   onChange,
+  disabled = false,
 }: SeatsSelectProps) {
   const { t } = useI18n();
   const { isOpen, setIsOpen, fieldRef: dropdownRef } = useClickOutside();
@@ -45,6 +47,7 @@ export default function SeatsSelect({
     <div className={styles.seatsDropdown} ref={dropdownRef}>
       <button
         type="button"
+        disabled={disabled}
         className={styles.seatsDropdownTrigger}
         onClick={() => setIsOpen((currentValue) => !currentValue)}
         aria-haspopup="listbox"
