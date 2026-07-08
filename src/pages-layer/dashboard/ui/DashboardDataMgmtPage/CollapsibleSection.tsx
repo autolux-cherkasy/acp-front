@@ -152,7 +152,7 @@ const CollapsibleSection = ({
           </div>
         </div>
         {open &&
-          (section.subSections ? (
+          (section.subSections && section.subSections.length > 0 ? (
             renderSubSections()
           ) : (
             <DataTable

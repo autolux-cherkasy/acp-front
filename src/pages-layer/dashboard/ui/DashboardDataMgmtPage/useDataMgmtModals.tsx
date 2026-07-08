@@ -44,9 +44,12 @@ import {
 } from "@/src/entities/dashboard/api/dashboardScheduleQueries";
 import {
   uploadCafeImage,
+  useAddCafeCategoryMutation,
   useAddCafeItemMutation,
   useAddCafeSectionMutation,
   useCafeItemUpdateMutation,
+  useDeleteCafeItemMutation,
+  useDeleteCafeSectionMutation,
   useUpdateCafeSectionMutation,
 } from "@/src/entities/dashboard/api/dashboardCafeQueries";
 import { CafeSectionWithCategoriesResponse } from "@/src/entities/dashboard/types";
@@ -123,8 +126,11 @@ export function useDataMgmtModals({
   const deleteRouteMutation = useDeleteRouteMutation();
   const addCafeSectionMutation = useAddCafeSectionMutation();
   const updateCafeSectionMutation = useUpdateCafeSectionMutation();
+  const deleteCafeSectionMutation = useDeleteCafeSectionMutation();
+  const addCafeCategoryMutation = useAddCafeCategoryMutation();
   const addCafeItemMutation = useAddCafeItemMutation();
   const cafeItemUpdateMutation = useCafeItemUpdateMutation();
+  const deleteCafeItemMutation = useDeleteCafeItemMutation();
 
   const sectionModalByTab: Partial<Record<string, SectionModalConfig>> = {
     routes: {},
@@ -154,9 +160,13 @@ export function useDataMgmtModals({
     const config = sectionModalByTab[tab]!;
     const sectionData = sectionModal.data!;
     const route =
-      tab === "routes" && sectionData.mode === "edit" ? sections[sectionData.sectionIndex] : undefined;
+      tab === "routes" && sectionData.mode === "edit"
+        ? sections[sectionData.sectionIndex]
+        : undefined;
     const cafeSection =
-      tab === "cafe" && sectionData.mode === "edit" ? sections[sectionData.sectionIndex] : undefined;
+      tab === "cafe" && sectionData.mode === "edit"
+        ? sections[sectionData.sectionIndex]
+        : undefined;
     return (
       <RouteModal
         mode={sectionData.mode}
@@ -194,7 +204,12 @@ export function useDataMgmtModals({
                 sectionModal.close();
                 deleteRouteMutation.mutate(route.id);
               }
-            : undefined
+            : cafeSection
+              ? () => {
+                  sectionModal.close();
+                  deleteCafeSectionMutation.mutate(cafeSection.id);
+                }
+              : undefined
         }
         showImage={tab === "cafe"}
         showTwoCities={tab === "routes"}
@@ -246,7 +261,8 @@ export function useDataMgmtModals({
     if (tab === "cafe") {
       const section = sections[data.sectionIndex];
       const subcategoryOptions =
-        section?.subSections?.map((sub) => ({ value: sub.groupLabel, label: sub.groupLabel })) ?? [];
+        section?.subSections?.map((sub) => ({ value: sub.groupLabel, label: sub.groupLabel })) ??
+        [];
       const resolved = data.mode === "edit" ? resolveCafeRow(section, data.rowIndex) : undefined;
       const resolveCategoryId = (sectionName: string, categoryName: string) => {
         const targetSection = cafeData?.find((cd) => cd.name === sectionName);
@@ -259,10 +275,18 @@ export function useDataMgmtModals({
         <CafeDishModal
           mode={data.mode}
           onClose={rowModal.close}
-          onSubmit={(formData) => {
+          onSubmit={async (formData) => {
             closeModals();
-            const categoryId = resolveCategoryId(formData.category, formData.subcategory);
-            if (!categoryId) return;
+            let categoryId = resolveCategoryId(formData.category, formData.subcategory);
+            if (!categoryId) {
+              const targetSection = cafeData?.find((cd) => cd.name === formData.category);
+              if (!targetSection) return;
+              const newCategory = await addCafeCategoryMutation.mutateAsync({
+                sectionId: targetSection.id,
+                name: "Вид",
+              });
+              categoryId = newCategory.id;
+            }
             const price = Number(formData.price);
             if (data.mode === "create") {
               addCafeItemMutation.mutate({ categoryId, name: formData.name, price });
@@ -273,9 +297,17 @@ export function useDataMgmtModals({
               });
             }
           }}
+          onDelete={
+            resolved
+              ? () => {
+                  closeModals();
+                  deleteCafeItemMutation.mutate(resolved.id);
+                }
+              : undefined
+          }
           categoryOptions={sectionOptions}
           subcategoryOptions={subcategoryOptions}
-          initialCategory={data.mode === "edit" ? section?.title : undefined}
+          initialCategory={section?.title}
           initialSubcategory={resolved?.groupLabel}
           initialData={
             resolved

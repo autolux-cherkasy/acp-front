@@ -42,6 +42,12 @@ export const updateCafeSection = (id: string, body: UpdateCafeSectionPayload) =>
   });
 };
 
+export const deleteCafeSection = (id: string) => {
+  return apiFetch<void>(`${ADMIN_CAFE_URL}/sections/${id}`, {
+    method: "DELETE",
+  });
+};
+
 export const createCafeCategory = (body: CreateCafeCategoryPayload) => {
   return apiFetch<CafeCategoryWithItemsResponse>(`${ADMIN_CAFE_URL}/categories`, {
     method: "POST",
@@ -70,6 +76,12 @@ export const updateCafeItem = (id: string, body: UpdateCafeItemPayload) => {
   });
 };
 
+export const deleteCafeItem = (id: string) => {
+  return apiFetch<void>(`${ADMIN_CAFE_URL}/items/${id}`, {
+    method: "DELETE",
+  });
+};
+
 export const useAdminCafeQuery = (options?: { enabled?: boolean }) => {
   return useQuery<CafeSectionWithCategoriesResponse[]>({
     queryFn: getAdminMenu,
@@ -84,14 +96,16 @@ function useCafeMutation<TVariables, TResult>({
   updateCache,
   successMessage,
   errorMessage,
+  silent,
 }: {
   mutationFn: (variables: TVariables) => Promise<TResult>;
   updateCache: (
     old: CafeSectionWithCategoriesResponse[] | undefined,
     variables: TVariables,
   ) => CafeSectionWithCategoriesResponse[] | undefined;
-  successMessage: string;
-  errorMessage: string;
+  successMessage?: string;
+  errorMessage?: string;
+  silent?: boolean;
 }) {
   const queryClient = useQueryClient();
   return useMutation<
@@ -116,11 +130,15 @@ function useCafeMutation<TVariables, TResult>({
       if (context?.previous) {
         queryClient.setQueryData([ADMIN_CAFE_KEY], context.previous);
       }
-      showServerToast({ type: "error", error, errorMessage });
+      if (!silent) {
+        showServerToast({ type: "error", error, errorMessage: errorMessage ?? "" });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [ADMIN_CAFE_KEY] });
-      showServerToast({ type: "success", successMessage });
+      if (!silent) {
+        showServerToast({ type: "success", successMessage: successMessage ?? "" });
+      }
     },
   });
 }
@@ -158,8 +176,17 @@ export const useUpdateCafeSectionMutation = () => {
   });
 };
 
-export const useAddCafeCategoryMutation = () => {
+export const useDeleteCafeSectionMutation = () => {
   const { t } = useI18n();
+  return useCafeMutation<string, void>({
+    mutationFn: deleteCafeSection,
+    updateCache: (old, id) => old?.filter((section) => section.id !== id),
+    successMessage: t("common.toast.cafeSectionDeleteSuccess"),
+    errorMessage: t("common.toast.cafeSectionDeleteError"),
+  });
+};
+
+export const useAddCafeCategoryMutation = () => {
   return useCafeMutation<CreateCafeCategoryPayload, CafeCategoryWithItemsResponse>({
     mutationFn: createCafeCategory,
     updateCache: (old, body) =>
@@ -182,8 +209,7 @@ export const useAddCafeCategoryMutation = () => {
             }
           : section,
       ),
-    successMessage: t("common.toast.cafeCategoryAddSuccess"),
-    errorMessage: t("common.toast.cafeCategoryAddError"),
+    silent: true,
   });
 };
 
@@ -277,5 +303,22 @@ export const useCafeItemUpdateMutation = (options?: { enabled?: boolean }) => {
       });
     },
     ...options,
+  });
+};
+
+export const useDeleteCafeItemMutation = () => {
+  const { t } = useI18n();
+  return useCafeMutation<string, void>({
+    mutationFn: deleteCafeItem,
+    updateCache: (old, id) =>
+      old?.map((section) => ({
+        ...section,
+        categories: section.categories.map((category) => ({
+          ...category,
+          items: category.items.filter((item) => item.id !== id),
+        })),
+      })),
+    successMessage: t("common.toast.cafeItemDeleteSuccess"),
+    errorMessage: t("common.toast.cafeItemDeleteError"),
   });
 };
