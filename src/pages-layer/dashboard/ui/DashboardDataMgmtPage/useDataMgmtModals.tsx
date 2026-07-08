@@ -54,7 +54,7 @@ import {
 } from "@/src/entities/dashboard/api/dashboardCafeQueries";
 import { CafeSectionWithCategoriesResponse } from "@/src/entities/dashboard/types";
 import { BusResponse } from "@/src/entities/dashboard/api/dashboardBusesApi";
-import { AdminStaffResponse } from "@/src/entities/dashboard/api/staffApi";
+import { AdminStaffResponse, DriverLicenseValidResponse } from "@/src/entities/dashboard/api/staffApi";
 import {
   formatLicenseDate,
   formatPhone,
@@ -74,6 +74,7 @@ type UseDataMgmtModalsParams = {
   fleetData?: BusResponse[];
   staffData?: AdminStaffResponse;
   cafeData?: CafeSectionWithCategoriesResponse[];
+  availableDrivers?: DriverLicenseValidResponse[];
 };
 
 type SectionModalConfig = {
@@ -104,13 +105,14 @@ export function useDataMgmtModals({
   fleetData,
   staffData,
   cafeData,
+  availableDrivers,
 }: UseDataMgmtModalsParams) {
   const { t } = useI18n();
   const sectionModal = useDisclosure<SectionModalPayload>();
   const rowModal = useDisclosure<RowModalPayload>();
 
   const sectionOptions = sections.map((s) => ({ value: s.title, label: s.title }));
-  const driverOptions = staffData?.drivers.map((d) => ({ value: d.id, label: d.fullName })) ?? [];
+  const driverOptions = availableDrivers?.map((d) => ({ value: d.id, label: d.fullName })) ?? [];
 
   const addBusMutation = useAddBusMutation();
   const updateBusMutation = useUpdateBusMutation();

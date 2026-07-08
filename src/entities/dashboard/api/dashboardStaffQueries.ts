@@ -14,15 +14,25 @@ import {
   UpdateDriverBody,
   updateDispatcher,
   updateDriver,
+  getAdminDrivers,
+  DriverLicenseValidResponse,
 } from "./staffApi";
 
-import { ADMIN_STAFF_KEY } from "./dashboardApiKeys";
+import { ADMIN_DRIVERS_KEY, ADMIN_STAFF_KEY } from "./dashboardApiKeys";
 export { ADMIN_STAFF_KEY };
 
 export const useAdminStaffQuery = (options?: { enabled?: boolean }) =>
   useQuery<AdminStaffResponse>({
     queryFn: getAdminStaff,
     queryKey: [ADMIN_STAFF_KEY],
+    staleTime: 1000 * 60 * 5,
+    ...options,
+  });
+
+export const useAvailableDriversQuery = (options?: { enabled?: boolean }) =>
+  useQuery<DriverLicenseValidResponse[]>({
+    queryFn: getAdminDrivers,
+    queryKey: [`${ADMIN_DRIVERS_KEY}`],
     staleTime: 1000 * 60 * 5,
     ...options,
   });
@@ -135,14 +145,16 @@ export const useUpdateDriverMutation = () => {
   const { t } = useI18n();
   return useMutation({
     mutationFn: ({ id, body }: { id: string; body: UpdateDriverBody }) => updateDriver(id, body),
-    ...createOptimisticMutationHandlers<{ id: string; body: UpdateDriverBody }, AdminStaffResponse>({
-      queryClient,
-      queryKey: [ADMIN_STAFF_KEY],
-      updateCache: (old, { id, body }) =>
-        old && { ...old, drivers: old.drivers.map((d) => (d.id === id ? { ...d, ...body } : d)) },
-      successMessage: t("common.toast.driverUpdateSuccess"),
-      errorMessage: t("common.toast.driverUpdateError"),
-    }),
+    ...createOptimisticMutationHandlers<{ id: string; body: UpdateDriverBody }, AdminStaffResponse>(
+      {
+        queryClient,
+        queryKey: [ADMIN_STAFF_KEY],
+        updateCache: (old, { id, body }) =>
+          old && { ...old, drivers: old.drivers.map((d) => (d.id === id ? { ...d, ...body } : d)) },
+        successMessage: t("common.toast.driverUpdateSuccess"),
+        errorMessage: t("common.toast.driverUpdateError"),
+      },
+    ),
   });
 };
 

@@ -13,7 +13,10 @@ import {
   useAdminCafeQuery,
   useCafeItemUpdateMutation,
 } from "@/src/entities/dashboard/api/dashboardCafeQueries";
-import { useAdminStaffQuery } from "@/src/entities/dashboard/api/dashboardStaffQueries";
+import {
+  useAdminStaffQuery,
+  useAvailableDriversQuery,
+} from "@/src/entities/dashboard/api/dashboardStaffQueries";
 import { useAdminFleetQuery } from "@/src/entities/dashboard/api/dashboardFleetQueries";
 import { useAdminScheduleQuery } from "@/src/entities/dashboard/api/dashboardScheduleQueries";
 import { usePermissionsQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
@@ -29,7 +32,10 @@ const DataMgmtPage = () => {
     enabled: tab === "cafe",
   });
   const { data: staffData, isLoading: isStaffLoading } = useAdminStaffQuery({
-    enabled: tab === "staff" || tab === "fleet",
+    enabled: tab === "staff",
+  });
+  const { data: availableDrivers } = useAvailableDriversQuery({
+    enabled: tab === "fleet",
   });
   const { data: fleetData, isLoading: isFleetLoading } = useAdminFleetQuery({
     enabled: tab === "fleet",
@@ -46,6 +52,7 @@ const DataMgmtPage = () => {
       fleetData,
       staffData,
       cafeData,
+      availableDrivers,
     });
 
   const cafeSections: DataSection[] = cafeData

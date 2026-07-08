@@ -1,5 +1,5 @@
 import { apiFetch } from "@/src/shared";
-import { ADMIN_STAFF_URL } from "./dashboardApiKeys";
+import { ADMIN_DRIVERS_URL, ADMIN_STAFF_URL } from "./dashboardApiKeys";
 
 export type DispatcherResponse = {
   id: number;
@@ -21,6 +21,10 @@ export type AdminStaffResponse = {
   drivers: DriverResponse[];
 };
 
+export type DriverLicenseValidResponse = {
+  id: string;
+  fullName: string;
+};
 export type CreateDispatcherBody = {
   name: string;
   phone: string;
@@ -42,6 +46,8 @@ export type CreateDriverBody = {
 export type UpdateDriverBody = Partial<CreateDriverBody>;
 
 export const getAdminStaff = () => apiFetch<AdminStaffResponse>(`${ADMIN_STAFF_URL}`);
+export const getAdminDrivers = () =>
+  apiFetch<DriverLicenseValidResponse[]>(`${ADMIN_DRIVERS_URL}`);
 
 export const addDispatcher = (body: CreateDispatcherBody) =>
   apiFetch<DispatcherResponse>(`${ADMIN_STAFF_URL}/dispatchers`, {
