@@ -120,7 +120,7 @@ async function sendRequest(path: string, options: ApiFetchOptions, accessToken: 
 
   return fetch(`${API_URL}${path}`, {
     ...requestInit,
-    headers: buildHeaders(requestInit.headers, requestInit.body, includeAuth ? accessToken : null),
+    headers,
     cache: "no-store",
     credentials: "include",
   });
