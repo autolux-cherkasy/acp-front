@@ -13,7 +13,7 @@ import {
   type RegisterPayload,
   type ResetPasswordPayload,
 } from "./auth";
-import { setAccessToken } from "@/src/shared/api/session";
+import { setAccessToken, setCsrfToken } from "@/src/shared/api/session";
 
 const PROFILE_QUERY_KEY = ["profile"];
 
@@ -29,6 +29,9 @@ export function useLoginMutation() {
       }
 
       setAccessToken(data.access_token);
+      if (data.csrf_token) {
+        setCsrfToken(data.csrf_token);
+      }
       await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
     },
   });

@@ -1,4 +1,10 @@
-import { clearAccessToken, getAccessToken, setAccessToken } from "./session";
+import {
+  clearAccessToken,
+  getAccessToken,
+  getCsrfToken,
+  setAccessToken,
+  setCsrfToken,
+} from "./session";
 
 export class ApiError extends Error {
   status: number;
@@ -49,17 +55,10 @@ type ErrorResponse = {
 
 type AccessTokenResponse = {
   access_token?: string;
+  csrf_token?: string;
 };
 
 let refreshPromise: Promise<string | null> | null = null;
-function getCookie(name: string) {
-  if (typeof document === "undefined") return null;
-
-  return document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(`${name}=`))
-      ?.split("=")[1] ?? null;
-}
 
 function buildHeaders(
   headersInit: HeadersInit | undefined,
@@ -99,11 +98,7 @@ async function getErrorMessage(response: Response) {
   return message;
 }
 
-async function sendRequest(
-    path: string,
-    options: ApiFetchOptions,
-    accessToken: string | null,
-) {
+async function sendRequest(path: string, options: ApiFetchOptions, accessToken: string | null) {
   const { includeAuth = true, ...requestInit } = options;
 
   if (!API_URL) {
@@ -113,19 +108,19 @@ async function sendRequest(
   const method = requestInit.method?.toUpperCase() ?? "GET";
 
   const headers = buildHeaders(
-      requestInit.headers,
-      requestInit.body,
-      includeAuth ? accessToken : null,
+    requestInit.headers,
+    requestInit.body,
+    includeAuth ? accessToken : null,
   );
 
-  const csrfToken = getCookie("csrf_token");
+  const csrfToken = getCsrfToken();
   if (csrfToken && ["POST", "PATCH", "PUT", "DELETE"].includes(method)) {
     headers.set("X-CSRF-Token", csrfToken);
   }
 
   return fetch(`${API_URL}${path}`, {
     ...requestInit,
-    headers,
+    headers: buildHeaders(requestInit.headers, requestInit.body, includeAuth ? accessToken : null),
     cache: "no-store",
     credentials: "include",
   });
@@ -137,10 +132,12 @@ async function refreshAccessToken() {
 
   if (!refreshPromise) {
     refreshPromise = (async () => {
+      const existingCsrfToken = getCsrfToken();
       const response = await fetch(`${API_URL}/auth/refresh-token`, {
         method: "POST",
         cache: "no-store",
         credentials: "include",
+        headers: existingCsrfToken ? { "X-CSRF-Token": existingCsrfToken } : undefined,
       });
 
       if (!response.ok) {
@@ -155,6 +152,9 @@ async function refreshAccessToken() {
       }
 
       setAccessToken(body.access_token);
+      if (body.csrf_token) {
+        setCsrfToken(body.csrf_token);
+      }
       return body.access_token;
     })().finally(() => {
       refreshPromise = null;
@@ -164,10 +164,7 @@ async function refreshAccessToken() {
   return refreshPromise;
 }
 
-export async function apiFetch<T>(
-  path: string,
-  options: ApiFetchOptions = {},
-): Promise<T> {
+export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
   const accessToken = options.includeAuth === false ? null : getAccessToken();
   let response = await sendRequest(path, options, accessToken);
 
