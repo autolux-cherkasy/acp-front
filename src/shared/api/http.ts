@@ -1,4 +1,10 @@
-import { clearAccessToken, getAccessToken, setAccessToken } from "./session";
+import {
+  clearAccessToken,
+  getAccessToken,
+  getCsrfToken,
+  setAccessToken,
+  setCsrfToken,
+} from "./session";
 
 export class ApiError extends Error {
   status: number;
@@ -49,6 +55,7 @@ type ErrorResponse = {
 
 type AccessTokenResponse = {
   access_token?: string;
+  csrf_token?: string;
 };
 
 let refreshPromise: Promise<string | null> | null = null;
@@ -91,15 +98,24 @@ async function getErrorMessage(response: Response) {
   return message;
 }
 
-async function sendRequest(
-  path: string,
-  options: ApiFetchOptions,
-  accessToken: string | null,
-) {
+async function sendRequest(path: string, options: ApiFetchOptions, accessToken: string | null) {
   const { includeAuth = true, ...requestInit } = options;
 
   if (!API_URL) {
     throw new Error("NEXT_PUBLIC_API_URL is not configured");
+  }
+
+  const method = requestInit.method?.toUpperCase() ?? "GET";
+
+  const headers = buildHeaders(
+    requestInit.headers,
+    requestInit.body,
+    includeAuth ? accessToken : null,
+  );
+
+  const csrfToken = getCsrfToken();
+  if (csrfToken && ["POST", "PATCH", "PUT", "DELETE"].includes(method)) {
+    headers.set("X-CSRF-Token", csrfToken);
   }
 
   return fetch(`${API_URL}${path}`, {
@@ -116,10 +132,12 @@ async function refreshAccessToken() {
 
   if (!refreshPromise) {
     refreshPromise = (async () => {
+      const existingCsrfToken = getCsrfToken();
       const response = await fetch(`${API_URL}/auth/refresh-token`, {
         method: "POST",
         cache: "no-store",
         credentials: "include",
+        headers: existingCsrfToken ? { "X-CSRF-Token": existingCsrfToken } : undefined,
       });
 
       if (!response.ok) {
@@ -134,6 +152,9 @@ async function refreshAccessToken() {
       }
 
       setAccessToken(body.access_token);
+      if (body.csrf_token) {
+        setCsrfToken(body.csrf_token);
+      }
       return body.access_token;
     })().finally(() => {
       refreshPromise = null;
@@ -143,10 +164,7 @@ async function refreshAccessToken() {
   return refreshPromise;
 }
 
-export async function apiFetch<T>(
-  path: string,
-  options: ApiFetchOptions = {},
-): Promise<T> {
+export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
   const accessToken = options.includeAuth === false ? null : getAccessToken();
   let response = await sendRequest(path, options, accessToken);
 
