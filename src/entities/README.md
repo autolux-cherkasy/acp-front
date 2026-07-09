@@ -1,9 +1,11 @@
 # Entities Layer
 
-Place domain-focused slices here when the project needs stable business entities.
+Domain-focused business entities (FSD `entities` layer). Each slice exposes API calls and base domain UI for one entity — see [`../../docs/architecture/fsd.md`](../../docs/architecture/fsd.md) for the layer rules (may only import from `shared`).
 
-Examples for this repo in the future:
+Current slices:
 
-- `trip`
-- `user`
-- `ticket`
+- `cafe` — cafe menu domain (categories, items).
+- `dashboard` — admin dashboard stats/aggregates.
+- `ticket` — ticket domain model and status UI (`TicketStatusBadge`).
+- `trip` — trip search/listing API and models.
+- `user` — user profile API.

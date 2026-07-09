@@ -8,8 +8,8 @@
 
 ### Особливості реалізації маршрутизації:
 - **Багатомовність (i18n):** Використовується динамічний сегмент `[locale]` у корені директорії `app/`. Це дозволяє обслуговувати різні мовні версії сайту (наприклад, `/en/login` та `/uk/login`).
-- **Перехоплення маршрутів (Intercepting Routes) та Паралельна маршрутизація (Parallel Routes):** В папці `app/[locale]/@modal` реалізована логіка відображення модальних вікон авторизації. Це дозволяє показувати сторінки логіну/реєстрації як модальні вікна поверх поточної сторінки, зберігаючи при цьому можливість прямого переходу на ці сторінки за окремим URL (фолбек на сторінки з `app/[locale]/(auth)`).
-- **Групи маршрутів (Route Groups):** Використовуються папки з круглими дужками (наприклад, `(auth-modal)` або `(auth)`), щоб організувати файли без впливу на структуру URL.
+- **Модальна авторизація через query-параметр (не Parallel/Intercepting Routes):** Прямі маршрути `app/[locale]/(auth)/login|register|forgot-password/page.tsx` не рендерять форму самі — вони одразу роблять `redirect` на фонову сторінку з доданим query-параметром `?auth=login|register|forgot-password` (`buildDirectAuthRedirectHref` у `src/features/auth/model/auth-flow.ts`). Клієнтський `AuthModalController` (підключений у кореневому `app/[locale]/layout.tsx`) читає цей параметр через `useSearchParams`, динамічно (`next/dynamic`, `ssr: false`) підвантажує відповідну `pages-layer/auth/*` сторінку і показує її в `ModalFrame` поверх поточного контенту. Раніше для цього використовувались Next.js Parallel/Intercepting Routes (`@modal`-слот) — цей підхід був замінений на query-param-based клієнтський контролер, окремого `@modal`-сегмента в `app/` більше немає.
+- **Групи маршрутів (Route Groups):** Використовуються папки з круглими дужками (наприклад, `(auth)`), щоб організувати файли без впливу на структуру URL.
 
 ## 2. Server Components (RSC) vs Client Components
 
@@ -43,8 +43,11 @@
 - Файли `page.tsx` або `layout.tsx` в директорії `app/` є виключно "тонкими" обгортками (entry points). Вони не містять складної логіки чи розмітки.
 - Кожна `page.tsx` імпортує композитний компонент сторінки (PageContent) з шару `pages-layer` (або `widgets`/`features`), де вже сконцентрована основна структура та бізнес-логіка.
 
-**Приклад флоу:**
-`app/[locale]/(auth)/login/page.tsx` → `app/[locale]/(auth)/login/LoginPageContent.tsx` → `src/widgets/BookingForm` + `src/features/auth` + `src/shared/ui/...`
+**Приклад флоу (головна сторінка):**
+`app/[locale]/(site)/home/page.tsx` (тонка обгортка) → `src/pages-layer/home/ui/HomePage` (композиція сторінки) → `src/widgets/BookingForm` + `src/widgets/PopularRoutes` + `src/shared/ui/...`
+
+**Приклад флоу (модальна авторизація):**
+`app/[locale]/(auth)/login/page.tsx` (redirect на `?auth=login`) → `src/features/auth/ui/AuthModalController` (client, читає query-параметр) → `src/pages-layer/auth/login/ui/LoginPage` (динамічний імпорт, рендериться в `ModalFrame`).
 
 ## 5. Робота зі станом (State Management)
 
