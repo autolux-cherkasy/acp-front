@@ -2,6 +2,7 @@ import { DEV_PROFILE_KEY, DEV_ROLE_KEY } from "./dev-auth";
 
 const ACCESS_TOKEN_KEY = "access_token";
 const LEGACY_TOKEN_KEY = "token";
+const CSRF_TOKEN_KEY = "csrf_token";
 const AUTH_CHANGE_EVENT = "auth-change";
 
 function isBrowser() {
@@ -74,4 +75,22 @@ export function clearAccessToken() {
   window.localStorage.removeItem(ACCESS_TOKEN_KEY);
   window.localStorage.removeItem(LEGACY_TOKEN_KEY);
   notifyAuthChange();
+}
+
+export function getCsrfToken() {
+  if (!isBrowser()) return null;
+
+  return window.localStorage.getItem(CSRF_TOKEN_KEY);
+}
+
+export function setCsrfToken(token: string) {
+  if (!isBrowser()) return;
+
+  window.localStorage.setItem(CSRF_TOKEN_KEY, token);
+}
+
+export function clearCsrfToken() {
+  if (!isBrowser()) return;
+
+  window.localStorage.removeItem(CSRF_TOKEN_KEY);
 }

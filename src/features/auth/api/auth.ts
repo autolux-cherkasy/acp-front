@@ -1,6 +1,6 @@
 import { apiFetch } from "@/src/shared/api/http";
 import { clearDevAuth, getDevRole } from "@/src/shared/api/dev-auth";
-import { clearAccessToken } from "@/src/shared/api/session";
+import { clearAccessToken, clearCsrfToken } from "@/src/shared/api/session";
 
 export type RegisterPayload = {
   email: string;
@@ -17,6 +17,7 @@ export type LoginPayload = {
 
 export type TokenResponse = {
   access_token: string;
+  csrf_token?: string;
 };
 
 type MessageResponse = {
@@ -71,6 +72,7 @@ export function resetPassword(payload: ResetPasswordPayload) {
 export async function logout() {
   if (getDevRole()) {
     clearAccessToken();
+    clearCsrfToken();
     clearDevAuth();
 
     return {
@@ -84,6 +86,7 @@ export async function logout() {
     });
   } finally {
     clearAccessToken();
+    clearCsrfToken();
     clearDevAuth();
   }
 }
