@@ -11,7 +11,7 @@ import { MouseEvent, useEffect, useEffectEvent, useRef, useState } from "react";
 
 import styles from "./Header.module.css";
 import HeaderAuthControl from "./HeaderAuthControl";
-import { usePhones } from "@/src/entities/dashboard/api/useSettingsQueries";
+import { usePhones, usePhonesQuery } from "@/src/entities/dashboard/api/useSettingsQueries";
 
 const menu = [
   { key: "menu.home", href: "#home" },
@@ -31,6 +31,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const phones = usePhones();
+  const { isLoading: isPhonesLoading } = usePhonesQuery();
 
   const { isAuthenticated, role } = useAuthSession();
   const pathnameWithoutLocale = stripLocaleFromPathname(pathname || "/");
@@ -178,7 +179,7 @@ export default function Header() {
       return;
     }
 
-    if (pathnameWithoutLocale === "/cafe") {
+    if (pathnameWithoutLocale !== "/") {
       router.push(resolveHref(`/${href}`));
       return;
     }
@@ -278,13 +279,24 @@ export default function Header() {
             </button>
 
             <div className={styles.phoneCol}>
-              {phones.map((item) => (
-                <div className={styles.phoneRow} key={item.href}>
-                  <a className={styles.phone} href={item.href}>
-                    {item.text}
-                  </a>
-                </div>
-              ))}
+              {isPhonesLoading ? (
+                <>
+                  <div className={styles.phoneRow}>
+                    <span className={styles.phoneSkeleton} aria-hidden="true" />
+                  </div>
+                  <div className={styles.phoneRow}>
+                    <span className={styles.phoneSkeleton} aria-hidden="true" />
+                  </div>
+                </>
+              ) : (
+                phones.map((item) => (
+                  <div className={styles.phoneRow} key={item.href}>
+                    <a className={styles.phone} href={item.href}>
+                      {item.text}
+                    </a>
+                  </div>
+                ))
+              )}
             </div>
 
             <div
@@ -293,16 +305,23 @@ export default function Header() {
               aria-hidden={!isPhoneMenuOpen}
               aria-label={t("menu.contacts")}
             >
-              {phones.map((item) => (
-                <a
-                  key={`popup-${item.href}`}
-                  className={styles.phoneMenuItem}
-                  href={item.href}
-                  onClick={() => setIsPhoneMenuOpen(false)}
-                >
-                  {item.text}
-                </a>
-              ))}
+              {isPhonesLoading ? (
+                <>
+                  <span className={styles.phoneSkeleton} aria-hidden="true" />
+                  <span className={styles.phoneSkeleton} aria-hidden="true" />
+                </>
+              ) : (
+                phones.map((item) => (
+                  <a
+                    key={`popup-${item.href}`}
+                    className={styles.phoneMenuItem}
+                    href={item.href}
+                    onClick={() => setIsPhoneMenuOpen(false)}
+                  >
+                    {item.text}
+                  </a>
+                ))
+              )}
             </div>
           </div>
 

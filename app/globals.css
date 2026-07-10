@@ -26,6 +26,7 @@
   --color-success: #169f2c;
   --color-divider: #e0eaed;
   --color-shadow-modal: rgba(17, 49, 61, 0.35);
+  --color-skeleton-base: #f3fdff;
   --font-roboto: Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 
   /* Compatibility aliases for existing CSS */

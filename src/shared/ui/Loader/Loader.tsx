@@ -1,3 +1,5 @@
+import styles from "./Loader.module.css";
+
 function Loader({ size = 180, text = "Завантаження..." }) {
   return (
     <div
@@ -9,7 +11,13 @@ function Loader({ size = 180, text = "Завантаження..." }) {
         placeItems: "center",
       }}
     >
-      <svg width={size} height={size} viewBox="0 0 38 38" fill="none">
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 38 38"
+        fill="none"
+        className={styles.spinner}
+      >
         <defs>
           <linearGradient id="tealGrad" x1="8%" y1="0%" x2="65.7%" y2="23.9%">
             <stop offset="0%" stopColor="#C9E4E7" stopOpacity="0" />
@@ -21,16 +29,7 @@ function Loader({ size = 180, text = "Завантаження..." }) {
           stroke="url(#tealGrad)"
           strokeWidth="4"
           strokeLinecap="round"
-        >
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            from="0 19 19"
-            to="360 19 19"
-            dur="1s"
-            repeatCount="indefinite"
-          />
-        </path>
+        />
       </svg>
       <span style={{ position: "absolute", fontWeight: 700, color: "#226078" }}>{text}</span>
     </div>

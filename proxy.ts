@@ -12,28 +12,6 @@ import {
   stripLocaleFromPathname,
 } from "@/src/shared/i18n/routing";
 
-function parseAcceptLanguage(header: string | null): Locale {
-  if (!header) {
-    return defaultLocale;
-  }
-
-  const languages = header
-    .split(",")
-    .map((part) => {
-      const [tag, qualityPart] = part.trim().split(";q=");
-      const quality = Number(qualityPart ?? "1");
-
-      return {
-        locale: normalizeLocale(tag),
-        quality: Number.isFinite(quality) ? quality : 1,
-      };
-    })
-    .filter((item): item is { locale: Locale; quality: number } => item.locale !== null)
-    .sort((a, b) => b.quality - a.quality);
-
-  return languages[0]?.locale ?? defaultLocale;
-}
-
 function resolveRequestLocale(request: NextRequest): Locale {
   const explicitLocale = normalizeLocale(request.cookies.get(localeCookieName)?.value);
 
@@ -47,7 +25,7 @@ function resolveRequestLocale(request: NextRequest): Locale {
     return legacyLocale;
   }
 
-  return parseAcceptLanguage(request.headers.get("accept-language"));
+  return defaultLocale;
 }
 
 function withLocaleCookie(response: NextResponse, locale: Locale) {

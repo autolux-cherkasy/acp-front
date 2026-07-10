@@ -159,6 +159,29 @@
   align-items: center;
 }
 
+.phoneSkeleton {
+  width: 113px;
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--color-skeleton-base) 25%,
+    var(--color-surface-soft) 50%,
+    var(--color-skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: headerSkeletonShimmer 1.4s infinite linear;
+}
+
+@keyframes headerSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .phone {
   font-weight: 400;
   font-size: 14px;
