@@ -1,17 +1,7 @@
-import dynamic from "next/dynamic";
 import Image from "next/image";
 
-import Loader from "@/src/shared/ui/Loader/Loader";
+import BookingForm from "../BookingForm";
 import styles from "./BookingHero.module.css";
-
-const BookingForm = dynamic(() => import("../BookingForm"), {
-  ssr: false,
-  loading: () => (
-    <div className={styles.state}>
-      <Loader />
-    </div>
-  ),
-});
 
 export default function BookingHero() {
   return (

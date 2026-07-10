@@ -5,13 +5,13 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { getTripAvailability } from "@/src/entities/trip";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
+import { useServerToast } from "@/src/shared/lib/toast";
 import { useBookingStore } from "@/src/shared/store/BookingStore";
 import Button from "@/src/shared/ui/Button/Button";
 import SelectField from "@/src/shared/ui/SelectField/SelectField";
 import { sortTripsByTime } from "../lib/bookingForm.utils";
 import { useBookingTrips } from "../model/useBookingTrips";
 import styles from "./BookingForm.module.css";
-import BookingStatus from "./controls/BookingStatus";
 import DateField from "./controls/DateField";
 import PriceField from "./controls/PriceField";
 import SeatsSelect from "./controls/SeatsSelect";
@@ -23,13 +23,13 @@ export default function BookingForm() {
   const { lang, t, raw } = useI18n();
   const timeLocale = lang === "en" ? "en-GB" : "uk-UA";
 
+  const { notifyError } = useServerToast();
   const [selectedDate, setDate] = useState<Date | null>(null);
   const [selectedRoute, setSelectedRoute] = useState("");
   const [selectedTripId, setSelectedTripId] = useState<string>("");
   const [seatsValue, setSeatsValue] = useState("1");
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [isPendingNavigation, startNavigation] = useTransition();
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const selectedPopularRoute = useBookingStore((s) => s.selectedRoute);
   const clearPopularRoute = useBookingStore((s) => s.setSelectedRoute);
 
@@ -67,10 +67,13 @@ export default function BookingForm() {
     router.prefetch(resolveHref(`/tickets/${selectedTrip.slug ?? selectedTrip.id}`));
   }, [router, resolveHref, selectedTrip]);
 
+  useEffect(() => {
+    if (isTripsError || isDatesError) {
+      notifyError(null, t("bookingForm.status.loadError"));
+    }
+  }, [isTripsError, isDatesError, notifyError, t]);
+
   const isBootstrapping = isRoutesLoading || isDatesLoading || isTripsLoading;
-  const statusMessage =
-    isTripsError || isDatesError ? t("bookingForm.status.loadError") : (submitError ?? "");
-  const isError = isTripsError || isDatesError || !!submitError;
   const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat(lang === "en" ? "en-US" : "uk-UA", {
@@ -111,12 +114,11 @@ export default function BookingForm() {
     event.preventDefault();
 
     if (!selectedTrip) {
-      setSubmitError(t("bookingForm.status.selectTrip"));
+      notifyError(null, t("bookingForm.status.selectTrip"));
       return;
     }
 
     setIsCheckingAvailability(true);
-    setSubmitError(null);
 
     try {
       const availability = await getTripAvailability(selectedTrip.id, seats);
@@ -126,7 +128,7 @@ export default function BookingForm() {
         (availability.availableSeats == null || availability.availableSeats >= seats);
 
       if (!hasEnoughSeats) {
-        setSubmitError(t("bookingForm.status.seatsUnavailable"));
+        notifyError(null, t("bookingForm.status.seatsUnavailable"));
         return;
       }
 
@@ -161,11 +163,7 @@ export default function BookingForm() {
         );
       });
     } catch (error) {
-      setSubmitError(
-        error instanceof Error && error.message
-          ? error.message
-          : t("bookingForm.status.availabilityError"),
-      );
+      notifyError(error, t("bookingForm.status.availabilityError"));
     } finally {
       setIsCheckingAvailability(false);
     }
@@ -222,13 +220,6 @@ export default function BookingForm() {
             />
           </div>
         </div>
-
-        <BookingStatus
-          statusMessage={statusMessage}
-          isError={isError}
-          isBootstrapping={isBootstrapping}
-          loadingText={t("bookingForm.status.loading")}
-        />
 
         <div className={styles.primaryBtnWrap}>
           <Button

@@ -53,6 +53,7 @@
   color: var(--color-text-strong, var(--color-text-strong));
 }
 
+
 .routeDropdown {
   position: relative;
   width: 100%;
@@ -728,21 +729,6 @@
   align-self: stretch;
 }
 
-.status {
-  width: 100%;
-  min-height: 20px;
-  font-size: 14px;
-  line-height: 140%;
-}
-
-.statusInfo {
-  color: var(--color-brand, var(--color-brand));
-}
-
-.statusError {
-  color: #b42318;
-}
-
 .primaryBtnWrap > :global(button) {
   width: 100%;
   height: 46px;
@@ -961,10 +947,6 @@
   .primaryBtnWrap,
   .primaryBtnWrap > :global(button) {
     height: 40px;
-  }
-
-  .status {
-    font-size: 12px;
   }
 
   .primaryBtnWrap > :global(button) {
