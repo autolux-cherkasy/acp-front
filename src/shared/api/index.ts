@@ -3,9 +3,8 @@ export { API_URL, API_ORIGIN, apiFetch, resolveAssetUrl } from './http';
 
 // Session utilities
 export {
-  clearAccessToken,
-  getAccessToken,
-  hasAccessToken,
+  clearCsrfToken,
+  getCsrfToken,
+  setCsrfToken,
   subscribeToAuthChange,
-  setAccessToken,
 } from "./session";

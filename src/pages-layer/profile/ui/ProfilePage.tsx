@@ -10,7 +10,6 @@ import {
   useProfileQuery,
   useUpdateProfileMutation,
 } from "@/src/entities/user/api/useUserQueries";
-import { hasAccessToken } from "@/src/shared";
 import { ApiError } from "@/src/shared/api/http";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import { useServerToast } from "@/src/shared/lib/toast";
@@ -73,20 +72,10 @@ export default function ProfilePage() {
   const isLoading = profileQuery.isPending;
   const isSubmitting =
     updateProfileMutation.isPending || changePasswordMutation.isPending;
-  const isAuthenticated = hasAccessToken();
 
   const isFormDisabled = isLoading || isSubmitting || requiresLogin;
 
   useEffect(() => {
-    const setter = () => {
-      setRequiresLogin(true);
-    };
-    if (!isAuthenticated) {
-      setter();
-
-      return;
-    }
-
     if (profileQuery.data) {
       reset({
         name: profileQuery.data.name ?? "",
@@ -94,12 +83,9 @@ export default function ProfilePage() {
         newPassword: "",
         confirmPassword: "",
       });
-      const set = () => {
-        setRequiresLogin(false);
-      };
-      set();
+      setRequiresLogin(false);
     }
-  }, [isAuthenticated, profileQuery.data, reset]);
+  }, [profileQuery.data, reset]);
 
   useEffect(() => {
     if (!profileQuery.error) {
@@ -240,7 +226,7 @@ export default function ProfilePage() {
           >
             <span>{displayedError}</span>
 
-            {!isLoading && isAuthenticated ? (
+            {!isLoading && !requiresLogin ? (
               <button
                 type="button"
                 className={styles.noticeAction}

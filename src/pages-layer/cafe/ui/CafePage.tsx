@@ -123,7 +123,10 @@ export default function CafePage() {
 
         <div className={styles.hotdogBlock}>
           <section className={styles.menuContent} aria-label={t("cafe.menuAria")}>
-            {cafeData?.map((menu: CafeSectionResponse) => renderCard(menu))}
+            {cafeData?.map(
+              (menu: CafeSectionResponse) =>
+                menu.categories[0].items.length > 0 && renderCard(menu),
+            )}
           </section>
           <section className={styles.story} aria-label={t("cafe.storyAria")}>
             <p className={styles.storyText}>{t("cafe.description")}</p>

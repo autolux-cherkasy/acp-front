@@ -1,4 +1,3 @@
-import { hasAccessToken } from "@/src/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   changePassword,
@@ -15,7 +14,7 @@ export function useProfileQuery() {
   return useQuery({
     queryFn: getProfile,
     queryKey: [PROFILE_KEY],
-    enabled: hasAccessToken(),
+    retry: false,
   });
 }
 

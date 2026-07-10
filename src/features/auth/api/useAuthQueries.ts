@@ -13,7 +13,7 @@ import {
   type RegisterPayload,
   type ResetPasswordPayload,
 } from "./auth";
-import { setAccessToken, setCsrfToken } from "@/src/shared/api/session";
+import { setCsrfToken } from "@/src/shared/api/session";
 
 const PROFILE_QUERY_KEY = ["profile"];
 
@@ -24,12 +24,7 @@ export function useLoginMutation() {
     mutationFn: (payload: LoginPayload) => login(payload),
     mutationKey: ["login"],
     onSuccess: async (data) => {
-      if (!data?.access_token) {
-        throw new Error("Missing access token");
-      }
-
-      setAccessToken(data.access_token);
-      if (data.csrf_token) {
+      if (data?.csrf_token) {
         setCsrfToken(data.csrf_token);
       }
       await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });

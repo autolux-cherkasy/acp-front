@@ -1,10 +1,4 @@
-import {
-  clearAccessToken,
-  getAccessToken,
-  getCsrfToken,
-  setAccessToken,
-  setCsrfToken,
-} from "./session";
+import { clearCsrfToken, getCsrfToken, setCsrfToken } from "./session";
 
 export class ApiError extends Error {
   status: number;
@@ -53,26 +47,18 @@ type ErrorResponse = {
   message?: string | string[];
 };
 
-type AccessTokenResponse = {
+type RefreshResponse = {
   access_token?: string;
   csrf_token?: string;
 };
 
-let refreshPromise: Promise<string | null> | null = null;
+let refreshPromise: Promise<boolean> | null = null;
 
-function buildHeaders(
-  headersInit: HeadersInit | undefined,
-  body: BodyInit | null | undefined,
-  accessToken: string | null,
-) {
+function buildHeaders(headersInit: HeadersInit | undefined, body: BodyInit | null | undefined) {
   const headers = new Headers(headersInit);
 
   if (body && !(body instanceof FormData) && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
-  }
-
-  if (accessToken && !headers.has("Authorization")) {
-    headers.set("Authorization", `Bearer ${accessToken}`);
   }
 
   return headers;
@@ -98,8 +84,8 @@ async function getErrorMessage(response: Response) {
   return message;
 }
 
-async function sendRequest(path: string, options: ApiFetchOptions, accessToken: string | null) {
-  const { includeAuth = true, ...requestInit } = options;
+async function sendRequest(path: string, options: ApiFetchOptions) {
+  const { includeAuth: _includeAuth, ...requestInit } = options;
 
   if (!API_URL) {
     throw new Error("NEXT_PUBLIC_API_URL is not configured");
@@ -107,11 +93,7 @@ async function sendRequest(path: string, options: ApiFetchOptions, accessToken: 
 
   const method = requestInit.method?.toUpperCase() ?? "GET";
 
-  const headers = buildHeaders(
-    requestInit.headers,
-    requestInit.body,
-    includeAuth ? accessToken : null,
-  );
+  const headers = buildHeaders(requestInit.headers, requestInit.body);
 
   const csrfToken = getCsrfToken();
   if (csrfToken && ["POST", "PATCH", "PUT", "DELETE"].includes(method)) {
@@ -126,9 +108,9 @@ async function sendRequest(path: string, options: ApiFetchOptions, accessToken: 
   });
 }
 
-async function refreshAccessToken() {
-  if (typeof window === "undefined") return null;
-  if (!API_URL) return null;
+async function refreshAccessToken(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  if (!API_URL) return false;
 
   if (!refreshPromise) {
     refreshPromise = (async () => {
@@ -141,21 +123,20 @@ async function refreshAccessToken() {
       });
 
       if (!response.ok) {
-        clearAccessToken();
-        return null;
+        clearCsrfToken();
+        return false;
       }
 
-      const body = await parseResponse<AccessTokenResponse>(response);
+      const body = await parseResponse<RefreshResponse>(response);
       if (!body?.access_token) {
-        clearAccessToken();
-        return null;
+        clearCsrfToken();
+        return false;
       }
 
-      setAccessToken(body.access_token);
       if (body.csrf_token) {
         setCsrfToken(body.csrf_token);
       }
-      return body.access_token;
+      return true;
     })().finally(() => {
       refreshPromise = null;
     });
@@ -165,20 +146,19 @@ async function refreshAccessToken() {
 }
 
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
-  const accessToken = options.includeAuth === false ? null : getAccessToken();
-  let response = await sendRequest(path, options, accessToken);
+  let response = await sendRequest(path, options);
 
   if (response.status === 401 && !options.skipAuthRefresh) {
-    const refreshedAccessToken = await refreshAccessToken();
+    const refreshed = await refreshAccessToken();
 
-    if (refreshedAccessToken) {
-      response = await sendRequest(path, options, refreshedAccessToken);
+    if (refreshed) {
+      response = await sendRequest(path, options);
     }
   }
 
   if (!response.ok) {
     if (response.status === 401) {
-      clearAccessToken();
+      clearCsrfToken();
     }
 
     throw new ApiError(await getErrorMessage(response), response.status);

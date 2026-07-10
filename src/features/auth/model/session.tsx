@@ -2,15 +2,13 @@
 
 import { type UserProfile, type UserRole } from "@/src/entities/user";
 import { useProfileQuery } from "@/src/entities/user/api/useUserQueries";
+import { fetchCsrfToken } from "@/src/features/auth/api/auth";
 import {
   getDevProfile,
   getDevRole,
   installDevAuthHelpers,
 } from "@/src/shared/api/dev-auth";
-import {
-  hasAccessToken,
-  subscribeToAuthChange,
-} from "@/src/shared/api/session";
+import { getCsrfToken, setCsrfToken, subscribeToAuthChange } from "@/src/shared/api/session";
 import {
   createContext,
   useCallback,
@@ -37,25 +35,18 @@ export function AuthSessionProvider({
 }) {
   const profileQuery = useProfileQuery();
   const [, setAuthVersion] = useState(0);
-  const authenticated = hasAccessToken();
   const devRole = getDevRole() as UserRole | null;
   const { refetch } = profileQuery;
-  const isAuthenticated = authenticated || devRole != null;
+  const isAuthenticated = devRole != null || Boolean(profileQuery.data);
   const profile =
     devRole != null
       ? ((getDevProfile() as UserProfile | null) ?? null)
       : (profileQuery.data ?? null);
-  const isLoading = devRole == null && authenticated
-    ? profileQuery.isPending
-    : false;
+  const isLoading = devRole == null && profileQuery.isPending;
 
   const refreshSession = useCallback(async () => {
     if (devRole != null) {
       return getDevProfile() as UserProfile | null;
-    }
-
-    if (!hasAccessToken()) {
-      return null;
     }
 
     const result = await refetch();
@@ -71,6 +62,20 @@ export function AuthSessionProvider({
       setAuthVersion((current) => current + 1);
     });
   }, []);
+
+  useEffect(() => {
+    if (!profileQuery.data || getCsrfToken()) {
+      return;
+    }
+
+    fetchCsrfToken()
+      .then((data) => {
+        if (data?.csrf_token) {
+          setCsrfToken(data.csrf_token);
+        }
+      })
+      .catch(() => {});
+  }, [profileQuery.data]);
 
   const value = useMemo<AuthSessionContextValue>(
     () => ({

@@ -1,7 +1,5 @@
 import { DEV_PROFILE_KEY, DEV_ROLE_KEY } from "./dev-auth";
 
-const ACCESS_TOKEN_KEY = "access_token";
-const LEGACY_TOKEN_KEY = "token";
 const CSRF_TOKEN_KEY = "csrf_token";
 const AUTH_CHANGE_EVENT = "auth-change";
 
@@ -20,8 +18,7 @@ export function subscribeToAuthChange(onChange: () => void) {
 
   const onStorage = (event: StorageEvent) => {
     if (
-      event.key === ACCESS_TOKEN_KEY
-      || event.key === LEGACY_TOKEN_KEY
+      event.key === CSRF_TOKEN_KEY
       || event.key === DEV_ROLE_KEY
       || event.key === DEV_PROFILE_KEY
       || event.key === null
@@ -43,40 +40,6 @@ export function subscribeToAuthChange(onChange: () => void) {
   };
 }
 
-export function getAccessToken() {
-  if (!isBrowser()) return null;
-
-  const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-  if (accessToken) return accessToken;
-
-  const legacyToken = window.localStorage.getItem(LEGACY_TOKEN_KEY);
-  if (!legacyToken) return null;
-
-  window.localStorage.setItem(ACCESS_TOKEN_KEY, legacyToken);
-  window.localStorage.removeItem(LEGACY_TOKEN_KEY);
-  return legacyToken;
-}
-
-export function hasAccessToken() {
-  return Boolean(getAccessToken());
-}
-
-export function setAccessToken(token: string) {
-  if (!isBrowser()) return;
-
-  window.localStorage.setItem(ACCESS_TOKEN_KEY, token);
-  window.localStorage.removeItem(LEGACY_TOKEN_KEY);
-  notifyAuthChange();
-}
-
-export function clearAccessToken() {
-  if (!isBrowser()) return;
-
-  window.localStorage.removeItem(ACCESS_TOKEN_KEY);
-  window.localStorage.removeItem(LEGACY_TOKEN_KEY);
-  notifyAuthChange();
-}
-
 export function getCsrfToken() {
   if (!isBrowser()) return null;
 
@@ -87,10 +50,12 @@ export function setCsrfToken(token: string) {
   if (!isBrowser()) return;
 
   window.localStorage.setItem(CSRF_TOKEN_KEY, token);
+  notifyAuthChange();
 }
 
 export function clearCsrfToken() {
   if (!isBrowser()) return;
 
   window.localStorage.removeItem(CSRF_TOKEN_KEY);
+  notifyAuthChange();
 }
