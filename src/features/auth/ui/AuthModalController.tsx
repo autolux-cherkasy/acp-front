@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import {
   closeAuthModal,
@@ -10,7 +10,8 @@ import {
   type AuthView,
 } from "@/src/features/auth/model/auth-flow";
 import { useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
-import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
+import ModalFrame, { useModalClose } from "@/src/shared/ui/ModalFrame/ModalFrame";
+import { useLockBodyScroll } from "@/src/shared/ui/ModalFrame/useLockBodyScroll";
 
 const LoginPage = dynamic(
   () => import("@/src/pages-layer/auth/login/ui/LoginPage"),
@@ -52,6 +53,11 @@ function renderAuthView(view: AuthView, onClose: () => void) {
   }
 }
 
+function AuthModalBody({ view }: { view: AuthView }) {
+  const requestClose = useModalClose();
+  return renderAuthView(view, requestClose);
+}
+
 export default function AuthModalController() {
   const router = useRouter();
   const resolveHref = useLocalizedHref();
@@ -65,26 +71,7 @@ export default function AuthModalController() {
     closeAuthModal(router, resolveHref);
   }, [resolveHref, router]);
 
-  useEffect(() => {
-    if (!authState) {
-      return;
-    }
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        handleClose();
-      }
-    };
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [authState, handleClose]);
+  useLockBodyScroll(!!authState);
 
   if (!authState) {
     return null;
@@ -92,7 +79,7 @@ export default function AuthModalController() {
 
   return (
     <ModalFrame onClose={handleClose} variant="route">
-      {renderAuthView(authState.view, handleClose)}
+      <AuthModalBody view={authState.view} />
     </ModalFrame>
   );
 }

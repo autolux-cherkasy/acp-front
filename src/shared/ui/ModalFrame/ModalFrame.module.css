@@ -4,6 +4,14 @@
   z-index: 9999;
 }
 
+.backdrop[data-state="open"] {
+  animation: modalBackdropFadeIn 180ms ease-out;
+}
+
+.backdrop[data-state="closed"] {
+  animation: modalBackdropFadeOut 180ms ease-in forwards;
+}
+
 .routeBackdrop {
   background: rgba(0, 0, 0, 0.35);
   display: grid;
@@ -47,6 +55,67 @@
   flex-direction: column;
   overflow: hidden;
   z-index: 10000;
+}
+
+.routeSurface[data-state="open"],
+.dialogSurface[data-state="open"] {
+  animation: modalSurfaceScaleIn 180ms ease-out;
+}
+
+.routeSurface[data-state="closed"],
+.dialogSurface[data-state="closed"] {
+  animation: modalSurfaceScaleOut 180ms ease-in forwards;
+}
+
+@keyframes modalBackdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalBackdropFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalSurfaceScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalSurfaceScaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop[data-state="open"],
+  .backdrop[data-state="closed"],
+  .routeSurface[data-state="open"],
+  .routeSurface[data-state="closed"],
+  .dialogSurface[data-state="open"],
+  .dialogSurface[data-state="closed"] {
+    animation: none;
+  }
 }
 
 @media (max-width: 767px) {

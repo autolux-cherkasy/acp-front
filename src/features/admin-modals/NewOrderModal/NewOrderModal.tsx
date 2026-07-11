@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo, type RefObject } from "react";
 import { useForm } from "react-hook-form";
 import MiniCalendar from "@/src/widgets/MiniCalendar/MiniCalendar";
 import { useClickOutside } from "@/src/shared/lib/useClickOutside";
 import type { TicketStatus } from "@/src/entities/ticket";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
-import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
+import DetailModalFrame from "@/src/shared/ui/DetailModalFrame/DetailModalFrame";
+import { useModalClose } from "@/src/shared/ui/ModalFrame/ModalFrame";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
 import styles from "./NewOrderModal.module.css";
 import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
@@ -31,28 +32,47 @@ type FormState = {
 };
 
 export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }: Props) {
-  const { t } = useI18n();
   const {
     isOpen: showCalendar,
     setIsOpen: setShowCalendar,
     fieldRef: calendarRef,
   } = useClickOutside();
 
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
+  return (
+    <DetailModalFrame
+      onClose={onClose}
+      ariaLabelledBy="new-order-title"
+      surfaceClassName={styles.modalFrame}
+      onEscapeKeyDown={(event) => {
+        if (showCalendar) event.preventDefault();
+      }}
+    >
+      <NewOrderModalBody
+        nextBookingNumber={nextBookingNumber}
+        routeInfo={routeInfo}
+        showCalendar={showCalendar}
+        setShowCalendar={setShowCalendar}
+        calendarRef={calendarRef}
+      />
+    </DetailModalFrame>
+  );
+}
 
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !showCalendar) {
-        onClose();
-      }
-    };
+type NewOrderModalBodyProps = Omit<Props, "onClose"> & {
+  showCalendar: boolean;
+  setShowCalendar: (updater: boolean | ((prev: boolean) => boolean)) => void;
+  calendarRef: RefObject<HTMLDivElement | null>;
+};
 
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [onClose, showCalendar]);
+function NewOrderModalBody({
+  nextBookingNumber,
+  routeInfo,
+  showCalendar,
+  setShowCalendar,
+  calendarRef,
+}: NewOrderModalBodyProps) {
+  const { t } = useI18n();
+  const requestClose = useModalClose();
 
   const { register, setValue, watch } = useForm<FormState>({
     defaultValues: {
@@ -86,13 +106,8 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
     : t("dispatcherArea.tickets.modal.newOrderTitle");
 
   return (
-    <ModalFrame
-      onClose={onClose}
-      ariaLabelledBy="new-order-title"
-      usePortal
-      surfaceClassName={styles.modalFrame}
-    >
-      <AdminModalHeader title={`${modalTitle} № ${bookingNumberStr}`} onClose={onClose} />
+    <>
+      <AdminModalHeader title={`${modalTitle} № ${bookingNumberStr}`} onClose={requestClose} />
 
       <div className={styles.body}>
         <InputWithLabel
@@ -188,9 +203,9 @@ export default function NewOrderModal({ onClose, nextBookingNumber, routeInfo }:
           text={t("dispatcherArea.tickets.actions.saveChanges")}
           variant="secondary"
           size="full"
-          onClick={onClose}
+          onClick={requestClose}
         />
       </div>
-    </ModalFrame>
+    </>
   );
 }

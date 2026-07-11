@@ -3,7 +3,15 @@
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import * as Dialog from "@radix-ui/react-dialog";
-import type { ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+  type AnimationEvent,
+  type ReactNode,
+} from "react";
 import styles from "./ModalFrame.module.css";
 
 type Props = {
@@ -16,7 +24,22 @@ type Props = {
   backdropClassName?: string;
   surfaceClassName?: string;
   surfaceOverflow?: "hidden" | "visible";
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
 };
+
+const ModalCloseContext = createContext<(() => void) | null>(null);
+
+// Lets a modal's own close/cancel controls trigger the same animated exit as
+// the backdrop click or Escape key, instead of unmounting the modal instantly.
+export function useModalClose() {
+  const requestClose = useContext(ModalCloseContext);
+
+  if (!requestClose) {
+    throw new Error("useModalClose must be used within a ModalFrame");
+  }
+
+  return requestClose;
+}
 
 function joinClassNames(...classNames: Array<string | undefined | false>) {
   return classNames.filter(Boolean).join(" ");
@@ -31,11 +54,30 @@ export default function ModalFrame({
   backdropClassName,
   surfaceClassName,
   surfaceOverflow = "hidden",
+  onEscapeKeyDown,
 }: Props) {
   const { t } = useI18n();
+  const [isOpen, setIsOpen] = useState(true);
+  const hasClosedRef = useRef(false);
+
+  const requestClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  const handleBackdropAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+    if (isOpen || hasClosedRef.current) return;
+    hasClosedRef.current = true;
+    onClose?.();
+  };
 
   const content = (
-    <Dialog.Root open={true}>
+    <Dialog.Root
+      open={isOpen}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) requestClose();
+      }}
+    >
       <Dialog.Portal>
         <Dialog.Overlay
           className={joinClassNames(
@@ -43,6 +85,7 @@ export default function ModalFrame({
             variant === "route" ? styles.routeBackdrop : styles.dialogBackdrop,
             backdropClassName,
           )}
+          onAnimationEnd={handleBackdropAnimationEnd}
         >
           <Dialog.Content
             className={joinClassNames(
@@ -53,8 +96,9 @@ export default function ModalFrame({
             onPointerDownOutside={(e) => {
               const target = e.target as Element;
               if (target.closest("[data-radix-popper-content-wrapper]")) return;
-              onClose?.();
+              requestClose();
             }}
+            onEscapeKeyDown={onEscapeKeyDown}
             aria-labelledby={ariaLabelledBy}
           >
             {title && (
@@ -62,10 +106,10 @@ export default function ModalFrame({
                 <h2 className={styles.title} id={ariaLabelledBy}>
                   {title}
                 </h2>
-                <ModalCloseButton onClose={onClose} ariaLabel={t("common.close")} />
+                <ModalCloseButton onClose={requestClose} ariaLabel={t("common.close")} />
               </div>
             )}
-            {children}
+            <ModalCloseContext.Provider value={requestClose}>{children}</ModalCloseContext.Provider>
           </Dialog.Content>
         </Dialog.Overlay>
       </Dialog.Portal>

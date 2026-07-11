@@ -46,7 +46,6 @@ export default function ProfilePage() {
   const resolveHref = useLocalizedHref();
   const { t } = useI18n();
   // const [profileEmail, setProfileEmail] = useState("");
-  const [requiresLogin, setRequiresLogin] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { notifyError, notifyInfo, notifySuccess } = useServerToast();
@@ -72,6 +71,7 @@ export default function ProfilePage() {
   const isLoading = profileQuery.isPending;
   const isSubmitting =
     updateProfileMutation.isPending || changePasswordMutation.isPending;
+  const requiresLogin = profileQuery.error ? shouldRequireLogin(profileQuery.error) : false;
 
   const isFormDisabled = isLoading || isSubmitting || requiresLogin;
 
@@ -83,20 +83,9 @@ export default function ProfilePage() {
         newPassword: "",
         confirmPassword: "",
       });
-      setRequiresLogin(false);
     }
   }, [profileQuery.data, reset]);
 
-  useEffect(() => {
-    if (!profileQuery.error) {
-      return;
-    }
-
-    const set = () => {
-      setRequiresLogin(shouldRequireLogin(profileQuery.error));
-    };
-    set();
-  }, [profileQuery.error]);
   const clearNotices = useCallback(() => {
     if (updateProfileMutation.error) {
       updateProfileMutation.reset();
@@ -160,7 +149,9 @@ export default function ProfilePage() {
         notifySuccess(response, t("common.toast.profileUpdateSuccess"));
       } catch (err) {
         notifyError(err, t("common.toast.profileUpdateError"));
-        setRequiresLogin(shouldRequireLogin(err));
+        if (shouldRequireLogin(err)) {
+          void profileQuery.refetch();
+        }
       }
     }
 
@@ -175,7 +166,9 @@ export default function ProfilePage() {
         notifySuccess(response, t("common.toast.passwordChangeSuccess"));
       } catch (err) {
         notifyError(err, t("common.toast.passwordChangeError"));
-        setRequiresLogin(shouldRequireLogin(err));
+        if (shouldRequireLogin(err)) {
+          void profileQuery.refetch();
+        }
       }
     }
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
 import type { Ticket } from "@/src/entities/ticket";
 import { useCountdown } from "@/src/features/ticket-timer";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import Icon from "@/src/shared/ui/Icon/Icon";
-import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
+import DetailModalFrame from "@/src/shared/ui/DetailModalFrame/DetailModalFrame";
+import { useModalClose } from "@/src/shared/ui/ModalFrame/ModalFrame";
 import ModalRow from "@/src/shared/ui/ModalRow/ModalRow";
 import styles from "./OrderDetailsModal.module.css";
 import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
@@ -24,24 +24,21 @@ function formatSeconds(seconds: number): string {
 }
 
 export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
+  return (
+    <DetailModalFrame
+      onClose={onClose}
+      ariaLabelledBy="order-details-title"
+      surfaceClassName={styles.modalFrame}
+    >
+      <OrderDetailsModalBody ticket={ticket} onEdit={onEdit} />
+    </DetailModalFrame>
+  );
+}
+
+function OrderDetailsModalBody({ ticket, onEdit }: { ticket: Ticket; onEdit?: () => void }) {
   const { t } = useI18n();
   const remainingSeconds = useCountdown(ticket.timerSeconds);
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [onClose]);
+  const requestClose = useModalClose();
 
   const bookingNumberStr = ticket.bookingNumber;
   const route = `${ticket.routeFrom} - ${ticket.routeTo}`;
@@ -53,15 +50,10 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
         : t("dispatcherArea.tickets.statuses.cancelled");
 
   return (
-    <ModalFrame
-      onClose={onClose}
-      ariaLabelledBy="order-details-title"
-      usePortal
-      surfaceClassName={styles.modalFrame}
-    >
+    <>
       <AdminModalHeader
         title={`${t("dispatcherArea.tickets.modal.orderDetailsTitle")} № ${bookingNumberStr}`}
-        onClose={onClose}
+        onClose={requestClose}
       />
       <div className={styles.body}>
         <ModalRow icon={<Icon src="/icons/account/archive/clarity_avatar-line.svg" />}>
@@ -108,17 +100,17 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
             size="full"
             onClick={() => {
               onEdit?.();
-              onClose();
+              requestClose();
             }}
           />
           <Button
             text={t("dispatcherArea.tickets.actions.cancel")}
             variant="danger"
             size="full"
-            onClick={onClose}
+            onClick={requestClose}
           />
         </div>
       </div>
-    </ModalFrame>
+    </>
   );
 }

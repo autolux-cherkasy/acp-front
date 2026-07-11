@@ -89,10 +89,10 @@ export const popularRoutes: PopularRoute[] = [
   {
     id: "8",
     searchFrom: PEREIASLAV,
-    searchTo: KYIV,
-    title: `${M_PEREIASLAV} — ${M_KYIV}`,
+    searchTo: KYIV_CHERNIHIVSKA,
+    title: `${M_PEREIASLAV} — ${M_KYIV} ${ST_M_CHERNIHIVSKA}`,
     imageSrc: "/Routes/pereiaslav-kyiv.png",
-    imageAlt: `Рейс ${PEREIASLAV}-${KYIV}`,
+    imageAlt: `Рейс ${PEREIASLAV}-${KYIV} ${ST_M_CHERNIHIVSKA}`,
   },
 ];
 

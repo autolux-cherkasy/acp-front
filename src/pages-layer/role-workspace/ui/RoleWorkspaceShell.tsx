@@ -162,7 +162,7 @@ export default function RoleWorkspaceShell({
         <aside className={styles.sidebar}>
           <div className={styles.sidebarTop}>
             <div className={styles.brandPanel}>
-              <div className={styles.brandLink}>
+              <LocaleLink href={basePath} className={styles.brandLink}>
                 <Image
                   src="/logo-sprinter.svg"
                   alt="AutoLux Cherkasy Plus"
@@ -171,7 +171,7 @@ export default function RoleWorkspaceShell({
                   className={styles.brandLogo}
                   priority
                 />
-              </div>
+              </LocaleLink>
             </div>
 
             <div className={styles.profileBlock}>

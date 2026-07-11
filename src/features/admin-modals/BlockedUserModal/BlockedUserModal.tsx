@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
 import Button from "@/src/shared/ui/Button/Button";
 import Icon from "@/src/shared/ui/Icon/Icon";
-import ModalFrame from "@/src/shared/ui/ModalFrame/ModalFrame";
+import DetailModalFrame from "@/src/shared/ui/DetailModalFrame/DetailModalFrame";
+import { useModalClose } from "@/src/shared/ui/ModalFrame/ModalFrame";
 import ModalRow from "@/src/shared/ui/ModalRow/ModalRow";
 import styles from "./BlockedUserModal.module.css";
 import Loader from "@/src/shared/ui/Loader/Loader";
@@ -20,22 +20,21 @@ type Props = {
 };
 
 export default function BlockedUserModal({ userId, onClose, onUnblock }: Props) {
+  return (
+    <DetailModalFrame
+      onClose={onClose}
+      ariaLabelledBy="blocked-user-title"
+      surfaceClassName={styles.modalFrame}
+    >
+      <BlockedUserModalBody userId={userId} onUnblock={onUnblock} />
+    </DetailModalFrame>
+  );
+}
+
+function BlockedUserModalBody({ userId, onUnblock }: Omit<Props, "onClose">) {
   const { data: userData, isPending } = useUserWithUnpaidBookingsQuery(userId);
   const blockMutation = useBlockUserMutation();
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [onClose]);
+  const requestClose = useModalClose();
 
   function handleUnblock() {
     if (userId === null) return;
@@ -44,20 +43,15 @@ export default function BlockedUserModal({ userId, onClose, onUnblock }: Props) 
       {
         onSuccess: () => {
           onUnblock?.();
-          onClose();
+          requestClose();
         },
       },
     );
   }
 
   return (
-    <ModalFrame
-      onClose={onClose}
-      ariaLabelledBy="blocked-user-title"
-      usePortal
-      surfaceClassName={styles.modalFrame}
-    >
-      <AdminModalHeader title="Дані заблокованого користувача" onClose={onClose} />
+    <>
+      <AdminModalHeader title="Дані заблокованого користувача" onClose={requestClose} />
 
       <div className={styles.body}>
         {isPending ? (
@@ -118,9 +112,9 @@ export default function BlockedUserModal({ userId, onClose, onUnblock }: Props) 
             onClick={handleUnblock}
             disabled={blockMutation.isPending}
           />
-          <Button text="Скасувати" variant="danger" size="full" onClick={onClose} />
+          <Button text="Скасувати" variant="danger" size="full" onClick={requestClose} />
         </div>
       </div>
-    </ModalFrame>
+    </>
   );
 }
