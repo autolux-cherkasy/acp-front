@@ -26,6 +26,31 @@ export type DataSection = {
   subSections?: SubSection[];
 };
 
+export function rowMatchesQuery(row: TableRow, lowerQuery: string): boolean {
+  return row.some((cell) => {
+    if (typeof cell === "string") return cell.toLowerCase().includes(lowerQuery);
+    if (isSelectCell(cell)) {
+      const label = cell.options.find((o) => o.value === cell.value)?.label ?? "";
+      return label.toLowerCase().includes(lowerQuery);
+    }
+    return false;
+  });
+}
+
+export function sectionMatchesQuery(section: DataSection, lowerQuery: string): boolean {
+  if (section.title.toLowerCase().includes(lowerQuery)) return true;
+  if (section.rows?.some((row) => rowMatchesQuery(row, lowerQuery))) return true;
+  if (
+    section.subSections?.some(
+      (sub) =>
+        sub.groupLabel.toLowerCase().includes(lowerQuery) ||
+        sub.rows.some((row) => rowMatchesQuery(row, lowerQuery)),
+    )
+  )
+    return true;
+  return false;
+}
+
 export type TabMockData = {
   sections: DataSection[];
 };

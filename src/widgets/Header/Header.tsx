@@ -51,6 +51,24 @@ export default function Header() {
   const [isPhoneMenuOpen, setIsPhoneMenuOpen] = useState(false);
   const currentMenuHref = pathnameWithoutLocale === "/cafe" ? "/cafe" : activeMenuHref;
   const phoneMenuRef = useRef<HTMLDivElement | null>(null);
+  const isProgrammaticScrollRef = useRef(false);
+  const scrollEndTimeoutRef = useRef<number | null>(null);
+
+  const beginProgrammaticScroll = () => {
+    isProgrammaticScrollRef.current = true;
+
+    if (scrollEndTimeoutRef.current !== null) {
+      window.clearTimeout(scrollEndTimeoutRef.current);
+    }
+
+    const clearFlag = () => {
+      isProgrammaticScrollRef.current = false;
+      window.removeEventListener("scrollend", clearFlag);
+    };
+
+    window.addEventListener("scrollend", clearFlag, { once: true });
+    scrollEndTimeoutRef.current = window.setTimeout(clearFlag, 700);
+  };
 
   useEffect(() => {
     router.prefetch(resolveHref("/"));
@@ -75,6 +93,10 @@ export default function Header() {
     const sections = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
 
     const onScroll = () => {
+      if (isProgrammaticScrollRef.current) {
+        return;
+      }
+
       const best = sections
         .map((section) => {
           const rect = section.getBoundingClientRect();
@@ -95,8 +117,6 @@ export default function Header() {
   }, [pathnameWithoutLocale]);
 
   useEffect(() => {
-    if (pathnameWithoutLocale !== "/") return;
-
     const hash = window.location.hash;
 
     if (!sectionHrefs.includes(hash)) {
@@ -112,6 +132,7 @@ export default function Header() {
 
     const frameId = window.requestAnimationFrame(() => {
       const top = elem.getBoundingClientRect().top + window.scrollY - 120;
+      beginProgrammaticScroll();
       window.scrollTo({ top, behavior: "smooth" });
     });
 
@@ -179,22 +200,21 @@ export default function Header() {
       return;
     }
 
-    if (pathnameWithoutLocale !== "/") {
-      router.push(resolveHref(`/${href}`));
-      return;
-    }
-
     const targetId = href.replace("#", "");
     const elem = document.getElementById(targetId);
 
     if (elem) {
       const top = elem.getBoundingClientRect().top + window.scrollY - 120;
+      beginProgrammaticScroll();
       window.scrollTo({ top, behavior: "smooth" });
 
       if (window.location.hash !== href) {
         window.history.replaceState(null, "", href);
       }
+      return;
     }
+
+    router.push(resolveHref(`/${href}`));
   };
 
   return (

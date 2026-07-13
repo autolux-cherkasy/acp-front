@@ -11,14 +11,15 @@ import DataTable from "@/src/shared/ui/DataTable/DataTable";
 import tableStyles from "@/src/shared/ui/DataTable/DataTable.module.css";
 import Icon from "@/src/shared/ui/Icon/Icon";
 import * as Switch from "@radix-ui/react-switch";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./DataMgmtPage.module.css";
-import { DataSection, isSelectCell, SECTION_COLUMNS } from "./mockData";
+import { DataSection, isSelectCell, rowMatchesQuery, SECTION_COLUMNS } from "./mockData";
 
 type CollapsiblesectionProps = {
   section: DataSection;
   tab: string;
   index: number;
+  query?: string;
   onEditSection?: () => void;
   onAddRow: () => void;
   onEditRow: (index: number) => void;
@@ -31,6 +32,7 @@ type CollapsiblesectionProps = {
 const CollapsibleSection = ({
   section,
   tab,
+  query,
   onAddRow,
   onEditRow,
   onEditSection,
@@ -41,6 +43,38 @@ const CollapsibleSection = ({
 }: CollapsiblesectionProps) => {
   const [open, setOpen] = useState(initialOpenState ?? false);
   const { t } = useI18n();
+
+  const lq = (query ?? "").trim().toLowerCase();
+
+  const allRows = section.rows ?? [];
+  const matchingRowIndices = lq
+    ? allRows.reduce<number[]>((acc, row, i) => {
+        if (rowMatchesQuery(row, lq)) acc.push(i);
+        return acc;
+      }, [])
+    : [];
+  const hasRowMatch = matchingRowIndices.length > 0;
+  const displayRows = hasRowMatch ? matchingRowIndices.map((i) => allRows[i]) : allRows;
+  const mapDisplayIndex = (displayIdx: number) =>
+    hasRowMatch ? matchingRowIndices[displayIdx] : displayIdx;
+
+  const hasSubRowMatch = lq
+    ? (section.subSections ?? []).some((sub) => sub.rows.some((row) => rowMatchesQuery(row, lq)))
+    : false;
+
+  const hasRowLevelMatch = hasRowMatch || hasSubRowMatch;
+
+  useEffect(() => {
+    const set = (a: boolean) => {
+      setOpen(a);
+    };
+    if (lq) {
+      if (hasRowLevelMatch) set(true);
+    } else {
+      set(initialOpenState ?? false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lq, hasRowLevelMatch]);
 
   const handleToggle = () => setOpen((prev) => !prev);
 
@@ -56,6 +90,17 @@ const CollapsibleSection = ({
           {subs.map((sub, subIdx) => {
             const groupRowIdx = globalRowIdx;
             globalRowIdx += sub.rows.length;
+
+            const groupLabelMatches = lq !== "" && sub.groupLabel.toLowerCase().includes(lq);
+            const rowsToRender =
+              hasSubRowMatch && !groupLabelMatches
+                ? sub.rows
+                    .map((row, rowIdx) => ({ row, rowIdx }))
+                    .filter(({ row }) => rowMatchesQuery(row, lq))
+                : sub.rows.map((row, rowIdx) => ({ row, rowIdx }));
+
+            if (hasSubRowMatch && rowsToRender.length === 0) return null;
+
             return (
               <React.Fragment key={`group-${subIdx}`}>
                 <tr className={dasboardTable.theadRow}>
@@ -75,7 +120,7 @@ const CollapsibleSection = ({
                     </button>
                   </th>
                 </tr>
-                {sub.rows.map((row, rowIdx) => {
+                {rowsToRender.map(({ row, rowIdx }) => {
                   const absoluteIdx = groupRowIdx + rowIdx;
                   return (
                     <DashboardTr key={`${subIdx}-${rowIdx}`} className={tableStyles.dataRow}>
@@ -102,7 +147,7 @@ const CollapsibleSection = ({
                               <Switch.Thumb className={tableStyles.switchThumb} />
                             </Switch.Root>
                           ) : isSelectCell(cell) ? (
-                            cell.options.find((o) => o.value === cell.value)?.label ?? ""
+                            (cell.options.find((o) => o.value === cell.value)?.label ?? "")
                           ) : (
                             cell
                           )}
@@ -156,11 +201,15 @@ const CollapsibleSection = ({
             renderSubSections()
           ) : (
             <DataTable
-              rows={section.rows ?? []}
+              rows={displayRows}
               columns={SECTION_COLUMNS[section.id] ?? SECTION_COLUMNS[tab] ?? []}
               onAdd={onAddRow}
-              onEdit={onEditRow}
-              onSelectCell={onSelectCell}
+              onEdit={(displayIdx) => onEditRow(mapDisplayIndex(displayIdx))}
+              onSelectCell={
+                onSelectCell
+                  ? (displayIdx, value) => onSelectCell(mapDisplayIndex(displayIdx), value)
+                  : undefined
+              }
               isLoading={isLoading}
             />
           ))}

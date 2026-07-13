@@ -6,7 +6,7 @@ import TabSwitch from "@/src/shared/ui/TabSwitch/TabSwitch";
 import MiniCalendarTrigger from "@/src/widgets/MiniCalendar/MiniCalendarTrigger";
 import { useEffect, useState } from "react";
 import styles from "./DataMgmtPage.module.css";
-import { DataSection, MOCK_DATA_BY_TAB } from "./mockData";
+import { DataSection, MOCK_DATA_BY_TAB, sectionMatchesQuery } from "./mockData";
 import CollapsibleSection from "./CollapsibleSection";
 import { useDataMgmtModals } from "./useDataMgmtModals";
 import {
@@ -148,17 +148,9 @@ const DataMgmtPage = () => {
       ? allTabs.filter((tabDef) => permissions[tabDef.permissionKey])
       : allTabs;
 
-  const { query, setQuery, filtered } = useSearch(sections, (section, q) => {
-    const lq = q.toLowerCase();
-
-    if (section.title.toLowerCase().includes(lq)) return true;
-
-    return (
-      section.rows?.some((row) =>
-        row.some((cell) => typeof cell === "string" && cell.toLowerCase().includes(lq)),
-      ) ?? false
-    );
-  });
+  const { query, setQuery, filtered } = useSearch(sections, (section, q) =>
+    sectionMatchesQuery(section, q.toLowerCase()),
+  );
 
   const handleTabChange = (value: string) => {
     setTab(value);
@@ -229,37 +221,41 @@ const DataMgmtPage = () => {
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className={styles.sectionSkeleton} />
               ))
-            : filtered.map((section: DataSection, index: number) => (
-                <div key={`${tab}-${index}`}>
-                  <CollapsibleSection
-                    section={section}
-                    tab={tab}
-                    index={index}
-                    initialOpenState={tab === "staff" || tab === "fleet" ? true : false}
-                    onEditSection={
-                      tab === "routes" || tab === "cafe"
-                        ? () => openSectionModal({ mode: "edit", sectionIndex: index })
-                        : undefined
-                    }
-                    onAddRow={() => openRowModal({ mode: "create", sectionIndex: index })}
-                    onEditRow={(rowIndex) =>
-                      openRowModal({ mode: "edit", sectionIndex: index, rowIndex })
-                    }
-                    onToggleSubCell={(id, value) =>
-                      cafeItemAvailMutation.mutate({ id, body: { isAvailable: value } })
-                    }
-                    onSelectCell={
-                      tab === "fleet"
-                        ? (rowIndex, value) => {
-                            const bus = fleetData?.[rowIndex];
-                            if (bus) updateBusDriver(bus.id, value);
-                          }
-                        : undefined
-                    }
-                    isLoading={tab === "staff" ? isStaffLoading : tab === "fleet" ? isFleetLoading : undefined}
-                  />
-                </div>
-              ))}
+            : filtered.map((section: DataSection, index: number) => {
+                const sectionIndex = sections.findIndex((s) => s.id === section.id);
+                return (
+                  <div key={`${tab}-${index}`}>
+                    <CollapsibleSection
+                      section={section}
+                      tab={tab}
+                      index={index}
+                      query={query}
+                      initialOpenState={tab === "staff" || tab === "fleet" ? true : false}
+                      onEditSection={
+                        tab === "routes" || tab === "cafe"
+                          ? () => openSectionModal({ mode: "edit", sectionIndex })
+                          : undefined
+                      }
+                      onAddRow={() => openRowModal({ mode: "create", sectionIndex })}
+                      onEditRow={(rowIndex) =>
+                        openRowModal({ mode: "edit", sectionIndex, rowIndex })
+                      }
+                      onToggleSubCell={(id, value) =>
+                        cafeItemAvailMutation.mutate({ id, body: { isAvailable: value } })
+                      }
+                      onSelectCell={
+                        tab === "fleet"
+                          ? (rowIndex, value) => {
+                              const bus = fleetData?.[rowIndex];
+                              if (bus) updateBusDriver(bus.id, value);
+                            }
+                          : undefined
+                      }
+                      isLoading={tab === "staff" ? isStaffLoading : tab === "fleet" ? isFleetLoading : undefined}
+                    />
+                  </div>
+                );
+              })}
         </div>
       </DashboardCard>
       {modalElement}
