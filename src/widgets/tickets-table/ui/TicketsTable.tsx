@@ -102,7 +102,11 @@ function TicketRow({ ticket, rowNumber, locale, onDetails }: TicketRowProps) {
       </td>
 
       <td className={styles.td}>
-        <TicketTimer initialSeconds={ticket.timerSeconds} />
+          {ticket.status === "reserved" ? (
+              <TicketTimer initialSeconds={ticket.timerSeconds} />
+          ) : (
+              <span>—</span>
+          )}
       </td>
 
       <td className={styles.td}>

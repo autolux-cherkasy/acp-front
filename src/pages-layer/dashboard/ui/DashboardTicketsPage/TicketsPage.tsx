@@ -7,7 +7,7 @@ import { useTicketSearch } from "@/src/features/search-tickets";
 import { useTicketSort } from "@/src/features/sort-tickets";
 import { TicketsTable, TicketsTableSkeleton } from "@/src/widgets/tickets-table";
 import { TicketsToolbar } from "@/src/widgets/tickets-toolbar";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import styles from "./tickets.module.css";
 import NewOrderModal from "@/src/features/admin-modals/NewOrderModal/NewOrderModal";
 import OrderDetailsModal from "@/src/features/admin-modals/OrderDetailsModal/OrderDetailsModal";
@@ -15,31 +15,55 @@ import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import { formatDateForApi } from "@/src/shared/lib/formatters";
 
 
-export default function TicketsPage() {
-    const { query, setQuery, filterTickets } = useTicketSearch();
-    const { sortOption, setSortOption, sortTickets } = useTicketSort();
-    const newOrder = useDisclosure();
-    const orderDetails = useDisclosure<string>();
-    const [ticketToEdit, setTicketToEdit] = useState<Ticket | null>(null);
-    const [chosenDate, setChosenDate] = useState(new Date());
+function mapSortOptionToApi(sortOption: string | "") {
+    switch (sortOption) {
+        case "dateAsc":
+            return { sortBy: "departureTime" as const, sortOrder: "asc" as const }
 
-    const selectedDate = formatDateForApi(chosenDate);
+        case "dateDesc":
+            return { sortBy: "departureTime" as const, sortOrder: "desc" as const }
+
+        case "filterBooked":
+            return { status: "ACTIVE" }
+
+        case "filterPaid":
+            return { status: "CONFIRMED" }
+
+        case "filterCancelled":
+            return { status: "CANCELLED" }
+
+        default:
+            return {}
+    }
+}
+
+export function TicketsPage() {
+    const {query, setQuery} = useTicketSearch()
+    const {sortOption, setSortOption} = useTicketSort()
+    const newOrder = useDisclosure()
+    const orderDetails = useDisclosure<string>()
+    const [ticketToEdit, setTicketToEdit] = useState<Ticket | null>(null)
+    const [chosenDate, setChosenDate] = useState(new Date())
+
+    const sortParams = mapSortOptionToApi(sortOption)
+    const selectedDate = formatDateForApi(chosenDate)
+
     const {
-        data: tickets = [],
+        data: bookingsResponse,
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["admin-bookings", selectedDate],
-        queryFn: () => getAdminTickets(selectedDate),
-    });
+        queryKey: ["admin-bookings", selectedDate, query, sortOption],
+        queryFn: () =>
+            getAdminTickets({
+                date: selectedDate,
+                search: query,
+                ...sortParams,
+            }),
+    })
 
-    const displayedTickets = useMemo(
-        () => sortTickets(filterTickets(tickets)),
-        [tickets, query, sortOption, filterTickets, sortTickets],
-    );
-
-    const selectedTicket = tickets.find((t) => t.id === orderDetails.data) ?? null;
-
+    const tickets = bookingsResponse?.data ?? []
+    const selectedTicket = tickets.find((t) => t.id === orderDetails.data) ?? null
     return (
         <div className={styles.page}>
             <TicketsToolbar
@@ -55,10 +79,10 @@ export default function TicketsPage() {
             {error ? (
                 <div className={styles.message}>Не вдалося завантажити квитки</div>
             ) : isLoading ? (
-                <TicketsTableSkeleton />
+                <TicketsTableSkeleton/>
             ) : (
                 <TicketsTable
-                    tickets={displayedTickets}
+                    tickets={tickets}
                     onDetails={(id) => orderDetails.open(id)}
                 />
             )}
@@ -73,10 +97,11 @@ export default function TicketsPage() {
                     routeInfo={
                         ticketToEdit
                             ? {
+                                bookingId: ticketToEdit.id,
                                 bookingNumber: ticketToEdit.bookingNumber,
                                 passengerName: ticketToEdit.passengerName,
                                 passengerPhone: ticketToEdit.passengerPhone,
-                                route: `${ticketToEdit.routeFrom} - ${ticketToEdit.routeTo}`,
+                                route: ticketToEdit.route,
                                 date: ticketToEdit.departureDate,
                                 departureTime: ticketToEdit.departureTime,
                                 ticketCount: String(ticketToEdit.ticketCount),
@@ -100,5 +125,5 @@ export default function TicketsPage() {
                 />
             )}
         </div>
-    );
+    )
 }

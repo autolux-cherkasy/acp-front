@@ -31,7 +31,7 @@ const STATUS_CONFIG: Record<BookingStatus, StatusConfig> = {
 
   expired: {
     labelKey: "dispatcherArea.tickets.statuses.expired",
-    variant: "danger",
+    variant: "success",
   },
 };
 

@@ -11,9 +11,6 @@ export type TripSearchParams = {
   fromStopId?: string;
   toStopId?: string;
   date?: string;
-  // seats?: number;
-  // page?: number;
-  // limit?: number;
 };
 
 export type TripDate = {

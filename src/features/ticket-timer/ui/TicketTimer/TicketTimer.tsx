@@ -24,28 +24,39 @@ function formatTime(totalSeconds: number): string {
 }
 
 export default function TicketTimer({ initialSeconds }: Props) {
-  const { t } = useI18n();
-  const seconds = useCountdown(initialSeconds);
+    const { t } = useI18n();
+    const seconds = useCountdown(initialSeconds);
 
-  if (seconds === null) {
-    return (
-      <span className={styles.none} aria-label={t("dispatcherArea.tickets.timer.noneAria")}>
+    if (seconds === null || seconds <= 0) {
+        return (
+            <span
+                className={styles.none}
+                aria-label={t("dispatcherArea.tickets.timer.noneAria")}
+            >
         —
       </span>
-    );
-  }
+        );
+    }
 
-  const isUrgent = seconds <= URGENT_THRESHOLD_SECONDS;
+    const isUrgent = seconds <= URGENT_THRESHOLD_SECONDS;
 
-  return (
-    <div className={[styles.cell, isUrgent ? styles.urgentCell : styles.normalCell].join(" ")}>
+    return (
+        <div
+            className={[
+                styles.cell,
+                isUrgent ? styles.urgentCell : styles.normalCell,
+            ].join(" ")}
+        >
       <span
-        className={[styles.timer, isUrgent ? styles.urgent : styles.normal].join(" ")}
-        role="timer"
-        aria-live="off"
+          className={[
+              styles.timer,
+              isUrgent ? styles.urgent : styles.normal,
+          ].join(" ")}
+          role="timer"
+          aria-live="off"
       >
         {formatTime(seconds)}
       </span>
-    </div>
-  );
+        </div>
+    );
 }

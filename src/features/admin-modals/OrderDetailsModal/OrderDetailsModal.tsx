@@ -47,19 +47,33 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
   }, [onClose]);
 
   const bookingNumberStr = ticket.bookingNumber;
-  const route = `${ticket.routeFrom} - ${ticket.routeTo}`;
   const statusLabel = t(`dispatcherArea.tickets.statuses.${ticket.status}`);
   const queryClient = useQueryClient();
 
-  async function handleStatusChange(status: "ACTIVE" | "COMPLETED" | "CANCELLED") {
-    await updateAdminBooking(ticket.id, { status });
+  async function handleStatusChange(status: "ACTIVE" | "CONFIRMED" | "CANCELLED") {
+    await updateAdminBooking(ticket.id, {
+      status,
+      tickets: [
+        {
+          ticketId: "base",
+          ticketsCount: ticket.ticketCount,
+          unitPrice: ticket.totalPrice / ticket.ticketCount,
+        },
+      ],
+      customerData: {
+        name: ticket.passengerName,
+        phone: ticket.passengerPhone,
+      },
+      totalPrice: ticket.totalPrice,
+    })
 
     await queryClient.invalidateQueries({
       queryKey: ["admin-bookings"],
-    });
+    })
 
-    onClose();
+    onClose()
   }
+  console.log(ticket)
 
   return (
       <>
@@ -83,7 +97,7 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
               {ticket.passengerPhone}
             </ModalRow>
 
-            <ModalRow icon={<Icon src="/icons/Footer/map-point.svg" />}>{route}</ModalRow>
+            <ModalRow icon={<Icon src="/icons/Footer/map-point.svg" />}>{ticket.routeFrom} - {ticket.routeTo}</ModalRow>
             <ModalRow icon={<Icon src="/icons/calendar.svg" />}>{ticket.departureDate}</ModalRow>
             <ModalRow icon={<Icon src="/icons/Footer/clock.svg" />}>{ticket.departureTime}</ModalRow>
 
@@ -118,7 +132,7 @@ export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
                   text={t("dispatcherArea.tickets.actions.buy")}
                   variant="success"
                   size="full"
-                  onClick={() => handleStatusChange("COMPLETED")}
+                  onClick={() => handleStatusChange("CONFIRMED")}
               />
 
               <Button

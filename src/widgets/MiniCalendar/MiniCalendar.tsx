@@ -74,6 +74,7 @@ export default function MiniCalendar({
   const normalizedMinDate = useMemo(() => (minDate ? startOfDay(minDate) : null), [minDate]);
   const normalizedMaxDate = useMemo(() => (maxDate ? startOfDay(maxDate) : null), [maxDate]);
   const availableDateSet = useMemo(() => new Set(availableDates ?? []), [availableDates]);
+  const hasAvailableDates = availableDates !== undefined;
   const [cursor, setCursor] = useState<Date>(() => value ?? normalizedMinDate ?? new Date());
 
   const monthTitle = useMemo(() => locMonths[cursor.getMonth()], [cursor, locMonths]);
@@ -177,36 +178,47 @@ export default function MiniCalendar({
       <div className={styles.grid}>
         {days.map((cell, idx) => {
           const isWeekend = idx % 7 === 5 || idx % 7 === 6;
+          const dateKey = toDateKey(cell.date);
+
           const isDisabled =
-            (normalizedMinDate != null && startOfDay(cell.date) < normalizedMinDate) ||
-            (normalizedMaxDate != null && startOfDay(cell.date) > normalizedMaxDate);
-          const isSelected = !isDisabled && selected ? isSameDay(cell.date, selected) : false;
-          const isAvailable = !isDisabled && availableDateSet.has(toDateKey(cell.date));
+              (normalizedMinDate != null &&
+                  startOfDay(cell.date) < normalizedMinDate) ||
+              (normalizedMaxDate != null &&
+                  startOfDay(cell.date) > normalizedMaxDate) ||
+              (hasAvailableDates && !availableDateSet.has(dateKey));
+
+          const isSelected =
+              !isDisabled && selected
+                  ? isSameDay(cell.date, selected)
+                  : false;
+
+          const isAvailable =
+              !isDisabled &&
+              hasAvailableDates &&
+              availableDateSet.has(dateKey);
 
           return (
-            <button
-              key={idx}
-              type="button"
-              className={[
-                styles.cell,
-                !cell.inCurrentMonth ? styles.cellMuted : "",
-                isWeekend ? styles.cellWeekend : "",
-                isDisabled ? styles.cellDisabled : "",
-                isAvailable ? styles.cellAvailable : "",
-                isSelected ? styles.selected : "",
-              ].join(" ")}
-              onClick={() => {
-                if (isDisabled) {
-                  return;
-                }
+              <button
+                  key={dateKey}
+                  type="button"
+                  className={[
+                    styles.cell,
+                    !cell.inCurrentMonth ? styles.cellMuted : "",
+                    isWeekend ? styles.cellWeekend : "",
+                    isDisabled ? styles.cellDisabled : "",
+                    isAvailable ? styles.cellAvailable : "",
+                    isSelected ? styles.selected : "",
+                  ].join(" ")}
+                  onClick={() => {
+                    if (isDisabled) return;
 
-                onChange(cell.date);
-                onClose();
-              }}
-              disabled={isDisabled}
-            >
-              {cell.label}
-            </button>
+                    onChange(cell.date);
+                    onClose();
+                  }}
+                  disabled={isDisabled}
+              >
+                {cell.label}
+              </button>
           );
         })}
       </div>

@@ -1,4 +1,4 @@
-import TicketsPage from "@/src/pages-layer/dashboard/ui/DashboardTicketsPage/TicketsPage";
+import {TicketsPage} from "@/src/pages-layer/dashboard/ui/DashboardTicketsPage/TicketsPage";
 
 type DispatcherRoutePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
