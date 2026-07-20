@@ -9,6 +9,7 @@ import ModalRow from "@/src/shared/ui/ModalRow/ModalRow";
 import styles from "./BlockedUserModal.module.css";
 import Loader from "@/src/shared/ui/Loader/Loader";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { useServerToast } from "@/src/shared/lib/toast";
 import {
   useUserWithUnpaidBookingsQuery,
   useBlockUserMutation,
@@ -38,15 +39,31 @@ function BlockedUserModalBody({ userId, action, isBlocked }: Omit<Props, "onClos
   const { data: userData, isPending } = useUserWithUnpaidBookingsQuery(userId);
   const blockMutation = useBlockUserMutation();
   const requestClose = useModalClose();
+  const { notifySuccess, notifyError } = useServerToast();
 
   function handleAction() {
     if (userId === null) return;
+    const nextBlock = !isBlocked;
     blockMutation.mutate(
-      { userId, block: !isBlocked },
+      { userId, block: nextBlock },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
+          notifySuccess(
+            result,
+            nextBlock
+              ? t("common.toast.blockUserSuccess")
+              : t("common.toast.unblockUserSuccess"),
+          );
           action?.();
           requestClose();
+        },
+        onError: (error) => {
+          notifyError(
+            error,
+            nextBlock
+              ? t("common.toast.blockUserError")
+              : t("common.toast.unblockUserError"),
+          );
         },
       },
     );
