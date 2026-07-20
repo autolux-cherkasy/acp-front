@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import { createOptimisticMutationHandlers } from "./optimisticMutation";
+import { createOptimisticMutationHandlers } from "@/src/shared/lib/optimisticMutation";
 import {
   addBus,
   BusResponse,

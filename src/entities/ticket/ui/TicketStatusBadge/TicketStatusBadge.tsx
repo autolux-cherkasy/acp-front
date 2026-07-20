@@ -21,6 +21,10 @@ const STATUS_CONFIG: Record<TicketStatus, StatusConfig> = {
     labelKey: "dispatcherArea.tickets.statuses.cancelled",
     variant: "danger",
   },
+  expired: {
+    labelKey: "dispatcherArea.tickets.statuses.expired",
+    variant: "neutral",
+  },
 };
 
 type Props = {

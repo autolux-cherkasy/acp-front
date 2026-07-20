@@ -72,6 +72,7 @@ export type UserWithUnpaidBookingsResponse = {
   name: string;
   phone: string | null;
   email: string;
+  isBlocked: boolean;
   unpaidBookings: UnpaidBookingItem[];
 };
 

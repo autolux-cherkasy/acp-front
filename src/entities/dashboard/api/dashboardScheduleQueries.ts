@@ -8,7 +8,7 @@ import {
   updateRoute,
   UpdateRouteBody,
 } from "./dashboardRoutesApi";
-import { createOptimisticMutationHandlers } from "./optimisticMutation";
+import { createOptimisticMutationHandlers } from "@/src/shared/lib/optimisticMutation";
 import { ADMIN_SCHEDULE_KEY } from "./dashboardApiKeys";
 export { ADMIN_SCHEDULE_KEY };
 
