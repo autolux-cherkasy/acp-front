@@ -1,8 +1,10 @@
+import type { Booking, BookingStatus } from "@/src/entities/booking";
 import type { TicketStatus } from "@/src/entities/ticket";
+import type { Locale } from "@/src/shared/i18n/config";
+import { formatCurrency, formatPhone } from "@/src/shared/lib/formatters";
 
 export type ArchivedTicketStop = {
-  city: string;
-  station: string;
+  name: string;
   time: string;
 };
 
@@ -19,65 +21,61 @@ export type ArchivedTicket = {
   routeTo: ArchivedTicketStop;
 };
 
-export const ARCHIVED_TICKETS: ArchivedTicket[] = [
-  {
-    code: "№000001",
-    date: "3 березня 2026",
-    metaDate: "03.03.2026",
-    passengerName: "Гордієнко Інна",
-    passengerPhone: "+38067 295 32 12",
-    seatCount: 1,
-    price: "500 ₴",
-    status: "cancelled",
+const STATUS_MAP: Record<BookingStatus, TicketStatus> = {
+  ACTIVE: "booked",
+  CONFIRMED: "booked",
+  BUYOUT: "paid",
+  CANCELLED: "cancelled",
+  EXPIRED: "expired",
+};
+
+function formatTime(value: string, locale: Locale): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "--:--";
+  return new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(parsed);
+}
+
+function formatLongDate(value: string, locale: Locale): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(parsed);
+}
+
+function formatMetaDate(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  const day = String(parsed.getDate()).padStart(2, "0");
+  const month = String(parsed.getMonth() + 1).padStart(2, "0");
+  return `${day}.${month}.${parsed.getFullYear()}`;
+}
+
+export function toArchivedTicket(booking: Booking, locale: Locale): ArchivedTicket {
+  const { departureTime, arrivalTime, boardingStop, alightingStop } = booking.tripDetails;
+
+  return {
+    code: booking.referenceCode,
+    date: formatLongDate(departureTime, locale),
+    metaDate: formatMetaDate(departureTime),
+    passengerName: booking.passengerName,
+    passengerPhone: formatPhone(booking.passengerPhone),
+    seatCount: booking.seatsCount,
+    price: formatCurrency(booking.totalPrice),
+    status: STATUS_MAP[booking.status],
     routeFrom: {
-      city: "м.Черкаси",
-      station: "(пл.Дружби Народів)",
-      time: "10:30",
+      name: boardingStop.name,
+      time: formatTime(departureTime, locale),
     },
     routeTo: {
-      city: "м.Київ",
-      station: "(ст.м.Харківська)",
-      time: "13:30",
+      name: alightingStop.name,
+      time: formatTime(arrivalTime, locale),
     },
-  },
-  {
-    code: "№000002",
-    date: "12 лютого 2026",
-    metaDate: "12.02.2026",
-    passengerName: "Гордієнко Інна",
-    passengerPhone: "+38067 295 32 12",
-    seatCount: 1,
-    price: "500 ₴",
-    status: "booked",
-    routeFrom: {
-      city: "м.Черкаси",
-      station: "(пл.Дружби Народів)",
-      time: "10:30",
-    },
-    routeTo: {
-      city: "м.Київ",
-      station: "(ст.м.Харківська)",
-      time: "13:30",
-    },
-  },
-  {
-    code: "№000003",
-    date: "25 січня 2026",
-    metaDate: "25.01.2026",
-    passengerName: "Гордієнко Інна",
-    passengerPhone: "+38067 295 32 12",
-    seatCount: 1,
-    price: "500 ₴",
-    status: "paid",
-    routeFrom: {
-      city: "м.Черкаси",
-      station: "(пл.Дружби Народів)",
-      time: "10:30",
-    },
-    routeTo: {
-      city: "м.Київ",
-      station: "(ст.м.Харківська)",
-      time: "13:30",
-    },
-  },
-];
+  };
+}

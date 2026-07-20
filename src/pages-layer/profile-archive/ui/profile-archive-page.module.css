@@ -41,6 +41,33 @@
   gap: 0;
 }
 
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: var(--light-bg, var(--color-surface-soft));
+  color: var(--color-brand);
+  font-size: 16px;
+}
+
+.noticeError {
+  color: #ff3d00;
+}
+
+.noticeAction {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
 .archiveBlock {
   width: 100%;
   margin-left: 0;
@@ -250,12 +277,6 @@
   color: var(--color-text-strong);
 }
 
-.stationName {
-  font-size: 16px;
-  line-height: 1.44;
-  color: var(--color-text-strong);
-}
-
 .passengerRow {
   display: flex;
   align-items: flex-end;
@@ -345,7 +366,6 @@
     font-size: 16px;
   }
 
-  .stationName,
   .passengerName,
   .passengerPhone {
     font-size: 14px;
@@ -423,10 +443,6 @@
 
   .stationCity {
     font-size: 14px;
-  }
-
-  .stationName {
-    font-size: 12px;
   }
 
   .passengerRow {
