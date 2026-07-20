@@ -34,8 +34,20 @@ export default function NoShowReport({ rows = [], onBlockUser, isLoading }: Prop
   const [blocked, setBlocked] = useState<Set<number>>(new Set());
   const blockedUserModal = useDisclosure<number>();
 
+  function setBlockedState(id: number, isBlockedNow: boolean) {
+    setBlocked((prev) => {
+      const next = new Set(prev);
+      if (isBlockedNow) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+      return next;
+    });
+  }
+
   function block(id: number) {
-    setBlocked((prev) => new Set(prev).add(id));
+    setBlockedState(id, true);
     onBlockUser?.(id);
   }
 
@@ -83,56 +95,65 @@ export default function NoShowReport({ rows = [], onBlockUser, isLoading }: Prop
             </DashboardThead>
             <tbody>
               {rows.map((row, index) => (
-                <DashboardTr key={row.id} className={styles.row}>
-                  <td className={styles.tdNum}>{index + 1}</td>
-                  <td className={`${styles.td} ${styles.tdLeft} ${styles.tdName}`}>{row.name}</td>
-                  <td className={`${styles.td} ${styles.tdLeft} ${styles.tdPhone}`}>{row.phone}</td>
-                  <td className={styles.td}>{row.ratio}</td>
-                  <td className={styles.tdAction}>
-                    <div className={styles.actionGroup}>
-                      {row.isBlocked || blocked.has(row.id) ? (
-                        <StatusBadge
-                          label={t("dispatcherArea.analytics.noShowReport.blocked")}
-                          variant="softDanger"
-                          className={styles.blockedBadge}
-                          withDot={false}
-                        />
-                      ) : (
+                <>
+                  <DashboardTr key={row.id} className={styles.row}>
+                    <td className={styles.tdNum}>{index + 1}</td>
+                    <td className={`${styles.td} ${styles.tdLeft} ${styles.tdName}`}>
+                      {row.name || t("common.notSpecified")}
+                    </td>
+                    <td className={`${styles.td} ${styles.tdLeft} ${styles.tdPhone}`}>
+                      {row.phone || t("common.notSpecified")}
+                    </td>
+                    <td className={styles.td}>{row.ratio}</td>
+                    <td className={styles.tdAction}>
+                      <div className={styles.actionGroup}>
+                        {row.isBlocked || blocked.has(row.id) ? (
+                          <StatusBadge
+                            label={t("dispatcherArea.analytics.noShowReport.blocked")}
+                            variant="softDanger"
+                            className={styles.blockedBadge}
+                            withDot={false}
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            className={styles.blockBtn}
+                            onClick={() => block(row.id)}
+                          >
+                            {t("dispatcherArea.analytics.noShowReport.blockBtn")}
+                          </button>
+                        )}
                         <button
                           type="button"
-                          className={styles.blockBtn}
-                          onClick={() => block(row.id)}
+                          className={styles.moreBtn}
+                          aria-label={t("dispatcherArea.analytics.noShowReport.moreActions")}
+                          onClick={() => {
+                            blockedUserModal.open(row.id);
+                          }}
                         >
-                          {t("dispatcherArea.analytics.noShowReport.blockBtn")}
+                          <span className={styles.moreBtnIcon} aria-hidden="true" />
                         </button>
-                      )}
-                      <button
-                        type="button"
-                        className={styles.moreBtn}
-                        aria-label={t("dispatcherArea.analytics.noShowReport.moreActions")}
-                        onClick={() => {
-                          blockedUserModal.open(row.id);
-                        }}
-                      >
-                        <span className={styles.moreBtnIcon} aria-hidden="true" />
-                      </button>
-                    </div>
-                  </td>
-                </DashboardTr>
+                      </div>
+                    </td>
+                  </DashboardTr>
+                  {blockedUserModal.isOpen && (
+                    <BlockedUserModal
+                      userId={blockedUserModal.data}
+                      onClose={blockedUserModal.close}
+                      action={() => {
+                        if (blockedUserModal.data !== null) {
+                          setBlockedState(blockedUserModal.data, !row.isBlocked);
+                        }
+                        blockedUserModal.close();
+                      }}
+                      isBlocked={row.isBlocked}
+                    />
+                  )}
+                </>
               ))}
             </tbody>
           </DashboardTable>
         </div>
-      )}
-      {blockedUserModal.isOpen && (
-        <BlockedUserModal
-          userId={blockedUserModal.data}
-          onClose={blockedUserModal.close}
-          onUnblock={() => {
-            if (blockedUserModal.data !== null) block(blockedUserModal.data);
-            blockedUserModal.close();
-          }}
-        />
       )}
     </DashboardCard>
   );

@@ -798,7 +798,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1259px) {
   .card {
     --booking-btn-width: 100%;
 

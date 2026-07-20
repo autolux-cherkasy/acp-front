@@ -91,35 +91,8 @@
   }
 }
 
-/* адаптив: коли вже не влазить 1240 */
-@media (max-width: 1240px) {
-  .formBlock {
-    height: auto;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .imageWrap {
-    width: 100%;
-    max-width: 100%;
-    height: 380px;
-    border-radius: 0;
-  }
-
-  .formFallback {
-    max-width: 100%;
-    height: 532px;
-  }
-}
-
-@media (max-width: 980px) {
-  .imageWrap {
-    height: 320px;
-  }
-}
-
-/* мобільний макет з накладанням */
-@media (max-width: 768px) {
+/* нижче 1260 — мобільний макет з накладанням (фото на фоні, форма поверх) */
+@media (max-width: 1259px) {
   .section {
     width: 100vw;
     padding-top: 0;
@@ -141,7 +114,9 @@
     position: absolute;
     inset: 0;
     width: 100%;
+    max-width: none;
     height: 100%;
+    border-radius: 0;
   }
 
   /* перший елемент у formBlock — BookingForm */
