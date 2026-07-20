@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import { usePostAuthNavigation } from "@/src/features/auth";
@@ -34,6 +34,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
   const router = useRouter();
   const { t } = useI18n();
   const resolveHref = useLocalizedHref();
+  const searchParams = useSearchParams();
 
   const { register, handleSubmit } = useForm<LoginFormData>({
     defaultValues: { identifier: "", password: "" },
@@ -41,6 +42,26 @@ export default function LoginPage({ onClose }: LoginPageProps) {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const loginMutation = useLoginMutation();
   const { notifyError, notifySuccess } = useServerToast();
+
+  useEffect(() => {
+    const oauthError = searchParams.get("error");
+    if (!oauthError) return;
+
+    notifyError(
+      null,
+      oauthError === "account_blocked"
+        ? t("common.toast.userBlocked")
+        : t("common.toast.loginError"),
+    );
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete("error");
+    router.replace(
+      `${window.location.pathname}${nextParams.toString() ? `?${nextParams}` : ""}`,
+      { scroll: false },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCloseAuthFlow = () => {
     if (onClose) {

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { useServerToast } from "@/src/shared/lib/toast";
 import DashboardPageHeader from "@/src/widgets/AdminComp/ui/Header/DashboardPageHeader";
 import NoShowReport from "@/src/widgets/AdminComp/ui/NoShowReport/NoShowReport";
 import PopularRoutesCard from "@/src/widgets/AdminComp/ui/PopularRoutes/PopularRoutesCard";
@@ -29,6 +30,7 @@ export default function AnalyticsPage() {
 
   const { data: summary, isLoading } = useAnalyticsSummaryQuery(date);
   const blockMutation = useBlockUserMutation();
+  const { notifySuccess, notifyError } = useServerToast();
 
   useEffect(() => {
     router.prefetch(`${pathname}/all`);
@@ -71,7 +73,16 @@ export default function AnalyticsPage() {
           <NoShowReport
             rows={noShowRows}
             isLoading={isLoading}
-            onBlockUser={(id) => blockMutation.mutate({ userId: id, block: true })}
+            onBlockUser={(id) =>
+              blockMutation.mutate(
+                { userId: id, block: true },
+                {
+                  onSuccess: (result) =>
+                    notifySuccess(result, t("common.toast.blockUserSuccess")),
+                  onError: (error) => notifyError(error, t("common.toast.blockUserError")),
+                },
+              )
+            }
           />
         </div>
         <div className={styles.financeArea}>
