@@ -1,10 +1,12 @@
 "use client";
 
-import Image from "next/image";
-
-import { useBookingHistoryQuery } from "@/src/entities/booking";
+import {
+  BookingSummaryCard,
+  useBookingHistoryQuery,
+  useCancelHistoryBookingMutation,
+} from "@/src/entities/booking";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import Button from "@/src/shared/ui/Button/Button";
+import { useServerToast } from "@/src/shared/lib/toast";
 import ProfileWrapper from "../../profile/ui/ProfileWrapper";
 import { toArchivedTicket } from "../model/archive-tickets";
 import styles from "./profile-archive-page.module.css";
@@ -12,8 +14,18 @@ import styles from "./profile-archive-page.module.css";
 export default function ProfileArchivePage() {
   const { t, locale } = useI18n();
   const historyQuery = useBookingHistoryQuery();
+  const cancelMutation = useCancelHistoryBookingMutation();
+  const { notifyError } = useServerToast();
 
   const tickets = (historyQuery.data ?? []).map((booking) => toArchivedTicket(booking, locale));
+
+  const handleCancel = async (id: string) => {
+    try {
+      await cancelMutation.mutateAsync(id);
+    } catch (error) {
+      notifyError(error, t("profile.tickets.toast.cancelError"));
+    }
+  };
 
   return (
     <ProfileWrapper mode="archive" className={styles.wrapperContent}>
@@ -50,144 +62,32 @@ export default function ProfileArchivePage() {
               ticket.status === "paid" ||
               ticket.status === "cancelled" ||
               ticket.status === "expired";
-            const statusLabel = t(`profile.archive.status.${ticket.status}`);
-            const badgeClassName = isUnpaid
-              ? styles.ticketBadgeWarning
-              : ticket.status === "paid"
-                ? styles.ticketBadgeSuccess
-                : styles.ticketBadgeMuted;
+            const statusVariant = isUnpaid ? "warning" : ticket.status === "paid" ? "success" : "muted";
 
             return (
-              <section
+              <BookingSummaryCard
                 key={ticket.code}
-                className={styles.archiveBlock}
-                aria-label={ticket.code}
-              >
-                <div className={styles.dateRow}>
-                  <span className={styles.dateLabel}>{ticket.date}</span>
-                </div>
-
-                <div className={styles.ticketRow}>
-                  <div className={styles.ticketCardRoute}>
-                    <div className={styles.ticketTitleRow}>
-                      <h2 className={styles.ticketTitle}>
-                        {t("profile.archive.bookingTitlePrefix")} {ticket.code}{" "}
-                        - {ticket.price}
-                      </h2>
-                      <div className={styles.badgeRow}>
-                        <span
-                          className={`${styles.ticketBadge} ${badgeClassName}`.trim()}
-                        >
-                          {statusLabel}
-                        </span>
-                        <span className={styles.ticketMetaDate}>
-                          {ticket.metaDate}
-                        </span>
-                      </div>
-                    </div>
-
-                    {isUnpaid ? (
-                      <p className={styles.unpaidNotice}>
-                        <span className={styles.unpaidNoticeLead}>
-                          {t("profile.archive.unpaidNoticeLead")}
-                        </span>{" "}
-                        <span>{t("profile.archive.unpaidNoticeText")}</span>
-                      </p>
-                    ) : null}
-
-                    <div className={styles.routeBody}>
-                      <div className={styles.timeColumn}>
-                        <span>{ticket.routeFrom.time}</span>
-                        <span>{ticket.routeTo.time}</span>
-                      </div>
-
-                      <div className={styles.routeLine} aria-hidden="true">
-                        <span className={styles.routeCircle} />
-                        <span className={styles.routeDots} />
-                        <span className={styles.routeCircleFilled} />
-                      </div>
-
-                      <div className={styles.routeStations}>
-                        <div className={styles.stationBlock}>
-                          <div className={styles.stationCity}>
-                            {ticket.routeFrom.name}
-                          </div>
-                        </div>
-                        <div className={styles.stationBlock}>
-                          <div className={styles.stationCity}>
-                            {ticket.routeTo.name}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.ticketCardPrice}>
-                    <div className={styles.passengerRow}>
-                      <div className={styles.passengerItem}>
-                        <Image
-                          src="/icons/account/archive/clarity_avatar-line.svg"
-                          alt=""
-                          width={24}
-                          height={24}
-                          className={styles.passengerIcon}
-                          aria-hidden="true"
-                        />
-                        <span className={styles.passengerName}>
-                          {ticket.passengerName}
-                        </span>
-                      </div>
-
-                      <div className={styles.passengerItem}>
-                        <Image
-                          src="/icons/account/archive/phone.svg"
-                          alt=""
-                          width={24}
-                          height={24}
-                          className={styles.passengerIcon}
-                          aria-hidden="true"
-                        />
-                        <span className={styles.passengerPhone}>
-                          {ticket.passengerPhone}
-                        </span>
-                      </div>
-
-                      <div className={styles.passengerItem}>
-                        <Image
-                          src="/icons/account/archive/ticket-outline.svg"
-                          alt=""
-                          width={24}
-                          height={24}
-                          className={styles.passengerIcon}
-                          aria-hidden="true"
-                        />
-                        <span className={styles.passengerSeat}>
-                          {ticket.seatCount}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className={styles.priceValue}>{ticket.price}</div>
-
-                    <div className={styles.actions}>
-                      <Button
-                        text={t("profile.archive.pay")}
-                        variant="primary"
-                        size="full"
-                        disabled={isActionDisabled}
-                        onClick={() => {}}
-                      />
-                      <Button
-                        text={t("profile.archive.cancel")}
-                        variant="secondary"
-                        size="full"
-                        disabled={isActionDisabled}
-                        onClick={() => {}}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
+                referenceCode={ticket.code}
+                price={ticket.price}
+                dateLabel={ticket.date}
+                metaDate={ticket.metaDate}
+                statusLabel={t(`profile.archive.status.${ticket.status}`)}
+                statusVariant={statusVariant}
+                showUnpaidNotice={isUnpaid}
+                unpaidNoticeLead={t("profile.archive.unpaidNoticeLead")}
+                unpaidNoticeText={t("profile.archive.unpaidNoticeText")}
+                routeFrom={ticket.routeFrom}
+                routeTo={ticket.routeTo}
+                passengerName={ticket.passengerName}
+                passengerPhone={ticket.passengerPhone}
+                seatCount={ticket.seatCount}
+                bookingTitlePrefix={t("profile.archive.bookingTitlePrefix")}
+                payLabel={t("profile.archive.pay")}
+                cancelLabel={t("profile.archive.cancel")}
+                onCancel={() => void handleCancel(ticket.id)}
+                isCancelling={cancelMutation.isPending && cancelMutation.variables === ticket.id}
+                cancelDisabled={isActionDisabled}
+              />
             );
           })}
         </div>

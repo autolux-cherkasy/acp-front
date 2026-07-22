@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { createOptimisticMutationHandlers } from "@/src/shared/lib/optimisticMutation";
-import { cancelBooking, getBookingHistory } from "./bookings";
+import { cancelBooking, getBookingHistory, reserveBooking } from "./bookings";
 import { MY_ACTIVE_BOOKINGS_KEY, MY_BOOKING_HISTORY_KEY } from "./bookingApiKeys";
-import type { Booking } from "../model/types";
+import type { Booking, CreateBookingPayload } from "../model/types";
 
 export function useBookingHistoryQuery() {
   return useQuery<Booking[]>({
@@ -28,5 +28,45 @@ export function useCancelBookingMutation() {
       successMessage: t("profile.tickets.toast.cancelSuccess"),
       errorMessage: t("profile.tickets.toast.cancelError"),
     }),
+  });
+}
+
+// Same cancel action as above, but targets the booking-history cache that
+// ProfileArchivePage actually reads from (useBookingHistoryQuery).
+export function useCancelHistoryBookingMutation() {
+  const queryClient = useQueryClient();
+  const { t } = useI18n();
+
+  return useMutation({
+    mutationFn: (id: string) => cancelBooking(id),
+    ...createOptimisticMutationHandlers<string, Booking[]>({
+      queryClient,
+      queryKey: [MY_BOOKING_HISTORY_KEY],
+      updateCache: (old, id) => old?.filter((booking) => booking.id !== id),
+      successMessage: t("profile.tickets.toast.cancelSuccess"),
+      errorMessage: t("profile.tickets.toast.cancelError"),
+    }),
+  });
+}
+
+export function useReserveBookingMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ payload, guestToken }: { payload: CreateBookingPayload; guestToken?: string }) =>
+      reserveBooking(payload, guestToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [MY_ACTIVE_BOOKINGS_KEY] });
+      queryClient.invalidateQueries({ queryKey: [MY_BOOKING_HISTORY_KEY] });
+    },
+  });
+}
+
+// Plain cancel mutation (no cache coupling) for the ticket-booking page's
+// own post-reserve confirmation card, which isn't backed by a cached list.
+export function useCancelReservationMutation() {
+  return useMutation({
+    mutationFn: ({ id, guestToken }: { id: string; guestToken?: string }) =>
+      cancelBooking(id, guestToken),
   });
 }

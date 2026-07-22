@@ -1,0 +1,416 @@
+.archiveBlock {
+  width: 100%;
+  margin-left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  min-height: 343px;
+}
+
+.dateRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0 8px;
+  margin: 0 0 9px;
+}
+
+.dateLabel {
+  margin: 0;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 132%;
+  color: var(--color-brand);
+}
+
+.ticketRow {
+  display: grid;
+  grid-template-columns: minmax(0, 761px) minmax(0, 472px);
+  gap: 0;
+  align-items: stretch;
+  width: min(100%, 1232px);
+  justify-content: center;
+}
+
+.ticketCardRoute,
+.ticketCardPrice {
+  box-sizing: border-box;
+  min-height: 262px;
+  padding: 20px 40px;
+  border: 1px dashed var(--color-border-muted);
+  background: var(--light-bg, var(--color-surface-soft));
+  border-radius: 12px;
+}
+
+.ticketCardRoute {
+  width: 100%;
+  margin-right: -1px;
+}
+
+.badgeRow {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+}
+
+.ticketCardPrice {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.ticketTitleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  min-height: 28px;
+}
+
+.ticketTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.32;
+  color: var(--color-brand);
+}
+
+.ticketBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(123, 152, 163, 0.1);
+  color: var(--color-brand);
+  font-size: 14px;
+}
+
+.ticketBadgeSuccess {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.ticketBadgeMuted {
+  background: rgba(123, 152, 163, 0.1);
+  color: var(--color-brand);
+}
+
+.ticketBadgeWarning {
+  background: #ff3d001a;
+  color: #ff3d00;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 144%;
+  vertical-align: middle;
+}
+
+.ticketMetaDate {
+  font-size: 14px;
+  color: var(--color-border-muted);
+}
+
+.unpaidNotice {
+  margin: 12px 0 0;
+  font-family: var(--font-roboto), sans-serif;
+  font-size: 12px;
+  line-height: 150%;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-brand);
+}
+
+.unpaidNoticeLead {
+  font-weight: 500;
+}
+
+.routeBody {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 41px 24px minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+  max-width: 681px;
+}
+
+.timeColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  min-height: 170px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-brand);
+}
+
+.routeLine {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+  min-height: 168px;
+}
+
+.routeCircle,
+.routeCircleFilled {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-accent);
+  background: var(--color-surface-soft);
+  flex: 0 0 auto;
+}
+
+.routeCircleFilled {
+  background: var(--color-accent);
+}
+
+.routeDots {
+  width: 8px;
+  flex: 1 1 auto;
+  min-height: 120px;
+  background: radial-gradient(circle, var(--color-surface-accent) 0 4px, transparent 4px 100%);
+  background-size: 8px 14px;
+  background-repeat: repeat-y;
+  background-position: center;
+}
+
+.routeStations {
+  display: grid;
+  align-content: space-between;
+  min-height: 170px;
+}
+
+.stationBlock {
+  display: grid;
+  gap: 2px;
+  padding: 0 8px;
+}
+
+.stationCity {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.32;
+  color: var(--color-text-strong);
+}
+
+.passengerRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  min-height: 24px;
+}
+
+.passengerItem {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.passengerIcon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+}
+
+.passengerName,
+.passengerPhone,
+.passengerSeat {
+  font-size: 16px;
+  line-height: 1.44;
+  color: var(--color-brand);
+}
+
+.priceValue {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.24;
+  color: var(--color-text-strong);
+}
+
+.actions {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+@media (max-width: 1024px) {
+  .archiveBlock {
+    width: 100%;
+    margin-left: 0;
+    padding: 24px 0;
+    min-height: auto;
+  }
+
+  .ticketRow {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .ticketCardRoute {
+    margin-right: 0;
+    margin-bottom: -1px;
+  }
+
+  .ticketCardPrice {
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .routeBody {
+    width: 100%;
+    grid-template-columns: 32px 20px minmax(0, 1fr);
+  }
+
+  .timeColumn {
+    font-size: 14px;
+  }
+
+  .stationCity {
+    font-size: 16px;
+  }
+
+  .passengerName,
+  .passengerPhone {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .archiveBlock {
+    gap: 6px;
+    padding: 16px 0;
+  }
+
+  .dateLabel {
+    font-size: 16px;
+  }
+
+  .ticketCardRoute,
+  .ticketCardPrice {
+    padding: 16px 20px;
+  }
+
+  .ticketTitleRow {
+    gap: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ticketTitle {
+    font-size: 16px;
+  }
+
+  .ticketBadge {
+    font-size: 12px;
+    padding: 2px 6px;
+    min-height: 24px;
+  }
+
+  .ticketMetaDate {
+    font-size: 12px;
+  }
+
+  .routeBody {
+    margin-top: 16px;
+    grid-template-columns: 28px 16px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .timeColumn {
+    font-size: 12px;
+  }
+
+  .routeCircle,
+  .routeCircleFilled {
+    width: 14px;
+    height: 14px;
+  }
+
+  .routeDots {
+    width: 6px;
+    background-size: 6px 12px;
+    min-height: 100px;
+  }
+
+  .stationCity {
+    font-size: 14px;
+  }
+
+  .passengerRow {
+    gap: 6px 12px;
+  }
+
+  .passengerItem {
+    gap: 6px;
+  }
+
+  .passengerIcon {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+  }
+
+  .passengerName,
+  .passengerPhone,
+  .passengerSeat {
+    font-size: 12px;
+  }
+
+  .priceValue {
+    font-size: 20px;
+  }
+
+  .actions {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .ticketCardRoute,
+  .ticketCardPrice {
+    padding: 12px 16px;
+  }
+
+  .routeBody {
+    grid-template-columns: 24px 12px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .routeCircle,
+  .routeCircleFilled {
+    width: 12px;
+    height: 12px;
+  }
+
+  .routeDots {
+    width: 4px;
+    background-size: 4px 10px;
+    min-height: 80px;
+  }
+
+  .passengerRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .passengerIcon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+  }
+}

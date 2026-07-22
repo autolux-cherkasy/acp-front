@@ -5,3 +5,4 @@ export const MY_ACTIVE_BOOKINGS_KEY = "my_active_bookings";
 // API paths
 export const BOOKINGS_URL = "/bookings";
 export const MY_HISTORY_URL = `${BOOKINGS_URL}/my-history`;
+export const RESERVE_URL = `${BOOKINGS_URL}/reserve`;
