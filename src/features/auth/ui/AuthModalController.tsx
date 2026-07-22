@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 
 import {
+  ACCOUNT_BLOCKED_ERROR_PARAM,
+  AUTH_ERROR_QUERY_PARAM,
   closeAuthModal,
   getAuthModalState,
   type AuthView,
@@ -62,9 +64,11 @@ export default function AuthModalController() {
   const router = useRouter();
   const resolveHref = useLocalizedHref();
   const searchParams = useSearchParams();
+  const isAccountBlocked =
+    searchParams.get(AUTH_ERROR_QUERY_PARAM) === ACCOUNT_BLOCKED_ERROR_PARAM;
   const authState = useMemo(
-    () => getAuthModalState(searchParams),
-    [searchParams],
+    () => (isAccountBlocked ? null : getAuthModalState(searchParams)),
+    [isAccountBlocked, searchParams],
   );
 
   const handleClose = useCallback(() => {

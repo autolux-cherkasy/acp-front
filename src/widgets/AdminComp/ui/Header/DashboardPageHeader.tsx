@@ -43,21 +43,18 @@ export default function DashboardPageHeader({
       <div className={styles.rightCont}>
         {action && (
           <div className={styles.buttonWrapper}>
-            <Button
-              text={action.text}
-              onClick={action.onClick}
-              variant="secondary"
-              size="md"
-            />
+            <Button text={action.text} onClick={action.onClick} variant="secondary" size="md" />
           </div>
         )}
         <div className={styles.dateContainer}>
           <DashboardDateText chosenDate={chosenDate} />
-          <MiniCalendarTrigger
-            chosenDate={chosenDate}
-            setChosenDate={setChosenDate}
-            onCalendarChange={onCalendarChange}
-          />
+          {onCalendarChange && (
+            <MiniCalendarTrigger
+              chosenDate={chosenDate}
+              setChosenDate={setChosenDate}
+              onCalendarChange={onCalendarChange}
+            />
+          )}
         </div>
       </div>
     </div>

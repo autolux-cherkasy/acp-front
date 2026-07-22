@@ -31,6 +31,8 @@ export const AUTH_QUERY_PARAM = "auth";
 export const AUTH_NEXT_QUERY_PARAM = "next";
 export const AUTH_FALLBACK_PATH = "/home";
 export const AUTH_LOGOUT_BYPASS_KEY = "auth:logout-bypass";
+export const AUTH_ERROR_QUERY_PARAM = "error";
+export const ACCOUNT_BLOCKED_ERROR_PARAM = "account_blocked";
 
 const AUTH_VIEWS = new Set<AuthView>(["login", "register", "forgot-password"]);
 const EXTERNAL_HREF_RE = /^(?:[a-z][a-z\d+\-.]*:)?\/\//i;

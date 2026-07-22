@@ -66,7 +66,6 @@ export default function AnalyticsPage() {
           text: t("dispatcherArea.analytics.allRoutes"),
           onClick: () => router.push(`${pathname}/all`),
         }}
-        onCalendarChange={handleCalendarChange}
       />
       <div className={styles.grid}>
         <div className={styles.noShowArea}>
@@ -77,8 +76,7 @@ export default function AnalyticsPage() {
               blockMutation.mutate(
                 { userId: id, block: true },
                 {
-                  onSuccess: (result) =>
-                    notifySuccess(result, t("common.toast.blockUserSuccess")),
+                  onSuccess: (result) => notifySuccess(result, t("common.toast.blockUserSuccess")),
                   onError: (error) => notifyError(error, t("common.toast.blockUserError")),
                 },
               )

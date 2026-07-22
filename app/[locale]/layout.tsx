@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { AuthSessionProvider } from "@/src/features/auth";
+import AccountBlockedModalController from "@/src/features/auth/ui/AccountBlockedModalController";
 import AuthModalController from "@/src/features/auth/ui/AuthModalController";
 import { hasLocale } from "@/src/shared/i18n/config";
 import { getDictionary } from "@/src/shared/i18n/getDictionary";
@@ -74,6 +75,7 @@ export default async function RootLayout({
             <AuthSessionProvider>
               {children}
               <AuthModalController />
+              <AccountBlockedModalController />
               <ToastProvider />
             </AuthSessionProvider>
           </ReactQueryProvider>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 
+import AccountBlockedModal from "@/src/features/auth/ui/AccountBlockedModal";
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useLoginMutation } from "@/src/features/auth/api/useAuthQueries";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
@@ -12,6 +13,7 @@ import {
   openAuthModal,
 } from "@/src/features/auth/model/auth-flow";
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
+import { ApiError } from "@/src/shared/api/http";
 import {
   useI18n,
   useLocalizedHref,
@@ -20,6 +22,14 @@ import { useServerToast } from "@/src/shared/lib/toast";
 import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
 import Button from "@/src/shared/ui/Button/Button";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
+
+function isBlockedAccountError(error: unknown): boolean {
+  return (
+    error instanceof ApiError &&
+    error.status === 403 &&
+    /заблокован|blocked/i.test(error.message)
+  );
+}
 
 type LoginFormData = {
   identifier: string;
@@ -40,6 +50,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
     defaultValues: { identifier: "", password: "" },
   });
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
   const loginMutation = useLoginMutation();
   const { notifyError, notifySuccess } = useServerToast();
 
@@ -47,12 +58,7 @@ export default function LoginPage({ onClose }: LoginPageProps) {
     const oauthError = searchParams.get("error");
     if (!oauthError) return;
 
-    notifyError(
-      null,
-      oauthError === "account_blocked"
-        ? t("common.toast.userBlocked")
-        : t("common.toast.loginError"),
-    );
+    notifyError(null, t("common.toast.loginError"));
 
     const nextParams = new URLSearchParams(searchParams.toString());
     nextParams.delete("error");
@@ -82,6 +88,10 @@ export default function LoginPage({ onClose }: LoginPageProps) {
       notifySuccess(result, t("common.toast.loginSuccess"));
       await handlePostAuthSuccess();
     } catch (error) {
+      if (isBlockedAccountError(error)) {
+        setIsBlockedModalOpen(true);
+        return;
+      }
       notifyError(error, t("common.toast.loginError"));
     }
   };
@@ -196,6 +206,10 @@ export default function LoginPage({ onClose }: LoginPageProps) {
           />
         </div>
       </form>
+
+      {isBlockedModalOpen && (
+        <AccountBlockedModal onClose={() => setIsBlockedModalOpen(false)} />
+      )}
     </AuthShell>
   );
 }
