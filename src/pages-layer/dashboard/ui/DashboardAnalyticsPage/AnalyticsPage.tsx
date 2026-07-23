@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { useServerToast } from "@/src/shared/lib/toast";
@@ -26,9 +26,8 @@ export default function AnalyticsPage() {
   const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
-  const [date, setDate] = useState<string | undefined>(undefined);
 
-  const { data: summary, isLoading } = useAnalyticsSummaryQuery(date);
+  const { data: summary, isLoading } = useAnalyticsSummaryQuery();
   const blockMutation = useBlockUserMutation();
   const { notifySuccess, notifyError } = useServerToast();
 
@@ -49,13 +48,6 @@ export default function AnalyticsPage() {
     route: r.direction,
     tickets: r.ticketsCount,
   }));
-
-  function handleCalendarChange(d: Date) {
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    setDate(`${yyyy}-${mm}-${dd}`);
-  }
 
   return (
     <div className={`${styles.mainContainer} ${pageStyles.pageRoot}`}>

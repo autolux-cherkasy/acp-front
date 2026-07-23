@@ -29,7 +29,7 @@
   box-sizing: border-box;
 }
 
-/* Фонова синя плашка на 1440, контент строго 1239 як у Figma */
+/* Фонова синя плашка на 1440, контент строго --content-max-width як у Figma */
 .statsBar {
   width: 100vw;
   max-width: none;
@@ -47,7 +47,7 @@
 }
 
 .statsInner {
-  width: min(1239px, 100%); /* 397*3 + 24*2 = 1239 */
+  width: min(var(--content-max-width), 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -93,15 +93,15 @@
 
 /* Текстовий блок як Auto Layout: 2 колонки, gap 24 */
 .textGrid {
-  width: 1238px; /* 607 + 607 + 24 = 1238 (без 0.5px округлень) */
+  width: min(var(--content-max-width), 100%);
   display: grid;
-  grid-template-columns: repeat(2, 607px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
   box-sizing: border-box;
 }
 
 .textCard {
-  width: 607px;
+  width: 100%;
   min-height: 128px;
 
   background: var(--color-surface-soft, var(--color-surface-soft));
@@ -147,7 +147,7 @@
     width: 100vw;
     max-width: none;
     height: 197px;
-    padding: 24px max(256px, calc((100vw - 1408px) / 2));
+    padding: 24px max(var(--layout-padding-x), calc((100vw - 1408px) / 2));
     gap: 24px;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
@@ -155,8 +155,6 @@
   }
 
   .statsInner {
-    width: 100%;
-    max-width: 1408px;
     gap: 24px;
   }
 
@@ -197,7 +195,7 @@
 
   .statsInner {
     width: 100%;
-    max-width: 1239px;
+    max-width: var(--content-max-width);
     padding: 0;
     flex-wrap: nowrap;
     justify-content: center;
@@ -216,9 +214,8 @@
 
   .textGrid {
     width: 100%;
-    max-width: 1238px;
+    max-width: var(--content-max-width);
     grid-template-columns: 1fr;
-    padding: 0 20px;
   }
 
   .textCard {
@@ -276,7 +273,6 @@
     max-width: none;
     grid-template-columns: 1fr;
     gap: 16px;
-    padding: 0 20px;
   }
 
   .textCard {

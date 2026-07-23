@@ -8,6 +8,8 @@
   /* Global responsive states: 1920 / 1440 / 768 / 393 */
   --layout-max-width: 1920px;
   --layout-padding-x: 256px;
+  /* Shared content row width used by Header, Footer, About, PopularRoutes, StatStepperCore */
+  --content-max-width: 1240px;
   --color-brand: #226078;
   --color-page-bg: #fcfefe;
   --color-text-strong: #11313d;
@@ -46,6 +48,11 @@
     --layout-max-width: 1920px;
     --layout-padding-x: 256px;
     --layout-padding-booking-x: 180px;
+  }
+}
+@media (min-width: 1920px) {
+  :root {
+    --content-max-width: 1408px;
   }
 }
 @media (max-width: 1440px) {

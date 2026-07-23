@@ -27,7 +27,7 @@ export default function HomePage() {
             <PopularRoutes />
           </section>
 
-          <section id="about">
+          <section id="about" className={styles.fullWidthSection}>
             <About />
           </section>
         </div>
