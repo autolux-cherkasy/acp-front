@@ -9,6 +9,7 @@ export type ArchivedTicketStop = {
 };
 
 export type ArchivedTicket = {
+  id: string;
   code: string;
   date: string;
   metaDate: string;
@@ -61,6 +62,7 @@ export function toArchivedTicket(booking: Booking, locale: Locale): ArchivedTick
   const { departureTime, arrivalTime, boardingStop, alightingStop } = booking.tripDetails;
 
   return {
+    id: booking.id,
     code: booking.referenceCode,
     date: formatLongDate(departureTime, locale),
     metaDate: formatMetaDate(departureTime),
