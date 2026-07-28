@@ -220,11 +220,7 @@ function NewOrderModalBody({
           text={t("dispatcherArea.tickets.actions.saveChanges")}
           variant="secondary"
           size="full"
-<<<<<<< HEAD
-          onClick={requestClose}
-=======
           onClick={handleSubmit(onSubmit)}
->>>>>>> d4fcbc5 (feat(admin): connect bookings API and ticket status management)
         />
       </div>
     </>

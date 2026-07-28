@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-export type TicketStatus = "booked" | "paid" | "cancelled" | "expired";
-=======
 export type BookingStatus =
     | "reserved"
     | "pending"
@@ -9,7 +6,6 @@ export type BookingStatus =
     | "expired";
 
 export type TicketStatus = BookingStatus;
->>>>>>> d4fcbc5 (feat(admin): connect bookings API and ticket status management)
 
 export type Ticket = {
   id: string;
