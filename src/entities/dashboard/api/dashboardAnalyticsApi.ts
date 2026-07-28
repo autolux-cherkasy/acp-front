@@ -76,9 +76,8 @@ export type UserWithUnpaidBookingsResponse = {
   unpaidBookings: UnpaidBookingItem[];
 };
 
-export function getAnalyticsSummary(date?: string) {
-  const qs = date ? `?date=${encodeURIComponent(date)}` : "";
-  return apiFetch<GetSummaryAnalyticsResponse>(`${ADMIN_ANALYTICS_URL}/summary${qs}`);
+export function getAnalyticsSummary() {
+  return apiFetch<GetSummaryAnalyticsResponse>(`${ADMIN_ANALYTICS_URL}/summary`);
 }
 
 export function getAllRoutesAnalytics(date?: string) {

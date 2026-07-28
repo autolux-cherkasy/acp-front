@@ -72,6 +72,16 @@
   color: var(--color-brand, var(--color-brand));
 }
 
+@media (max-width: 1259px) {
+  .mainScreenBlock {
+    gap: 0;
+  }
+
+  .homeSection {
+    gap: 32px;
+  }
+}
+
 @media (max-width: 768px) {
   .page {
     padding-top: 0;

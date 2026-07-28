@@ -15,10 +15,10 @@ import {
 } from "./dashboardApiKeys";
 export { ANALYTICS_SUMMARY_KEY, ANALYTICS_ALL_ROUTES_KEY, ANALYTICS_ROUTE_KEY, ANALYTICS_USER_KEY };
 
-export function useAnalyticsSummaryQuery(date?: string) {
+export function useAnalyticsSummaryQuery() {
   return useQuery({
-    queryFn: () => getAnalyticsSummary(date),
-    queryKey: [ANALYTICS_SUMMARY_KEY, date ?? "today"],
+    queryFn: () => getAnalyticsSummary(),
+    queryKey: [ANALYTICS_SUMMARY_KEY],
   });
 }
 
