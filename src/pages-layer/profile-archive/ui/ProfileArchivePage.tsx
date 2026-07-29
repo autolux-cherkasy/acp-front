@@ -55,7 +55,7 @@ export default function ProfileArchivePage() {
 
         <div className={styles.blocks}>
           {tickets.map((ticket) => {
-            const isUnpaid = ticket.status === "reserved";
+            const isUnpaid = ticket.status === "booked";
             const isActionDisabled =
               ticket.status === "paid" ||
               ticket.status === "cancelled" ||

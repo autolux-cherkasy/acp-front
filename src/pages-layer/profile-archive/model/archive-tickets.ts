@@ -1,7 +1,8 @@
 import type { Booking, BookingStatus } from "@/src/entities/booking";
-import type { TicketStatus } from "@/src/entities/ticket";
 import type { Locale } from "@/src/shared/i18n/config";
 import { formatCurrency, formatPhone } from "@/src/shared/lib/formatters";
+
+export type ArchiveTicketStatus = "booked" | "paid" | "cancelled" | "expired";
 
 export type ArchivedTicketStop = {
   name: string;
@@ -17,14 +18,15 @@ export type ArchivedTicket = {
   passengerPhone: string;
   seatCount: number;
   price: string;
-  status: TicketStatus;
+  status: ArchiveTicketStatus;
   routeFrom: ArchivedTicketStop;
   routeTo: ArchivedTicketStop;
 };
 
-const STATUS_MAP: Record<BookingStatus, TicketStatus> = {
+
+const STATUS_MAP: Record<BookingStatus, ArchiveTicketStatus> = {
   ACTIVE: "booked",
-  CONFIRMED: "booked",
+  CONFIRMED: "paid",
   BUYOUT: "paid",
   CANCELLED: "cancelled",
   EXPIRED: "expired",
