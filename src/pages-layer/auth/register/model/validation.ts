@@ -225,40 +225,6 @@ function mapSingleServerError(
   if (
     mentionsEmail &&
     includesAny(normalized, [
-      "already",
-      "exists",
-      "taken",
-      "зареєстр",
-      "зарегистр",
-      "существ",
-      "використ",
-      "использ",
-      "unique",
-    ])
-  ) {
-    return { field: "email", message: t("auth.register.errors.emailExists") };
-  }
-
-  if (
-    mentionsPhone &&
-    includesAny(normalized, [
-      "already",
-      "exists",
-      "taken",
-      "зареєстр",
-      "зарегистр",
-      "существ",
-      "використ",
-      "использ",
-      "unique",
-    ])
-  ) {
-    return { field: "phone", message: t("auth.register.errors.phoneExists") };
-  }
-
-  if (
-    mentionsEmail &&
-    includesAny(normalized, [
       "required",
       "empty",
       "обов",
@@ -307,7 +273,6 @@ function mapSingleServerError(
       "невер",
       "валид",
       "format",
-      "email",
     ])
   ) {
     return { field: "email", message: t("auth.register.errors.emailInvalid") };
@@ -370,10 +335,38 @@ function mapSingleServerError(
 export function mapRegisterServerError(
   message: string,
   t: Translate,
+  status?: number,
 ): {
   fieldErrors: RegisterFieldErrors;
   formError: string;
 } {
+  if (status === 409) {
+    const normalized = message.trim().toLowerCase();
+    const mentionsPhone = includesAny(normalized, ["phone", "телефон", "номер"]);
+    const mentionsEmail = includesAny(normalized, [
+      "email",
+      "e-mail",
+      "імейл",
+      "имейл",
+      "пошт",
+    ]);
+
+    if (mentionsPhone && !mentionsEmail) {
+      return {
+        fieldErrors: { phone: t("auth.register.errors.phoneExists") },
+        formError: "",
+      };
+    }
+
+    if (mentionsEmail && !mentionsPhone) {
+      return {
+        fieldErrors: { email: t("auth.register.errors.emailExists") },
+        formError: "",
+      };
+    }
+    return { fieldErrors: {}, formError: message || t("auth.register.errors.generic") };
+  }
+
   const segments = splitServerValidationMessage(message);
 
   const fieldErrors = segments.reduce<RegisterFieldErrors>(

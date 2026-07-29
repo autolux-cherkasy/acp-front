@@ -16,6 +16,7 @@ import TextField from "@/src/shared/ui/TextField/TextField";
 import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
 import Notification from "@/src/shared/ui/Notification/Notification";
 import AuthShell from "@/src/shared/ui/AuthShell/AuthShell";
+import { ApiError } from "@/src/shared/api/http";
 import {
   EMAIL_MAX_LENGTH,
   mapRegisterServerError,
@@ -90,7 +91,12 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       openAuthModal(router, resolveHref, "login", { replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
-      const { fieldErrors: nextFieldErrors, formError } = mapRegisterServerError(message, t);
+      const status = err instanceof ApiError ? err.status : undefined;
+      const { fieldErrors: nextFieldErrors, formError } = mapRegisterServerError(
+        message,
+        t,
+        status,
+      );
 
       for (const [field, msg] of Object.entries(nextFieldErrors)) {
         setFieldError(field as RegisterField, { message: msg });

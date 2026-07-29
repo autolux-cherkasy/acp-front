@@ -47,6 +47,11 @@
   color: #ff3d00;
 }
 
+.variantError .title,
+.variantError .message {
+  color: #ff3d00;
+}
+
 .variantSuccess .iconWrap {
   color: #4caf50;
 }
