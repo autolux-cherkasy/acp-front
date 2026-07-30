@@ -1,18 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { useForgotPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
-import {
-  closeAuthModal,
-  openAuthModal,
-} from "@/src/features/auth/model/auth-flow";
 import { usePostAuthNavigation } from "@/src/features/auth";
+import { useForgotPasswordMutation } from "@/src/features/auth/api/useAuthQueries";
+import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
+import {
+  openAuthModal
+} from "@/src/features/auth/model/auth-flow";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import { useServerToast } from "@/src/shared/lib/toast";
-import GoogleAuthButton from "@/src/features/auth/google/ui/GoogleAuthButton";
 import Button from "@/src/shared/ui/Button/Button";
 import FormField from "@/src/shared/ui/FormField/FormField";
 import TextField from "@/src/shared/ui/TextField/TextField";
@@ -43,15 +42,6 @@ export default function ForgotPasswordPage({
     typeof rememberedPassword === "string" && typeof loginAction === "string"
       ? `${rememberedPassword} ${loginAction}`
       : t("auth.forgotPassword.existingAccount");
-
-  const handleCloseAuthFlow = () => {
-    if (onClose) {
-      onClose();
-      return;
-    }
-
-    closeAuthModal(router, resolveHref);
-  };
 
   const isBusy = forgotPasswordMutation.isPending || isGoogleLoading;
   const handlePostAuthSuccess = usePostAuthNavigation();

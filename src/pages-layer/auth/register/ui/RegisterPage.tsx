@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import styles from "@/src/pages-layer/auth/ui/auth-page.module.css";
-import { useRegisterMutation } from "@/src/features/auth/api/useAuthQueries";
+import { useRegisterMutation, useResendConfirmMutation, useVerifyEmailOtpMutation } from "@/src/features/auth/api/useAuthQueries";
 import { closeAuthModal, openAuthModal } from "@/src/features/auth/model/auth-flow";
 import { usePostAuthNavigation } from "@/src/features/auth";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
@@ -27,6 +27,8 @@ import {
   type RegisterField,
   type RegisterFormData,
 } from "../model/validation";
+import { useDisclosure } from "@/src/shared/lib/useDisclosure";
+import EmailConfirmationModal from "@/src/features/email-confirmation/ui/EmailConfirmationModal";
 
 type RegisterPageProps = {
   onClose?: () => void;
@@ -36,6 +38,9 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
   const router = useRouter();
   const { t } = useI18n();
   const resolveHref = useLocalizedHref();
+  // const verifyOpt = useVerifyEmailOtpMutation()
+  const emailConfirmModal = useDisclosure<string>()
+  const resendConfirm = useResendConfirmMutation()
 
   const {
     register,
@@ -88,7 +93,8 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
       });
       notifySuccess(result, t("common.toast.registerSuccess"));
 
-      openAuthModal(router, resolveHref, "login", { replace: true });
+      emailConfirmModal.open(data.email.trim())
+      // openAuthModal(router, resolveHref, "login", { replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
       const status = err instanceof ApiError ? err.status : undefined;
@@ -285,6 +291,21 @@ export default function RegisterPage({ onClose }: RegisterPageProps) {
             </button>
           </div>
         </div>
+
+        {emailConfirmModal.isOpen && emailConfirmModal.data && (
+        <EmailConfirmationModal
+          context="registration"
+          onClose={emailConfirmModal.close}
+          onResend={() => {
+            if (typeof emailConfirmModal.data === "string") {
+               resendConfirm.mutate({ email: emailConfirmModal.data });
+            }
+          }}
+          email={emailConfirmModal.data}
+          onChangeEmail={emailConfirmModal.close}
+          onConfirm={async() => {await handlePostAuthSuccess();}}
+        />
+      )}
       </form>
     </AuthShell>
   );

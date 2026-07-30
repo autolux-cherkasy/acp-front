@@ -32,6 +32,12 @@ export type ResetPasswordPayload = {
   newPassword: string;
 };
 
+export type VerifyEmailOtpPayload = {
+  email: string;
+  code: string
+};
+
+
 export function register(payload: RegisterPayload) {
   return apiFetch<TokenResponse>("/auth/register", {
     method: "POST",
@@ -75,6 +81,25 @@ export function resetPassword(payload: ResetPasswordPayload) {
   });
 }
 
+export function verifyEmailOtp(payload: VerifyEmailOtpPayload){
+  return apiFetch<MessageResponse>("/auth/verify-email-otp", {
+  method: "POST",
+  body: JSON.stringify(payload),
+  includeAuth: false,
+  skipAuthRefresh: true,
+});
+}
+
+export function resendConfirm(payload: ForgotPasswordPayload){
+  return apiFetch<MessageResponse>("/auth/resend-confirmation", {
+  method: "POST",
+  body: JSON.stringify(payload),
+  includeAuth: false,
+  skipAuthRefresh: true,
+});
+}
+
+
 export async function logout() {
   if (getDevRole()) {
     clearCsrfToken();
@@ -94,3 +119,4 @@ export async function logout() {
     clearDevAuth();
   }
 }
+

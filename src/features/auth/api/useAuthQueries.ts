@@ -12,6 +12,9 @@ import {
   type LoginPayload,
   type RegisterPayload,
   type ResetPasswordPayload,
+  VerifyEmailOtpPayload,
+  verifyEmailOtp,
+  resendConfirm,
 } from "./auth";
 import { setCsrfToken } from "@/src/shared/api/session";
 
@@ -62,5 +65,19 @@ export function useLogoutMutation() {
     onSettled: async () => {
       queryClient.removeQueries({ queryKey: PROFILE_QUERY_KEY });
     },
+  });
+}
+
+export function useVerifyEmailOtpMutation() {
+  return useMutation({
+    mutationFn: (payload: VerifyEmailOtpPayload) => verifyEmailOtp(payload),
+    mutationKey: ["verify-email-otp"],
+  });
+}
+
+export function useResendConfirmMutation() {
+  return useMutation({
+    mutationFn: (payload: ForgotPasswordPayload) => resendConfirm(payload),
+    mutationKey: ["resend-confirm"],
   });
 }
