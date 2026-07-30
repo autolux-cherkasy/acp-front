@@ -1,4 +1,4 @@
-const DEFAULT_SITE_URL = "https://acp-front-nu.vercel.app";
+const DEFAULT_SITE_URL = "https://acp-front-95e5.vercel.app";
 
 function resolveSiteUrl() {
   const candidate = process.env.NEXT_PUBLIC_SITE_URL?.trim() || DEFAULT_SITE_URL;
