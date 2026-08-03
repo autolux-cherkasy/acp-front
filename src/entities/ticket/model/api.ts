@@ -1,5 +1,5 @@
 import { apiFetch } from "@/src/shared/api/http";
-import type { Ticket, AdminBookingsResponse, AdminBookingDto } from "./types";
+import type { Ticket, AdminBookingsResponse, AdminBookingDto, ApiBookingStatus } from "./types";
 import mapBookingToTicket from "@/src/entities/ticket/model/mapper";
 
 export async function getAdminTickets(date: string): Promise<Ticket[]> {
@@ -38,7 +38,7 @@ export async function createAdminBooking(payload: CreateAdminBookingPayload): Pr
 }
 
 export type UpdateAdminBookingPayload = {
-  status?: "ACTIVE" | "COMPLETED" | "CANCELLED" | "EXPIRED";
+  status?: ApiBookingStatus;
 };
 
 export async function updateAdminBooking(

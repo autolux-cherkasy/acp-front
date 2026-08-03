@@ -7,6 +7,14 @@ export type BookingStatus =
 
 export type TicketStatus = BookingStatus;
 
+/** Статуси такі, як їх віддає бекенд (prisma enum BookingStatus). */
+export type ApiBookingStatus =
+    | "ACTIVE"
+    | "CONFIRMED"
+    | "BUYOUT"
+    | "CANCELLED"
+    | "EXPIRED";
+
 export type Ticket = {
   id: string;
   bookingNumber: string;
@@ -29,11 +37,13 @@ export type AdminBookingDto = {
   passengerName: string;
   phone: string;
   route: string;
+  boardingStopName: string;
+  alightingStopName: string;
   departureTime: string;
   arrivalTime: string;
   ticketsCount: number;
   totalPrice: number;
-  status: BookingStatus;
+  status: ApiBookingStatus;
   createdAt: string;
   expiresAt: string | null;
 };

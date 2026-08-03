@@ -1,26 +1,21 @@
-import type {AdminBookingDto, Ticket} from "@/src/entities/ticket";
+import type {AdminBookingDto, ApiBookingStatus, Ticket} from "@/src/entities/ticket";
+
+const STATUS_MAP: Record<ApiBookingStatus, Ticket["status"]> = {
+    ACTIVE: "reserved",
+    CONFIRMED: "completed",
+    BUYOUT: "completed",
+    CANCELLED: "cancelled",
+    EXPIRED: "expired",
+};
 
 function mapBookingToTicket(booking: AdminBookingDto): Ticket {
-    const [routeFrom = "", routeTo = ""] = booking.route.split(" - ");
     const departureDate = new Date(booking.departureTime);
     const arrivalDate = new Date(booking.arrivalTime);
-    function mapStatus(status: string): Ticket["status"] {
-        switch (status.toLowerCase()) {
-            case "active":
-            case "reserved":
-                return "reserved";
-            case "pending":
-                return "pending";
-            case "completed":
-                return "completed";
-            case "cancelled":
-                return "cancelled";
-            case "expired":
-                return "expired";
-            default:
-                return "pending";
-        }
-    }
+
+    const routeFrom = booking.boardingStopName;
+    const routeTo = booking.alightingStopName;
+    // Напрямок рейсу показуємо додатково лише тоді, коли пасажир їде не весь
+    const segment = `${routeFrom} - ${routeTo}`;
 
     return {
         id: booking.id,
@@ -29,7 +24,7 @@ function mapBookingToTicket(booking: AdminBookingDto): Ticket {
         passengerPhone: booking.phone,
         routeFrom,
         routeTo,
-        routeStop: null,
+        routeStop: segment === booking.route ? null : booking.route,
         departureDate: departureDate.toLocaleDateString("uk-UA"),
         departureTime: `${departureDate.toLocaleTimeString("uk-UA", {
             hour: "2-digit",
@@ -40,7 +35,7 @@ function mapBookingToTicket(booking: AdminBookingDto): Ticket {
         })}`,
         ticketCount: booking.ticketsCount,
         totalPrice: booking.totalPrice,
-        status: mapStatus(booking.status),
+        status: STATUS_MAP[booking.status] ?? "pending",
         timerSeconds: booking.expiresAt
             ? Math.max(0, Math.floor((new Date(booking.expiresAt).getTime() - Date.now()) / 1000))
             : null,
