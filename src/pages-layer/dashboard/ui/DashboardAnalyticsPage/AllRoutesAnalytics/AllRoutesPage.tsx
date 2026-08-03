@@ -26,7 +26,8 @@ import {
 const RouteAnalyticsDetails = dynamic(() => import("./RouteAnalyticsDetails"), { ssr: false });
 
 type AllRouteRow = {
-  id: number;
+  routeId: string;
+  routeName: string;
   direction: string;
   tripsPerDay: number;
   ticketsSold: number;
@@ -40,22 +41,15 @@ type TicketStatKey = "reserved" | "purchased" | "cancelled";
 export default function AllRoutesPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
-  const [date, setDate] = useState<string | undefined>(undefined);
+  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
 
-  const { data: routesData, isLoading: isRoutesLoading } = useAllRoutesAnalyticsQuery(date);
+  const { data: routesData, isLoading: isRoutesLoading } = useAllRoutesAnalyticsQuery();
   const { data: routeDetail, isLoading: isRouteDetailLoading } =
-    useRouteAnalyticsQuery(selectedDirection);
+    useRouteAnalyticsQuery(selectedRouteId);
 
-  function handleCalendarChange(d: Date) {
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    setDate(`${yyyy}-${mm}-${dd}`);
-  }
-
-  const allRoutes: AllRouteRow[] = (routesData ?? []).map((r, i) => ({
-    id: i,
+  const allRoutes: AllRouteRow[] = (routesData ?? []).map((r) => ({
+    routeId: r.routeId,
+    routeName: r.routeName,
     direction: r.direction,
     tripsPerDay: r.tripsCount,
     ticketsSold: r.ticketsSoldTotal,
@@ -95,7 +89,7 @@ export default function AllRoutesPage() {
     paginationHeight,
   } = measurements;
 
-  const selectedRoute = allRoutes.find((r) => r.direction === selectedDirection) ?? null;
+  const selectedRoute = allRoutes.find((r) => r.routeId === selectedRouteId) ?? null;
   const hasSelection = Boolean(selectedRoute && routeDetail);
 
   const trendChartData =
@@ -130,7 +124,6 @@ export default function AllRoutesPage() {
         title={`${t("dispatcherArea.sidebar.menu.analytics")} / ${t("dispatcherArea.analytics.allRoutes")}`}
         subtitle={t("dispatcherArea.analytics.subtitle")}
         onBack={() => router.back()}
-        onCalendarChange={handleCalendarChange}
       />
       <div
         ref={cardRef}
@@ -184,11 +177,11 @@ export default function AllRoutesPage() {
                       return (
                         <DashboardTr
                           ref={index === 0 ? firstRowRef : undefined}
-                          key={row.direction}
+                          key={row.routeId}
                           className={`${styles.clickableRow} ${
-                            selectedDirection === row.direction ? styles.selectedRow : ""
+                            selectedRouteId === row.routeId ? styles.selectedRow : ""
                           }`}
-                          onClick={() => setSelectedDirection(row.direction)}
+                          onClick={() => setSelectedRouteId(row.routeId)}
                         >
                           <td className={dashboardTableStyles.tdNum}>
                             {(page - 1) * rowsPerPage + index + 1}
@@ -234,7 +227,7 @@ export default function AllRoutesPage() {
         aria-hidden={!hasSelection}
       >
         <RouteAnalyticsDetails
-          routeTitle={selectedRoute?.direction ?? ""}
+          routeTitle={selectedRoute?.routeName ?? ""}
           statisticsTitle={t("dispatcherArea.analytics.allRoutesPage.details.statisticsTitle")}
           trendTitle={t("dispatcherArea.analytics.allRoutesPage.details.dynamicsTitle")}
           trendChartData={trendChartData}

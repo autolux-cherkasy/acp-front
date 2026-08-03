@@ -1,6 +1,6 @@
 "use client";
 
-import type { Ticket } from "@/src/entities/ticket";
+import type { ApiBookingStatus, Ticket } from "@/src/entities/ticket";
 import { updateAdminBooking } from "@/src/entities/ticket";
 import { useCountdown } from "@/src/features/ticket-timer";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
@@ -72,7 +72,7 @@ function OrderDetailsModalBody({
   const statusLabel = t(`dispatcherArea.tickets.statuses.${ticket.status}`);
   const queryClient = useQueryClient();
 
-  async function handleStatusChange(status: "ACTIVE" | "COMPLETED" | "CANCELLED") {
+  async function handleStatusChange(status: ApiBookingStatus) {
     await updateAdminBooking(ticket.id, { status });
 
     await queryClient.invalidateQueries({
@@ -137,7 +137,7 @@ function OrderDetailsModalBody({
               text={t("dispatcherArea.tickets.actions.buy")}
               variant="success"
               size="full"
-              onClick={() => handleStatusChange("COMPLETED")}
+              onClick={() => handleStatusChange("BUYOUT")}
             />
 
             <Button

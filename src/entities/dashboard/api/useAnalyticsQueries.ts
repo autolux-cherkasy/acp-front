@@ -22,18 +22,18 @@ export function useAnalyticsSummaryQuery() {
   });
 }
 
-export function useAllRoutesAnalyticsQuery(date?: string) {
+export function useAllRoutesAnalyticsQuery() {
   return useQuery({
-    queryFn: () => getAllRoutesAnalytics(date),
-    queryKey: [ANALYTICS_ALL_ROUTES_KEY, date ?? "today"],
+    queryFn: () => getAllRoutesAnalytics(),
+    queryKey: [ANALYTICS_ALL_ROUTES_KEY],
   });
 }
 
-export function useRouteAnalyticsQuery(direction: string | null) {
+export function useRouteAnalyticsQuery(routeId: string | null) {
   return useQuery({
-    queryFn: () => getRouteAnalytics(direction!),
-    queryKey: [ANALYTICS_ROUTE_KEY, direction],
-    enabled: !!direction,
+    queryFn: () => getRouteAnalytics(routeId!),
+    queryKey: [ANALYTICS_ROUTE_KEY, routeId],
+    enabled: !!routeId,
   });
 }
 

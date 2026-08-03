@@ -34,6 +34,8 @@ export type GetSummaryAnalyticsResponse = {
 };
 
 export type AllRoutesResponse = {
+  routeId: string;
+  routeName: string;
   direction: string;
   tripsCount: number;
   ticketsSoldTotal: number;
@@ -54,6 +56,8 @@ export type RouteTicketStats = {
 };
 
 export type RouteAnalyticsResponse = {
+  routeId: string;
+  routeName: string;
   direction: string;
   dynamics: RouteDynamicsItem[];
   ticketStats: RouteTicketStats;
@@ -80,14 +84,13 @@ export function getAnalyticsSummary() {
   return apiFetch<GetSummaryAnalyticsResponse>(`${ADMIN_ANALYTICS_URL}/summary`);
 }
 
-export function getAllRoutesAnalytics(date?: string) {
-  const qs = date ? `?date=${encodeURIComponent(date)}` : "";
-  return apiFetch<AllRoutesResponse[]>(`${ADMIN_ANALYTICS_URL}${qs}`);
+export function getAllRoutesAnalytics() {
+  return apiFetch<AllRoutesResponse[]>(ADMIN_ANALYTICS_URL);
 }
 
-export function getRouteAnalytics(direction: string) {
+export function getRouteAnalytics(routeId: string) {
   return apiFetch<RouteAnalyticsResponse>(
-    `${ADMIN_ANALYTICS_URL}/route?direction=${encodeURIComponent(direction)}`,
+    `${ADMIN_ANALYTICS_URL}/route?routeId=${encodeURIComponent(routeId)}`,
   );
 }
 
