@@ -1,0 +1,54 @@
+/* Above the modal it was opened from (and above its select menus at 10001),
+   so "back" returns to an untouched form. */
+.backdrop {
+  --modal-frame-backdrop-z: 10010;
+}
+
+.surface {
+  --modal-frame-max-width: 400px;
+  --modal-frame-surface-bg: var(--light-bg);
+  --modal-frame-radius: 16px;
+  --modal-frame-surface-z: 10011;
+
+  min-height: 176px;
+  gap: 24px;
+  padding: 20px;
+}
+
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 72px;
+  padding: 14px 16px;
+
+  background: var(--color-white);
+  border: 1px solid var(--LightSlateGray, #7b98a3);
+  border-radius: 12px;
+}
+
+.infoIcon {
+  color: var(--LightSlateGray, #7b98a3);
+  display: flex;
+  flex-shrink: 0;
+}
+
+.question {
+  flex: 1;
+  margin: 0;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 132%;
+  letter-spacing: 0;
+  color: var(--color-text-strong, #11313d);
+}
+
+.closeButton {
+  color: var(--color-text-strong, #11313d);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}

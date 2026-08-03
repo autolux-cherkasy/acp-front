@@ -34,6 +34,7 @@ export {
 } from "./ui/DashboardComponents/DashboardTable";
 export { DashboardDateText } from "./ui/DashboardComponents/DashboardDateText";
 export { TablePagination } from "./ui/TablePagination/TablePagination";
+export { default as ConfirmDeleteModal } from "./ui/ConfirmDeleteModal/ConfirmDeleteModal";
 export { default as EmptyState } from "./ui/EmptyState/EmptyState";
 export { default as LoadingState } from "./ui/LoadingState/LoadingState";
 

@@ -25,6 +25,7 @@ type RouteModalProps = {
   titles?: { create: string; edit: string };
   labels?: { create: string; edit: string };
   placeholder?: string;
+  deleteSubject?: string;
 };
 
 export default function RouteModal({
@@ -39,6 +40,7 @@ export default function RouteModal({
   titles,
   labels,
   placeholder,
+  deleteSubject,
 }: RouteModalProps) {
   const { t } = useI18n();
   const [imageFile, setImageFile] = useState<File | undefined>(undefined);
@@ -76,6 +78,7 @@ export default function RouteModal({
       onClose={onClose}
       onSubmit={handleSubmit(submitHandler)}
       onDelete={onDelete}
+      deleteSubject={deleteSubject ?? t("common.confirmDelete.targets.route")}
     >
       {showTwoCities ? (
         <>

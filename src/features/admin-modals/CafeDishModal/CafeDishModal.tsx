@@ -62,6 +62,7 @@ export default function CafeDishModal({
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
+      deleteSubject={t("common.confirmDelete.targets.cafeDish")}
     >
       <SelectWithLabel
         control={control}

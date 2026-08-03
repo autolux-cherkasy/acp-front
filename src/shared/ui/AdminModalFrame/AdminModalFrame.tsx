@@ -2,9 +2,10 @@
 
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
+import ConfirmDeleteModal from "@/src/shared/ui/ConfirmDeleteModal/ConfirmDeleteModal";
 import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton";
 import ModalFrame, { useModalClose } from "@/src/shared/ui/ModalFrame/ModalFrame";
-import type { CSSProperties, ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import styles from "./AdminModalFrame.module.css";
 
 type AdminModalFrameProps = {
@@ -14,6 +15,7 @@ type AdminModalFrameProps = {
   onClose: () => void;
   onSubmit: () => void;
   onDelete?: () => void;
+  deleteSubject?: string;
   children: ReactNode;
 };
 
@@ -24,19 +26,43 @@ export default function AdminModalFrame({
   onClose,
   onSubmit,
   onDelete,
+  deleteSubject,
   children,
 }: AdminModalFrameProps) {
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+
   return (
-    <ModalFrame
-      onClose={onClose}
-      ariaLabelledBy="admin-modal-title"
-      usePortal
-      surfaceClassName={styles.surface}
-    >
-      <AdminModalFrameBody mode={mode} title={title} icon={icon} onSubmit={onSubmit} onDelete={onDelete}>
-        {children}
-      </AdminModalFrameBody>
-    </ModalFrame>
+    <>
+      <ModalFrame
+        onClose={onClose}
+        ariaLabelledBy="admin-modal-title"
+        usePortal
+        surfaceClassName={styles.surface}
+      >
+        <AdminModalFrameBody
+          mode={mode}
+          title={title}
+          icon={icon}
+          onSubmit={onSubmit}
+          onDelete={
+            onDelete && (deleteSubject ? () => setIsConfirmingDelete(true) : onDelete)
+          }
+        >
+          {children}
+        </AdminModalFrameBody>
+      </ModalFrame>
+
+      {isConfirmingDelete && deleteSubject && (
+        <ConfirmDeleteModal
+          subject={deleteSubject}
+          onCancel={() => setIsConfirmingDelete(false)}
+          onConfirm={() => {
+            setIsConfirmingDelete(false);
+            onDelete?.();
+          }}
+        />
+      )}
+    </>
   );
 }
 

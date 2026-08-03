@@ -70,6 +70,7 @@ export default function HandleRoutesModal({
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
+      deleteSubject={t("common.confirmDelete.targets.route")}
     >
       <SelectWithLabel
         control={control}

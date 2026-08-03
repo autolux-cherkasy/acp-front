@@ -62,6 +62,7 @@ export default function DirectionModal({
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
+      deleteSubject={t("common.confirmDelete.targets.direction")}
     >
       <SelectWithLabel
         control={control}

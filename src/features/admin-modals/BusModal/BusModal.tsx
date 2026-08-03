@@ -58,6 +58,7 @@ export default function BusModal({
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
+      deleteSubject={t("common.confirmDelete.targets.bus")}
     >
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.busModal.modelLabel")}

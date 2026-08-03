@@ -52,6 +52,7 @@ export default function DriverModal({
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
+      deleteSubject={t("common.confirmDelete.targets.driver")}
     >
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.driverModal.nameLabel")}

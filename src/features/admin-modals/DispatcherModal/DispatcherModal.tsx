@@ -49,6 +49,7 @@ export default function DispatcherModal({
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
       onDelete={onDelete}
+      deleteSubject={t("common.confirmDelete.targets.dispatcher")}
     >
       <InputWithLabel
         label={t("dispatcherArea.dataMgmt.dispatcherModal.nameLabel")}

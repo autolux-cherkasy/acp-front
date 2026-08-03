@@ -82,6 +82,7 @@ type SectionModalConfig = {
   titles?: { create: string; edit: string };
   labels?: { create: string; edit: string };
   placeholder?: string;
+  deleteSubject?: string;
 };
 
 function resolveCafeRow(section: DataSection | undefined, rowIndex: number) {
@@ -147,6 +148,7 @@ export function useDataMgmtModals({
         edit: t("dispatcherArea.dataMgmt.cafeCategoryModal.label"),
       },
       placeholder: t("dispatcherArea.dataMgmt.cafeCategoryModal.placeholder"),
+      deleteSubject: t("common.confirmDelete.targets.cafeCategory"),
     },
   };
 
