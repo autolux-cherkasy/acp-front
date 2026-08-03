@@ -37,7 +37,6 @@ export type UpdateDispatcherBody = Partial<CreateDispatcherBody & { isBlocked: b
 export type CreateDriverBody = {
   fullName: string;
   phone: string;
-  licenseNumber?: string;
   licenseValidUntil: string;
   licenseCategories: string;
   isActive?: boolean;
