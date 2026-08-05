@@ -22,12 +22,13 @@ import {
   useAllRoutesAnalyticsQuery,
   useRouteAnalyticsQuery,
 } from "@/src/entities/dashboard/api/useAnalyticsQueries";
+import type { RouteSegment } from "@/src/entities/dashboard/api/dashboardAnalyticsApi";
 
 const RouteAnalyticsDetails = dynamic(() => import("./RouteAnalyticsDetails"), { ssr: false });
 
 type AllRouteRow = {
-  routeId: string;
-  routeName: string;
+  boardingStop: string;
+  alightingStop: string;
   direction: string;
   tripsPerDay: number;
   ticketsSold: number;
@@ -41,15 +42,15 @@ type TicketStatKey = "reserved" | "purchased" | "cancelled";
 export default function AllRoutesPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const [selectedSegment, setSelectedSegment] = useState<RouteSegment | null>(null);
 
   const { data: routesData, isLoading: isRoutesLoading } = useAllRoutesAnalyticsQuery();
   const { data: routeDetail, isLoading: isRouteDetailLoading } =
-    useRouteAnalyticsQuery(selectedRouteId);
+    useRouteAnalyticsQuery(selectedSegment);
 
   const allRoutes: AllRouteRow[] = (routesData ?? []).map((r) => ({
-    routeId: r.routeId,
-    routeName: r.routeName,
+    boardingStop: r.boardingStopName,
+    alightingStop: r.alightingStopName,
     direction: r.direction,
     tripsPerDay: r.tripsCount,
     ticketsSold: r.ticketsSoldTotal,
@@ -89,7 +90,12 @@ export default function AllRoutesPage() {
     paginationHeight,
   } = measurements;
 
-  const selectedRoute = allRoutes.find((r) => r.routeId === selectedRouteId) ?? null;
+  const selectedRoute =
+    allRoutes.find(
+      (r) =>
+        r.boardingStop === selectedSegment?.boardingStop &&
+        r.alightingStop === selectedSegment?.alightingStop,
+    ) ?? null;
   const hasSelection = Boolean(selectedRoute && routeDetail);
 
   const trendChartData =
@@ -177,11 +183,16 @@ export default function AllRoutesPage() {
                       return (
                         <DashboardTr
                           ref={index === 0 ? firstRowRef : undefined}
-                          key={row.routeId}
+                          key={row.direction}
                           className={`${styles.clickableRow} ${
-                            selectedRouteId === row.routeId ? styles.selectedRow : ""
+                            selectedRoute?.direction === row.direction ? styles.selectedRow : ""
                           }`}
-                          onClick={() => setSelectedRouteId(row.routeId)}
+                          onClick={() =>
+                            setSelectedSegment({
+                              boardingStop: row.boardingStop,
+                              alightingStop: row.alightingStop,
+                            })
+                          }
                         >
                           <td className={dashboardTableStyles.tdNum}>
                             {(page - 1) * rowsPerPage + index + 1}
@@ -227,7 +238,7 @@ export default function AllRoutesPage() {
         aria-hidden={!hasSelection}
       >
         <RouteAnalyticsDetails
-          routeTitle={selectedRoute?.routeName ?? ""}
+          routeTitle={selectedRoute?.direction ?? ""}
           statisticsTitle={t("dispatcherArea.analytics.allRoutesPage.details.statisticsTitle")}
           trendTitle={t("dispatcherArea.analytics.allRoutesPage.details.dynamicsTitle")}
           trendChartData={trendChartData}

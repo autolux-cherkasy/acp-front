@@ -4,23 +4,21 @@ import { TicketStatusBadge } from "@/src/entities/ticket";
 import type { Ticket } from "@/src/entities/ticket";
 import { TicketTimer } from "@/src/features/ticket-timer";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./TicketsTable.module.css";
 
 type Props = {
   tickets: Ticket[];
+  isLoading?: boolean;
   onDetails: (ticketId: string) => void;
 };
 
-export default function TicketsTable({ tickets, onDetails }: Props) {
-  const { locale, t } = useI18n();
+const COLUMN_COUNT = 8;
+const SKELETON_ROW_COUNT = 8;
 
-  if (tickets.length === 0) {
-    return (
-      <div className={styles.empty}>
-        <p>{t("dispatcherArea.tickets.table.empty")}</p>
-      </div>
-    );
-  }
+export default function TicketsTable({ tickets, isLoading = false, onDetails }: Props) {
+  const { locale, t } = useI18n();
 
   return (
     <div className={styles.wrapper}>
@@ -42,15 +40,34 @@ export default function TicketsTable({ tickets, onDetails }: Props) {
           </tr>
         </thead>
         <tbody>
-          {tickets.map((ticket, index) => (
-            <TicketRow
-              key={ticket.id}
-              ticket={ticket}
-              rowNumber={index + 1}
-              locale={locale}
-              onDetails={onDetails}
-            />
-          ))}
+          {isLoading ? (
+            Array.from({ length: SKELETON_ROW_COUNT }).map((_, rowIndex) => (
+              <tr key={rowIndex} className={styles.tr}>
+                {Array.from({ length: COLUMN_COUNT }).map((__, cellIndex) => (
+                  <td key={cellIndex} className={styles.td}>
+                    <Skeleton height={18} />
+                    {cellIndex === 1 && <Skeleton height={14} width="70%" />}
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : tickets.length === 0 ? (
+            <tr className={styles.tr}>
+              <td className={`${styles.td} ${styles.empty}`} colSpan={COLUMN_COUNT}>
+                {t("dispatcherArea.tickets.table.empty")}
+              </td>
+            </tr>
+          ) : (
+            tickets.map((ticket, index) => (
+              <TicketRow
+                key={ticket.id}
+                ticket={ticket}
+                rowNumber={index + 1}
+                locale={locale}
+                onDetails={onDetails}
+              />
+            ))
+          )}
         </tbody>
       </table>
     </div>

@@ -5,7 +5,7 @@ import type { Ticket } from "@/src/entities/ticket";
 import { useQuery } from "@tanstack/react-query";
 import { useTicketSearch } from "@/src/features/search-tickets";
 import { useTicketSort } from "@/src/features/sort-tickets";
-import { TicketsTable, TicketsTableSkeleton } from "@/src/widgets/tickets-table";
+import { TicketsTable } from "@/src/widgets/tickets-table";
 import { TicketsToolbar } from "@/src/widgets/tickets-toolbar";
 import { useMemo, useState } from "react";
 import styles from "./tickets.module.css";
@@ -54,11 +54,10 @@ export default function TicketsPage() {
 
             {error ? (
                 <div className={styles.message}>Не вдалося завантажити квитки</div>
-            ) : isLoading ? (
-                <TicketsTableSkeleton />
             ) : (
                 <TicketsTable
                     tickets={displayedTickets}
+                    isLoading={isLoading}
                     onDetails={(id) => orderDetails.open(id)}
                 />
             )}

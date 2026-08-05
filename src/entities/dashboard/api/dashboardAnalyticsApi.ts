@@ -34,14 +34,19 @@ export type GetSummaryAnalyticsResponse = {
 };
 
 export type AllRoutesResponse = {
-  routeId: string;
-  routeName: string;
+  boardingStopName: string;
+  alightingStopName: string;
   direction: string;
   tripsCount: number;
   ticketsSoldTotal: number;
   occupancyPercent: number;
   revenueTotal: number;
   buyoutRatePercent: number;
+};
+
+export type RouteSegment = {
+  boardingStop: string;
+  alightingStop: string;
 };
 
 export type RouteDynamicsItem = {
@@ -56,8 +61,8 @@ export type RouteTicketStats = {
 };
 
 export type RouteAnalyticsResponse = {
-  routeId: string;
-  routeName: string;
+  boardingStopName: string;
+  alightingStopName: string;
   direction: string;
   dynamics: RouteDynamicsItem[];
   ticketStats: RouteTicketStats;
@@ -88,10 +93,13 @@ export function getAllRoutesAnalytics() {
   return apiFetch<AllRoutesResponse[]>(ADMIN_ANALYTICS_URL);
 }
 
-export function getRouteAnalytics(routeId: string) {
-  return apiFetch<RouteAnalyticsResponse>(
-    `${ADMIN_ANALYTICS_URL}/route?routeId=${encodeURIComponent(routeId)}`,
-  );
+export function getRouteAnalytics(segment: RouteSegment) {
+  const qs = new URLSearchParams({
+    boardingStop: segment.boardingStop,
+    alightingStop: segment.alightingStop,
+  });
+
+  return apiFetch<RouteAnalyticsResponse>(`${ADMIN_ANALYTICS_URL}/route?${qs}`);
 }
 
 export function getUserWithUnpaidBookings(userId: number) {

@@ -5,6 +5,7 @@ import {
   getAnalyticsSummary,
   getRouteAnalytics,
   getUserWithUnpaidBookings,
+  type RouteSegment,
 } from "./dashboardAnalyticsApi";
 
 import {
@@ -29,11 +30,11 @@ export function useAllRoutesAnalyticsQuery() {
   });
 }
 
-export function useRouteAnalyticsQuery(routeId: string | null) {
+export function useRouteAnalyticsQuery(segment: RouteSegment | null) {
   return useQuery({
-    queryFn: () => getRouteAnalytics(routeId!),
-    queryKey: [ANALYTICS_ROUTE_KEY, routeId],
-    enabled: !!routeId,
+    queryFn: () => getRouteAnalytics(segment!),
+    queryKey: [ANALYTICS_ROUTE_KEY, segment?.boardingStop, segment?.alightingStop],
+    enabled: !!segment,
   });
 }
 
