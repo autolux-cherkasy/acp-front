@@ -297,7 +297,15 @@
       "logoutSuccess": "Signed out successfully.",
       "logoutError": "Failed to sign out. Please try again.",
       "requestError": "Request failed. Please try again.",
-      "noChanges": "There are no changes to save."
+      "noChanges": "There are no changes to save.",
+      "tripAddSuccess": "Trip added successfully.",
+      "tripAddError": "Failed to add the trip.",
+      "tripUpdateSuccess": "Trip updated successfully.",
+      "tripUpdateError": "Failed to update the trip.",
+      "tripStatusUpdateSuccess": "Trip status updated.",
+      "tripStatusUpdateError": "Failed to update the trip status.",
+      "tripDeleteSuccess": "Trip deleted successfully.",
+      "tripDeleteError": "Failed to delete the trip."
     },
     "password": {
       "show": "Show password",
@@ -613,9 +621,15 @@
         "editTitle": "Edit trip",
         "routeLabel": "Trip",
         "directionPlaceholder": "City - City",
+        "departureCityLabel": "Departure city",
+        "arrivalCityLabel": "Arrival city",
+        "cityPlaceholder": "City",
+        "dateLabel": "Trip date",
         "arrivalTime": "Arrival time",
-        "seatsLabel": "Seats: occupied/free",
-        "seatsPlaceholder": "0/0"
+        "seatsLabel": "Seats",
+        "seatsPlaceholder": "20",
+        "priceLabel": "Ticket price, ₴",
+        "pricePlaceholder": "0.00"
       },
       "calendarAria": "Open calendar",
       "stats": {
@@ -627,6 +641,10 @@
       "table": {
         "title": "Trips",
         "sort": "Sort",
+        "loading": "Loading trips…",
+        "error": "Could not load trips.",
+        "empty": "No trips for the selected date.",
+        "retry": "Try again",
         "columns": {
           "number": "#",
           "direction": "Trip",

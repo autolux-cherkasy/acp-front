@@ -392,6 +392,14 @@
       "routeUpdateError": "Не вдалося оновити маршрут.",
       "routeDeleteSuccess": "Маршрут успішно видалено.",
       "routeDeleteError": "Не вдалося видалити маршрут.",
+      "tripAddSuccess": "Рейс успішно додано.",
+      "tripAddError": "Не вдалося додати рейс.",
+      "tripUpdateSuccess": "Рейс успішно оновлено.",
+      "tripUpdateError": "Не вдалося оновити рейс.",
+      "tripStatusUpdateSuccess": "Статус рейсу оновлено.",
+      "tripStatusUpdateError": "Не вдалося оновити статус рейсу.",
+      "tripDeleteSuccess": "Рейс успішно видалено.",
+      "tripDeleteError": "Не вдалося видалити рейс.",
       "blockUserSuccess": "Користувача успішно заблоковано.",
       "blockUserError": "Не вдалося заблокувати користувача.",
       "unblockUserSuccess": "Користувача успішно розблоковано.",
@@ -729,9 +737,12 @@
         "departureCityLabel": "Місто відправлення",
         "arrivalCityLabel": "Місто прибуття",
         "cityPlaceholder": "Місто",
+        "dateLabel": "Дата рейсу",
         "arrivalTime": "Час прибуття",
-        "seatsLabel": "Місця: зайнято/вільні",
-        "seatsPlaceholder": "0/0"
+        "seatsLabel": "Кількість місць",
+        "seatsPlaceholder": "20",
+        "priceLabel": "Ціна квитка, ₴",
+        "pricePlaceholder": "0.00"
       },
       "calendarAria": "Відкрити календар",
       "stats": {
@@ -743,6 +754,10 @@
       "table": {
         "title": "Рейси",
         "sort": "Сортувати",
+        "loading": "Завантаження рейсів…",
+        "error": "Не вдалося завантажити рейси.",
+        "empty": "На обрану дату рейсів немає.",
+        "retry": "Спробувати ще раз",
         "columns": {
           "number": "№",
           "direction": "Рейс",
