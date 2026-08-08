@@ -175,7 +175,9 @@ export default function RoutesTable({
                         key={row.id}
                         ref={index === 0 ? firstRowRef : undefined}
                       >
-                        <td className={dashboardTableStyles.tdNum}>
+                        <td
+                          className={`${dashboardTableStyles.tdNum} ${dashboardTableStyles.tdLeft}`}
+                        >
                           {(page - 1) * rowsPerPage + index + 1}
                         </td>
                         <td
@@ -183,7 +185,9 @@ export default function RoutesTable({
                         >
                           {row.direction}
                         </td>
-                        <td className={dashboardTableStyles.td}>
+                        <td
+                          className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft} ${styles.timeCell}`}
+                        >
                           {row.departureTime && row.arrivalTime ? (
                             <>
                               <div>{row.date ?? EM_DASH}</div>
@@ -195,15 +199,21 @@ export default function RoutesTable({
                             EM_DASH
                           )}
                         </td>
-                        <td className={dashboardTableStyles.td}>
+                        <td
+                          className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft}`}
+                        >
                           {row.busNumber ?? EM_DASH}
                         </td>
-                        <td className={dashboardTableStyles.td}>
+                        <td
+                          className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft}`}
+                        >
                           {row.availableSeats != null && row.totalSeats != null
                             ? `${row.availableSeats}/${row.totalSeats}`
                             : EM_DASH}
                         </td>
-                        <td className={dashboardTableStyles.tdStatus}>
+                        <td
+                          className={`${dashboardTableStyles.tdStatus} ${dashboardTableStyles.tdLeft}`}
+                        >
                           <Chip
                             className={`${styles.statusChip} ${getStatusClass(status)}`}
                           >

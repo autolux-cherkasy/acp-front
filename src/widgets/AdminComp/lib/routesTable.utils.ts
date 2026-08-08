@@ -1,5 +1,6 @@
 import type { AdminTripDto } from "@/src/entities/dashboard/api/dashboardTripsApi";
 import type { TripStatus } from "@/src/entities/trip";
+import { formatMetroStops } from "@/src/shared/lib/formatters";
 import type { RouteRow, RoutesStatsProps } from "../model/types";
 import styles from "../ui/admin-routes-table.module.css";
 
@@ -25,7 +26,7 @@ function formatKyivDate(iso: string): string {
 export function mapTripToRow(trip: AdminTripDto): RouteRow {
   return {
     id: trip.id,
-    direction: trip.direction,
+    direction: formatMetroStops(trip.direction),
     date: formatKyivDate(trip.departureTime),
     departureTime: formatKyivTime(trip.departureTime),
     arrivalTime: formatKyivTime(trip.arrivalTime),

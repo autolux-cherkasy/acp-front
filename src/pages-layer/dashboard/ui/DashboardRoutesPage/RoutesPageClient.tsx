@@ -21,7 +21,10 @@ import HandleRoutesModal, {
 } from "@/src/features/admin-modals/HandleRoutesModal/HandleRoutesModal";
 import type { SelectOption } from "@/src/shared/ui/SelectField/SelectField";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
-import { formatDateForApi } from "@/src/shared/lib/formatters";
+import {
+  formatDateForApi,
+  formatMetroStops,
+} from "@/src/shared/lib/formatters";
 import {
   kyivDateOnly,
   kyivWallClockToIso,
@@ -80,7 +83,13 @@ export default function RoutesPageClient() {
   );
 
   const routeOptions: SelectOption[] = useMemo(
-    () => routes.map((route) => ({ value: route.id, label: route.name })),
+    // Значенням лишається id, тож префікс станції в підписі нікуди не поїде
+    // в запит — селект маршрутів просто не розходиться з таблицею.
+    () =>
+      routes.map((route) => ({
+        value: route.id,
+        label: formatMetroStops(route.name),
+      })),
     [routes],
   );
 
