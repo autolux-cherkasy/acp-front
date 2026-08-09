@@ -9,11 +9,14 @@ export function useTicketSearch() {
       const q = query.trim().toLowerCase();
       if (!q) return tickets;
 
+      const phoneQuery = q.replace(/\D/g, "");
+
       return tickets.filter(
         (ticket) =>
           ticket.bookingNumber.toLowerCase().includes(q) ||
           ticket.passengerName.toLowerCase().includes(q) ||
-          ticket.passengerPhone.replace(/\D/g, "").includes(q.replace(/\D/g, ""))
+          (phoneQuery.length > 0 &&
+            ticket.passengerPhone.replace(/\D/g, "").includes(phoneQuery))
       );
     },
     [query]

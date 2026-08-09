@@ -30,6 +30,7 @@ export type ForgotPasswordPayload = {
 export type ResetPasswordPayload = {
   token: string;
   newPassword: string;
+  confirmPassword: string;
 };
 
 export type VerifyEmailOtpPayload = {

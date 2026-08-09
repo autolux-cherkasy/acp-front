@@ -52,6 +52,7 @@ export default function ResetPasswordPage({
       const result = await resetPasswordMutation.mutateAsync({
         token: trimmedToken,
         newPassword,
+        confirmPassword,
       });
 
       reset();

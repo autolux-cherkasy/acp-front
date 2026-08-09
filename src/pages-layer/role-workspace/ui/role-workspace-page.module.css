@@ -163,14 +163,16 @@
 
 .navItemActive::before {
   top: -18px;
-  border-bottom-right-radius: 15px;
-  box-shadow: 12px 12px 0 12px var(--color-page-bg);
+  background: radial-gradient(circle 15px at 3px 3px, transparent 15px, var(--color-page-bg) 15px);
 }
 
 .navItemActive::after {
   bottom: -18px;
-  border-top-right-radius: 15px;
-  box-shadow: 12px -12px 0 12px var(--color-page-bg);
+  background: radial-gradient(
+    circle 15px at 3px 15px,
+    transparent 15px,
+    var(--color-page-bg) 15px
+  );
 }
 
 .navItemActive:hover {
