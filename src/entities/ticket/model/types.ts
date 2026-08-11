@@ -29,6 +29,9 @@ export type Ticket = {
   totalPrice: number;
   status: BookingStatus;
   timerSeconds: number | null;
+  tripId: string;
+  boardingStopId: string;
+  alightingStopId: string;
 };
 
 export type AdminBookingDto = {
@@ -37,6 +40,9 @@ export type AdminBookingDto = {
   passengerName: string;
   phone: string;
   route: string;
+  tripId: string;
+  boardingStopId: string;
+  alightingStopId: string;
   boardingStopName: string;
   alightingStopName: string;
   departureTime: string;

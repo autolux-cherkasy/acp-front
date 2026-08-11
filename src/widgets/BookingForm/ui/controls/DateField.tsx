@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useMemo } from "react";
 
 import { useClickOutside } from "@/src/shared/lib/useClickOutside";
+import { formatDDMMYYYY } from "@/src/entities/trip";
 import MiniCalendar from "../../../MiniCalendar/MiniCalendar";
-import { formatDDMMYYYY } from "../../lib/bookingForm.utils";
 import styles from "../BookingForm.module.css";
 
 type DateFieldProps = {

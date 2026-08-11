@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 
-import type { Trip } from "@/src/entities/trip";
+import { formatTripTime, type Trip } from "@/src/entities/trip";
 
 import ChevronIcon from "@/src/shared/ui/ChevronIcon/ChevronIcon";
 import { useClickOutside } from "@/src/shared/lib/useClickOutside";
-import { formatTripTime } from "../../lib/bookingForm.utils";
 import styles from "../BookingForm.module.css";
 
 type TripTimeSelectProps = {

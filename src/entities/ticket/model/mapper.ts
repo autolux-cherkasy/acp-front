@@ -36,6 +36,9 @@ function mapBookingToTicket(booking: AdminBookingDto): Ticket {
         ticketCount: booking.ticketsCount,
         totalPrice: booking.totalPrice,
         status: STATUS_MAP[booking.status] ?? "pending",
+        tripId: booking.tripId,
+        boardingStopId: booking.boardingStopId,
+        alightingStopId: booking.alightingStopId,
         timerSeconds: booking.expiresAt
             ? Math.max(0, Math.floor((new Date(booking.expiresAt).getTime() - Date.now()) / 1000))
             : null,

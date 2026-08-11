@@ -714,6 +714,7 @@
         "addOrder": "Додати замовлення",
         "details": "Деталі",
         "saveChanges": "Зберегти зміни",
+        "saving": "Збереження...",
         "buy": "Викупити",
         "cancel": "Скасувати"
       },
@@ -722,9 +723,24 @@
         "editOrderTitle": "Редагування замовлення",
         "orderDetailsTitle": "Дані замовлення",
         "routePlaceholder": "м.Кременчук - м.Черкаси",
+        "routeSelectPlaceholder": "Оберіть маршрут",
         "datePlaceholder": "дд.мм.рррр",
+        "timeSelectPlaceholder": "Оберіть рейс",
+        "noTripsForDate": "На цю дату рейсів не знайдено",
         "departureTime": "Час відправлення",
-        "ticketCount": "К-сть квитків"
+        "ticketCount": "К-сть квитків",
+        "toast": {
+          "createSuccess": "Замовлення створено",
+          "updateSuccess": "Замовлення оновлено",
+          "submitError": "Не вдалося зберегти замовлення"
+        },
+        "errors": {
+          "tripRequired": "Оберіть маршрут, дату та рейс",
+          "seatsInvalid": "Вкажіть кількість квитків від 1",
+          "seatsExceedsAvailable": "Недостатньо вільних місць",
+          "nameRequired": "Вкажіть ім'я пасажира",
+          "phoneInvalid": "Телефон має бути у форматі +380XXXXXXXXX"
+        }
       }
     },
     "routes": {

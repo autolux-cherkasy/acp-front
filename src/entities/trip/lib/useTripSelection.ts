@@ -1,20 +1,14 @@
 "use client";
 
-import {
-  getDates,
-  getRoutes,
-  getTrips,
-  RouteSegment,
-  TripDate,
-  TripSearchParams,
-  type Trip,
-} from "@/src/entities/trip";
-
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { buildRouteValue, formatISODate, parseRouteValue } from "../lib/bookingForm.utils";
 
-type UseBookingTripsParams = {
+import { getDates, getRoutes, getTrips } from "../api/trips";
+import type { RouteSegment, Trip, TripDate, TripSearchParams } from "../model/types";
+import { formatDateForApi } from "@/src/shared/lib/formatters";
+import { buildRouteValue, parseRouteValue } from "./tripSelection.utils";
+
+type UseTripSelectionParams = {
   selectedRoute: string;
   selectedDate: Date | null;
 };
@@ -23,13 +17,13 @@ const TRIPS_KEY = "trips";
 const ROUTES_KEY = "routes";
 const DATES_KEY = "dates";
 
-export function useBookingTrips({ selectedRoute, selectedDate }: UseBookingTripsParams) {
+export function useTripSelection({ selectedRoute, selectedDate }: UseTripSelectionParams) {
   const { from: fromStopId, to: toStopId } = parseRouteValue(selectedRoute);
   const params = useMemo<TripSearchParams>(
     () => ({
       fromStopId: fromStopId,
       toStopId: toStopId,
-      date: selectedDate ? formatISODate(selectedDate) : undefined,
+      date: selectedDate ? formatDateForApi(selectedDate) : undefined,
     }),
     [selectedRoute, selectedDate],
   );

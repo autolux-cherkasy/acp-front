@@ -68,6 +68,15 @@ export async function createAdminBooking(payload: CreateAdminBookingPayload): Pr
 
 export type UpdateAdminBookingPayload = {
   status?: ApiBookingStatus;
+  ticketsCount?: number;
+  customerData?: {
+    name?: string;
+    phone?: string;
+    email?: string;
+  };
+  tripId?: string;
+  boardingStopId?: string;
+  alightingStopId?: string;
 };
 
 export async function updateAdminBooking(

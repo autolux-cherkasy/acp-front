@@ -48,3 +48,10 @@
   left: 0;
   z-index: 200;
 }
+
+.errorText {
+  font-family: Roboto, system-ui, sans-serif;
+  font-size: 13px;
+  color: #e04b4b;
+  margin: 0;
+}

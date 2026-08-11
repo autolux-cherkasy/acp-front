@@ -3,14 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
-import { getTripAvailability } from "@/src/entities/trip";
+import { getTripAvailability, sortTripsByTime, useTripSelection } from "@/src/entities/trip";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import { useServerToast } from "@/src/shared/lib/toast";
 import { useBookingStore } from "@/src/shared/store/BookingStore";
 import Button from "@/src/shared/ui/Button/Button";
 import SelectField from "@/src/shared/ui/SelectField/SelectField";
-import { sortTripsByTime } from "../lib/bookingForm.utils";
-import { useBookingTrips } from "../model/useBookingTrips";
 import styles from "./BookingForm.module.css";
 import DateField from "./controls/DateField";
 import PriceField from "./controls/PriceField";
@@ -51,7 +49,7 @@ export default function BookingForm() {
     isDatesError,
     fromStopId,
     toStopId,
-  } = useBookingTrips({
+  } = useTripSelection({
     selectedRoute,
     selectedDate,
   });

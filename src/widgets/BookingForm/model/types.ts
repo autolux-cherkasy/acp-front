@@ -1,12 +1,5 @@
 import type { Trip } from "@/src/entities/trip";
 
-export type RouteOption = {
-  value: string;
-  from: string;
-  to: string;
-  label: string;
-};
-
 export type BookingFormProps = {
   initialTrips?: Trip[];
 };

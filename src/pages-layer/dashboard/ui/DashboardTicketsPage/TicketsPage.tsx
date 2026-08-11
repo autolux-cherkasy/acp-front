@@ -132,12 +132,14 @@ export default function TicketsPage() {
                     routeInfo={
                         ticketToEdit
                             ? {
+                                id: ticketToEdit.id,
                                 bookingNumber: ticketToEdit.bookingNumber,
                                 passengerName: ticketToEdit.passengerName,
                                 passengerPhone: ticketToEdit.passengerPhone,
-                                route: `${ticketToEdit.routeFrom} - ${ticketToEdit.routeTo}`,
+                                tripId: ticketToEdit.tripId,
+                                boardingStopId: ticketToEdit.boardingStopId,
+                                alightingStopId: ticketToEdit.alightingStopId,
                                 date: ticketToEdit.departureDate,
-                                departureTime: ticketToEdit.departureTime,
                                 ticketCount: String(ticketToEdit.ticketCount),
                                 totalPrice: String(ticketToEdit.totalPrice),
                                 status: ticketToEdit.status,
