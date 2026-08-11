@@ -26,6 +26,21 @@ export function unformatLicenseDate(value: string): string {
   return `${year}-${month}-${day}`;
 }
 
+// У дужках після міста бекенд тримає станцію метро без префікса
+// («м.Київ (Харківська)»), а макет показує її як «м.Київ (ст.м.Харківська)».
+// Правка суто відображальна: у запити йде оригінальний рядок напрямку,
+// інакше upsert маршруту за direction плодив би дублікати.
+const METRO_STOP_PREFIX = "ст.м.";
+
+export function formatMetroStops(value: string): string {
+  return value.replace(/\(([^)]*)\)/g, (match, station: string) => {
+    const name = station.trim();
+    if (!name || name.startsWith(METRO_STOP_PREFIX)) return match;
+
+    return `(${METRO_STOP_PREFIX}${name})`;
+  });
+}
+
 export function formatCurrency(value: number): string {
   return new Intl.NumberFormat("uk-UA").format(value) + "\u00A0₴";
 }

@@ -22,6 +22,15 @@
   line-height: 1.32;
 }
 
+/* Кнопка фільтра в шапці накриває ту саму смугу, що й колонки «Статус» і меню
+   дій: ширину міряє useStatusColumnWidth і віддає сюди змінною (фолбек — суми
+   з DashboardTable.module.css). Від'ємний відступ гасить правий padding шапки
+   картки, щоб праві краї кнопки й таблиці збіглись. */
+.sortAction {
+  width: var(--routes-sort-width, 180px);
+  margin-right: -8px;
+}
+
 .tableArea {
   flex: 1;
   min-height: 0;
@@ -34,8 +43,25 @@
   border-radius: 12px;
 }
 
+/* Дата й час у макеті менші за решту клітинок (14px проти 16px) — саме через
+   це двострічкова комірка тримає рядок у 56px, а не розганяє його до 64px. */
+.timeCell > div {
+  font-size: 14px;
+}
+
 .pagination {
   margin-top: auto;
+}
+
+.emptyCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--color-text-secondary, #6b7280);
 }
 
 

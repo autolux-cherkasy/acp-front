@@ -8,14 +8,19 @@ import SelectWithLabel from "@/src/shared/ui/SelectField/SelectWithLabel";
 import { type SelectOption } from "@/src/shared/ui/SelectField/SelectField";
 import styles from "./HandleRoutesModal.module.css";
 
-type RouteFormState = {
+export type RouteFormState = {
+  /** id наявного маршруту; порожній рядок — маршрут задається містами нижче. */
   route: string;
   departureCity: string;
   arrivalCity: string;
+  /** YYYY-MM-DD, київська доба. */
+  date: string;
   departureTime: string;
   arrivalTime: string;
+  /** id автобуса. */
   vehicle: string;
   seats: string;
+  price: string;
   status: string;
 };
 
@@ -26,7 +31,6 @@ type HandleRoutesModalProps = {
   onDelete?: () => void;
   initialData?: Partial<RouteFormState>;
   routeOptions?: SelectOption[];
-  timeOptions?: SelectOption[];
   vehicleOptions?: SelectOption[];
   statusOptions?: SelectOption[];
 };
@@ -38,21 +42,27 @@ export default function HandleRoutesModal({
   onDelete,
   initialData,
   routeOptions = [],
-  timeOptions = [],
   vehicleOptions = [],
   statusOptions = [],
 }: HandleRoutesModalProps) {
   const { t } = useI18n();
 
-  const { register, handleSubmit, control } = useForm<RouteFormState>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<RouteFormState>({
     defaultValues: {
       route: initialData?.route ?? "",
       departureCity: initialData?.departureCity ?? "",
       arrivalCity: initialData?.arrivalCity ?? "",
+      date: initialData?.date ?? "",
       departureTime: initialData?.departureTime ?? "",
       arrivalTime: initialData?.arrivalTime ?? "",
       vehicle: initialData?.vehicle ?? "",
       seats: initialData?.seats ?? "",
+      price: initialData?.price ?? "",
       status: initialData?.status ?? "",
     },
   });
@@ -91,20 +101,25 @@ export default function HandleRoutesModal({
         {...register("arrivalCity")}
       />
 
+      <InputWithLabel
+        type="date"
+        label={t("dispatcherArea.routes.modal.dateLabel")}
+        aria-invalid={Boolean(errors.date)}
+        {...register("date", { required: true })}
+      />
+
       <div className={styles.row}>
-        <SelectWithLabel
-          control={control}
-          name="departureTime"
+        <InputWithLabel
+          type="time"
           label={t("dispatcherArea.tickets.modal.departureTime")}
-          options={timeOptions}
-          placeholder={t("bookingForm.time.placeholder")}
-          menuZIndex={10001}
+          aria-invalid={Boolean(errors.departureTime)}
+          {...register("departureTime", { required: true })}
         />
         <InputWithLabel
+          type="time"
           label={t("dispatcherArea.routes.modal.arrivalTime")}
-          placeholder="00:00"
-          trailingAdornment="/icons/Footer/clock.svg"
-          {...register("arrivalTime")}
+          aria-invalid={Boolean(errors.arrivalTime)}
+          {...register("arrivalTime", { required: true })}
         />
       </div>
 
@@ -118,11 +133,23 @@ export default function HandleRoutesModal({
           menuZIndex={10001}
         />
         <InputWithLabel
+          type="number"
+          min={1}
           label={t("dispatcherArea.routes.modal.seatsLabel")}
           placeholder={t("dispatcherArea.routes.modal.seatsPlaceholder")}
           {...register("seats")}
         />
       </div>
+
+      <InputWithLabel
+        type="number"
+        min={0}
+        step="0.01"
+        label={t("dispatcherArea.routes.modal.priceLabel")}
+        placeholder={t("dispatcherArea.routes.modal.pricePlaceholder")}
+        aria-invalid={Boolean(errors.price)}
+        {...register("price", { required: true })}
+      />
 
       <SelectWithLabel
         control={control}

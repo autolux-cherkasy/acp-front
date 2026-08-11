@@ -17,12 +17,14 @@ type Props<T extends string = SortOption> = {
   options?: TicketSortDropdownOption<T>[];
   defaultLabel?: string;
   ariaLabel?: string;
+  className?: string;
   value: T | "";
   onChange: (value: T) => void;
 };
 export default function TicketSortDropdown<T extends string = SortOption>({
   options,
   defaultLabel,
+  className,
   value,
   onChange,
 }: Props<T>) {
@@ -58,7 +60,7 @@ export default function TicketSortDropdown<T extends string = SortOption>({
     t("dispatcherArea.routes.table.sort");
 
   return (
-    <div className={styles.wrapper}>
+    <div className={className ? `${styles.wrapper} ${className}` : styles.wrapper}>
       <DropdownMenu.Root open={open} onOpenChange={setOpen}>
         <DropdownMenu.Trigger className={styles.trigger}>
           <span className={styles.label}>{selectedLabel}</span>

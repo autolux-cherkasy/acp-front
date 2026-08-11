@@ -3,15 +3,19 @@
   flex-shrink: 0;
 }
 
+/* Розміри з макета: 170×35, світла плашка на картці без обведення.
+   Ширина тягнеться за обгорткою — так її може задати місце вживання
+   (напр. таблиця логістики рівняє кнопку по колонці «Статус»). */
 .trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   min-width: 170px;
   gap: 10px;
   border-radius: 12px;
-  border: 1px solid var(--color-brand);
-  padding: 8px 24px;
+  border: none;
+  padding: 6px 12px;
   background: var(--color-page-bg, #fcfefe);
   font-family: var(--font-roboto);
   font-weight: 500;
