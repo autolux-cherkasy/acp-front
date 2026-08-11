@@ -19,4 +19,5 @@ export {
   ADMIN_TICKETS_PAGE_SIZE,
 } from "./model/api";
 export type { CreateAdminBookingPayload, UpdateAdminBookingPayload } from "./model/api";
+export { hasLiveTimer } from "./model/status";
 export { default as TicketStatusBadge } from "./ui/TicketStatusBadge/TicketStatusBadge";

@@ -1,9 +1,10 @@
 "use client";
 
 import type { ApiBookingStatus, Ticket } from "@/src/entities/ticket";
-import { updateAdminBooking } from "@/src/entities/ticket";
+import { hasLiveTimer, updateAdminBooking } from "@/src/entities/ticket";
 import { useCountdown } from "@/src/features/ticket-timer";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { formatDuration } from "@/src/shared/lib/formattimer";
 import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
 import Button from "@/src/shared/ui/Button/Button";
 import DetailModalFrame from "@/src/shared/ui/DetailModalFrame/DetailModalFrame";
@@ -19,12 +20,6 @@ type Props = {
   onClose: () => void;
   onEdit?: () => void;
 };
-
-function formatSeconds(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainder = seconds % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
-}
 
 export default function OrderDetailsModal({ ticket, onClose, onEdit }: Props) {
   return (
@@ -47,8 +42,10 @@ function OrderDetailsModalBody({
   onClose: () => void;
   onEdit?: () => void;
 }) {
-  const { t } = useI18n();
-  const remainingSeconds = useCountdown(ticket.timerSeconds);
+  const { locale, t } = useI18n();
+  // На відміну від табличного таймера тут показуємо повний залишок до
+  // expiresAt, без 10-хвилинного вікна.
+  const remainingSeconds = useCountdown(hasLiveTimer(ticket.status) ? ticket.timerSeconds : null);
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
 
   useEffect(() => {
@@ -126,9 +123,7 @@ function OrderDetailsModalBody({
               {t("dispatcherArea.tickets.timer.untilBookingEnd")}:
             </span>
             <span className={styles.metaValue}>
-              {remainingSeconds !== null
-                ? `${formatSeconds(remainingSeconds)} ${t("dispatcherArea.tickets.timer.minutes")}`
-                : "—"}
+              {remainingSeconds !== null ? formatDuration(remainingSeconds, locale) : "—"}
             </span>
           </div>
 

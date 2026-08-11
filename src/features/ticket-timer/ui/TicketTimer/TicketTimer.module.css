@@ -16,6 +16,11 @@
   padding: 3px 0;
 }
 
+/* Залишок ще не увійшов у 10-хвилинне вікно: таймер стоїть і неактивний. */
+.dormant {
+  opacity: 0.45;
+}
+
 .timer {
   display: inline-flex;
   align-items: center;

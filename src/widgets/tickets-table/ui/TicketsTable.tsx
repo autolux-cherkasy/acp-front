@@ -1,6 +1,6 @@
 "use client";
 
-import { TicketStatusBadge } from "@/src/entities/ticket";
+import { hasLiveTimer, TicketStatusBadge } from "@/src/entities/ticket";
 import type { Ticket } from "@/src/entities/ticket";
 import { TicketTimer } from "@/src/features/ticket-timer";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
@@ -12,12 +12,19 @@ type Props = {
   tickets: Ticket[];
   isLoading?: boolean;
   onDetails: (ticketId: string) => void;
+  /** Таймер брони дійшов до межі — замовлення пора скасувати. */
+  onTimerExpire: (ticketId: string) => void;
 };
 
 const COLUMN_COUNT = 8;
 const SKELETON_ROW_COUNT = 8;
 
-export default function TicketsTable({ tickets, isLoading = false, onDetails }: Props) {
+export default function TicketsTable({
+  tickets,
+  isLoading = false,
+  onDetails,
+  onTimerExpire,
+}: Props) {
   const { locale, t } = useI18n();
 
   return (
@@ -65,6 +72,7 @@ export default function TicketsTable({ tickets, isLoading = false, onDetails }: 
                 rowNumber={index + 1}
                 locale={locale}
                 onDetails={onDetails}
+                onTimerExpire={onTimerExpire}
               />
             ))
           )}
@@ -79,9 +87,10 @@ type TicketRowProps = {
   rowNumber: number;
   locale: string;
   onDetails: (ticketId: string) => void;
+  onTimerExpire: (ticketId: string) => void;
 };
 
-function TicketRow({ ticket, rowNumber, locale, onDetails }: TicketRowProps) {
+function TicketRow({ ticket, rowNumber, locale, onDetails, onTimerExpire }: TicketRowProps) {
   const { t } = useI18n();
   const routeLine = ticket.routeStop
     ? `${ticket.routeFrom}-${ticket.routeTo}`
@@ -119,7 +128,11 @@ function TicketRow({ ticket, rowNumber, locale, onDetails }: TicketRowProps) {
       </td>
 
       <td className={styles.td}>
-        <TicketTimer initialSeconds={ticket.timerSeconds} />
+        {/* Для статусів без живої брони таймер не має що рахувати — там прочерк. */}
+        <TicketTimer
+          initialSeconds={hasLiveTimer(ticket.status) ? ticket.timerSeconds : null}
+          onExpire={() => onTimerExpire(ticket.id)}
+        />
       </td>
 
       <td className={styles.td}>

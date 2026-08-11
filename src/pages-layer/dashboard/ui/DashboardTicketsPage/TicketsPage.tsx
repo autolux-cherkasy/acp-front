@@ -5,6 +5,7 @@ import type { Ticket } from "@/src/entities/ticket";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useTicketSearch } from "@/src/features/search-tickets";
 import { useTicketSort } from "@/src/features/sort-tickets";
+import { useAutoCancelExpiredTickets } from "@/src/features/ticket-timer";
 import type { SortOption } from "@/src/features/sort-tickets";
 import { TicketsTable } from "@/src/widgets/tickets-table";
 import { TicketsToolbar } from "@/src/widgets/tickets-toolbar";
@@ -33,6 +34,7 @@ export default function TicketsPage() {
     const { t } = useI18n();
     const { query, setQuery, debouncedQuery } = useTicketSearch();
     const { sortOption, setSortOption, sortQuery } = useTicketSort();
+    const autoCancelExpired = useAutoCancelExpiredTickets();
     const newOrder = useDisclosure();
     const orderDetails = useDisclosure<string>();
     const [ticketToEdit, setTicketToEdit] = useState<Ticket | null>(null);
@@ -107,6 +109,7 @@ export default function TicketsPage() {
                         tickets={tickets}
                         isLoading={isLoading}
                         onDetails={(id) => orderDetails.open(id)}
+                        onTimerExpire={autoCancelExpired}
                     />
 
                     {totalPages > 1 && (

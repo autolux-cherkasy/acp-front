@@ -2,61 +2,51 @@ import { useEffect, useState } from "react";
 
 /**
  * Бронь тримає місце аж до 5 хвилин перед посадкою, тобто залишок може бути
- * і кілька діб. Табло показує лише останні 10 хвилин: доти таймер статично
- * стоїть на 10:00 і стартує рівно тоді, коли залишок у це вікно входить.
+ * і кілька діб. Табло показує лише останні 10 хвилин, а на 5 хвилинах бронь
+ * згорає. Саме вікно й поріг живуть у TicketTimer — хук віддає сирий залишок.
  */
 export const COUNTDOWN_WINDOW_SECONDS = 600;
+export const CANCEL_FLOOR_SECONDS = 300;
 
-const MAX_TIMEOUT_MS = 2_147_483_647;
+type CountdownState = {
+  source: number | null;
+  seconds: number | null;
+};
 
-function toDisplayedSeconds(initialSeconds: number | null): number | null {
-  if (initialSeconds === null) return null;
-
-  return Math.min(Math.max(initialSeconds, 0), COUNTDOWN_WINDOW_SECONDS);
+function createState(initialSeconds: number | null): CountdownState {
+  return {
+    source: initialSeconds,
+    seconds: initialSeconds === null ? null : Math.max(0, initialSeconds),
+  };
 }
 
 export function useCountdown(initialSeconds: number | null): number | null {
-  const [state, setState] = useState(() => ({
-    source: initialSeconds,
-    seconds: toDisplayedSeconds(initialSeconds),
-  }));
+  const [state, setState] = useState(() => createState(initialSeconds));
 
   // Новий залишок з бекенда скидає таймер ще під час рендеру, без зайвого
   // проходу через ефект.
   if (state.source !== initialSeconds) {
-    setState({ source: initialSeconds, seconds: toDisplayedSeconds(initialSeconds) });
+    setState(createState(initialSeconds));
   }
 
   useEffect(() => {
     if (initialSeconds === null || initialSeconds <= 0) return;
 
-    let interval: ReturnType<typeof setInterval> | undefined;
+    // Рахуємо від абсолютного дедлайну, а не декрементом: інакше таймер
+    // дрейфує і відстає, поки вкладка у фоні.
+    const deadline = Date.now() + initialSeconds * 1000;
 
-    const startTicking = () => {
-      interval = setInterval(() => {
-        setState((prev) => {
-          if (prev.seconds === null || prev.seconds <= 1) {
-            clearInterval(interval);
-            return { ...prev, seconds: 0 };
-          }
+    const interval = setInterval(() => {
+      const seconds = Math.max(0, Math.round((deadline - Date.now()) / 1000));
 
-          return { ...prev, seconds: prev.seconds - 1 };
-        });
-      }, 1000);
-    };
+      if (seconds === 0) {
+        clearInterval(interval);
+      }
 
-    const delayMs = Math.max(0, initialSeconds - COUNTDOWN_WINDOW_SECONDS) * 1000;
+      setState((prev) => (prev.seconds === seconds ? prev : { ...prev, seconds }));
+    }, 1000);
 
-    if (delayMs > MAX_TIMEOUT_MS) {
-      return;
-    }
-
-    const startTimeout = setTimeout(startTicking, delayMs);
-
-    return () => {
-      clearTimeout(startTimeout);
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [initialSeconds]);
 
   return state.seconds;
