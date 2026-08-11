@@ -4,3 +4,13 @@
   flex-direction: column;
   gap: 24px;
 }
+
+.message {
+  font-family: var(--font-roboto), sans-serif;
+  font-size: 15px;
+  color: var(--color-text-strong);
+}
+
+.pagination {
+  align-self: center;
+}

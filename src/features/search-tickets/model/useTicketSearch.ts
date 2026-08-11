@@ -1,26 +1,20 @@
-import { useCallback, useState } from "react";
-import type { Ticket } from "@/src/entities/ticket";
+import { useEffect, useState } from "react";
 
+const SEARCH_DEBOUNCE_MS = 300;
+
+/**
+ * Пошук виконує бекенд (search покриває № броні, прізвище й телефон),
+ * тому тут лишається тільки поле вводу з дебаунсом.
+ */
 export function useTicketSearch() {
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
 
-  const filterTickets = useCallback(
-    (tickets: Ticket[]): Ticket[] => {
-      const q = query.trim().toLowerCase();
-      if (!q) return tickets;
+  useEffect(() => {
+    const timeout = setTimeout(() => setDebouncedQuery(query.trim()), SEARCH_DEBOUNCE_MS);
 
-      const phoneQuery = q.replace(/\D/g, "");
+    return () => clearTimeout(timeout);
+  }, [query]);
 
-      return tickets.filter(
-        (ticket) =>
-          ticket.bookingNumber.toLowerCase().includes(q) ||
-          ticket.passengerName.toLowerCase().includes(q) ||
-          (phoneQuery.length > 0 &&
-            ticket.passengerPhone.replace(/\D/g, "").includes(phoneQuery))
-      );
-    },
-    [query]
-  );
-
-  return { query, setQuery, filterTickets };
+  return { query, setQuery, debouncedQuery };
 }

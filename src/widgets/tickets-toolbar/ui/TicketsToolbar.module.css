@@ -26,6 +26,12 @@
   margin-left: auto;
 }
 
+.rangeSeparator {
+  font-family: var(--font-roboto), sans-serif;
+  font-size: 14px;
+  color: var(--color-text-strong);
+}
+
 @media (max-width: 800px) {
   .toolbar {
     flex-wrap: wrap;

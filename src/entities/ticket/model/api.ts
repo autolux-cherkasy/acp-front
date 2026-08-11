@@ -1,19 +1,48 @@
 import { apiFetch } from "@/src/shared/api/http";
-import type { Ticket, AdminBookingsResponse, AdminBookingDto, ApiBookingStatus } from "./types";
+import type {
+  Ticket,
+  AdminBookingsResponse,
+  AdminBookingDto,
+  AdminTicketsPage,
+  AdminTicketsQuery,
+  ApiBookingStatus,
+} from "./types";
 import mapBookingToTicket from "@/src/entities/ticket/model/mapper";
 
-export async function getAdminTickets(date: string): Promise<Ticket[]> {
-  const params = new URLSearchParams({
-    date,
-    page: "1",
-    limit: "10",
-  });
+export const ADMIN_TICKETS_PAGE_SIZE = 10;
+
+function buildAdminTicketsParams(query: AdminTicketsQuery): URLSearchParams {
+  const params = new URLSearchParams();
+
+  params.set("page", String(query.page ?? 1));
+  params.set("limit", String(query.limit ?? ADMIN_TICKETS_PAGE_SIZE));
+
+  if (query.dateFrom) params.set("dateFrom", query.dateFrom);
+  if (query.dateTo) params.set("dateTo", query.dateTo);
+  if (query.sortBy) params.set("sortBy", query.sortBy);
+  if (query.sortOrder) params.set("sortOrder", query.sortOrder);
+
+  const search = query.search?.trim();
+  if (search) params.set("search", search);
+
+  // Бекенд приймає status як повторюваний параметр, тому "оплачені"
+  // (CONFIRMED + BUYOUT) лишаються одним запитом.
+  query.status?.forEach((status) => params.append("status", status));
+
+  return params;
+}
+
+export async function getAdminTickets(query: AdminTicketsQuery): Promise<AdminTicketsPage> {
+  const params = buildAdminTicketsParams(query);
 
   const response = await apiFetch<AdminBookingsResponse>(
       `/admin/bookings?${params.toString()}`,
   );
 
-  return response.data.map(mapBookingToTicket);
+  return {
+    tickets: response.data.map(mapBookingToTicket),
+    pagination: response.pagination,
+  };
 }
 
 export type CreateAdminBookingPayload = {

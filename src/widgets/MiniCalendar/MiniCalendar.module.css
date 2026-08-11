@@ -212,3 +212,10 @@
   background: rgba(34, 96, 120, 0.16);
   box-shadow: inset 0 0 0 1px var(--color-brand, var(--color-brand));
 }
+
+/* Дні всередині діапазону: та сама заливка, але без рамки - рамку мають
+   тільки межі "від" і "по". */
+.inRange {
+  background: rgba(34, 96, 120, 0.16);
+  border-radius: 0;
+}

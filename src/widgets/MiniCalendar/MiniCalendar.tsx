@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import styles from "./MiniCalendar.module.css";
 
-type Props = {
-  value: Date | null;
-  onChange: (d: Date) => void;
+export type DateRange = { from: Date; to: Date };
+
+type BaseProps = {
   onClose: () => void;
   minDate?: Date;
   maxDate?: Date;
@@ -15,6 +15,20 @@ type Props = {
   months?: string[];
   weekdays?: string[];
 };
+
+type SingleProps = BaseProps & {
+  mode?: "single";
+  value: Date | null;
+  onChange: (d: Date) => void;
+};
+
+type RangeProps = BaseProps & {
+  mode: "range";
+  value: DateRange | null;
+  onChange: (range: DateRange) => void;
+};
+
+type Props = SingleProps | RangeProps;
 
 const DEFAULT_MONTHS = [
   "Січень",
@@ -58,23 +72,24 @@ function mondayIndex(jsDay: number) {
   return (jsDay + 6) % 7;
 }
 
-export default function MiniCalendar({
-  value,
-  onChange,
-  onClose,
-  minDate,
-  maxDate,
-  availableDates,
-  months,
-  weekdays,
-}: Props) {
+export default function MiniCalendar(props: Props) {
+  const { onClose, minDate, maxDate, availableDates, months, weekdays } = props;
+
+  const isRange = props.mode === "range";
+  const selectedRange = props.mode === "range" ? props.value : null;
+  const selectedDate = props.mode === "range" ? null : props.value;
+
+  const [pendingStart, setPendingStart] = useState<Date | null>(null);
+
   const locMonths = months && months.length === 12 ? months : DEFAULT_MONTHS;
   const locWeekdays = weekdays && weekdays.length === 7 ? weekdays : DEFAULT_WEEKDAYS;
 
   const normalizedMinDate = useMemo(() => (minDate ? startOfDay(minDate) : null), [minDate]);
   const normalizedMaxDate = useMemo(() => (maxDate ? startOfDay(maxDate) : null), [maxDate]);
   const availableDateSet = useMemo(() => new Set(availableDates ?? []), [availableDates]);
-  const [cursor, setCursor] = useState<Date>(() => value ?? normalizedMinDate ?? new Date());
+  const [cursor, setCursor] = useState<Date>(
+    () => selectedRange?.from ?? selectedDate ?? normalizedMinDate ?? new Date(),
+  );
 
   const monthTitle = useMemo(() => locMonths[cursor.getMonth()], [cursor, locMonths]);
   const yearTitle = useMemo(() => String(cursor.getFullYear()), [cursor]);
@@ -127,12 +142,40 @@ export default function MiniCalendar({
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
 
-  const selected = value;
+  // Поки чекаємо на другий клік, підсвіченим лишається тільки перший день.
+  const highlightStart = isRange ? (pendingStart ?? selectedRange?.from ?? null) : selectedDate;
+  const highlightEnd = isRange ? (pendingStart ?? selectedRange?.to ?? null) : selectedDate;
+
   const canGoToPreviousMonth =
     normalizedMinDate == null ||
     cursor.getFullYear() > normalizedMinDate.getFullYear() ||
     (cursor.getFullYear() === normalizedMinDate.getFullYear() &&
       cursor.getMonth() > normalizedMinDate.getMonth());
+
+  function handleSelect(date: Date) {
+    if (props.mode !== "range") {
+      props.onChange(date);
+      onClose();
+      return;
+    }
+
+    // Перший клік фіксує один день, другий добудовує межу з того боку, з якого
+    // стоїть обрана дата. Наступний клік починає вибір спочатку.
+    if (!pendingStart) {
+      setPendingStart(date);
+      props.onChange({ from: date, to: date });
+      return;
+    }
+
+    const startsEarlier = startOfDay(date) < startOfDay(pendingStart);
+
+    props.onChange({
+      from: startsEarlier ? date : pendingStart,
+      to: startsEarlier ? pendingStart : date,
+    });
+    setPendingStart(null);
+    onClose();
+  }
 
   return (
     <div className={styles.wrap} role="dialog" aria-label="Calendar">
@@ -180,7 +223,17 @@ export default function MiniCalendar({
           const isDisabled =
             (normalizedMinDate != null && startOfDay(cell.date) < normalizedMinDate) ||
             (normalizedMaxDate != null && startOfDay(cell.date) > normalizedMaxDate);
-          const isSelected = !isDisabled && selected ? isSameDay(cell.date, selected) : false;
+          const isSelected =
+            !isDisabled &&
+            ((highlightStart != null && isSameDay(cell.date, highlightStart)) ||
+              (highlightEnd != null && isSameDay(cell.date, highlightEnd)));
+          const isInRange =
+            !isDisabled &&
+            !isSelected &&
+            highlightStart != null &&
+            highlightEnd != null &&
+            startOfDay(cell.date) > startOfDay(highlightStart) &&
+            startOfDay(cell.date) < startOfDay(highlightEnd);
           const isAvailable = !isDisabled && availableDateSet.has(toDateKey(cell.date));
 
           return (
@@ -193,6 +246,7 @@ export default function MiniCalendar({
                 isWeekend ? styles.cellWeekend : "",
                 isDisabled ? styles.cellDisabled : "",
                 isAvailable ? styles.cellAvailable : "",
+                isInRange ? styles.inRange : "",
                 isSelected ? styles.selected : "",
               ].join(" ")}
               onClick={() => {
@@ -200,8 +254,7 @@ export default function MiniCalendar({
                   return;
                 }
 
-                onChange(cell.date);
-                onClose();
+                handleSelect(cell.date);
               }}
               disabled={isDisabled}
             >

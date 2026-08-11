@@ -10,17 +10,12 @@ type Props = {
   initialSeconds: number | null;
 };
 
+// Залишок нормалізує useCountdown, тож тут завжди не більше за 10:00.
 function formatTime(totalSeconds: number): string {
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
 
-    const time = [hours, minutes, seconds]
-        .map((value) => String(value).padStart(2, "0"))
-        .join(":");
-
-    return days > 0 ? `${days}д ${time}` : time;
+    return [minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
 }
 
 export default function TicketTimer({ initialSeconds }: Props) {

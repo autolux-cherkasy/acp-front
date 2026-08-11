@@ -48,12 +48,35 @@ export type AdminBookingDto = {
   expiresAt: string | null;
 };
 
+export type AdminBookingsPagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
 export type AdminBookingsResponse = {
   data: AdminBookingDto[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+  pagination: AdminBookingsPagination;
+};
+
+/** Сортування, яке підтримує GET /admin/bookings. */
+export type AdminTicketsSortBy = "date" | "time" | "status";
+export type AdminTicketsSortOrder = "asc" | "desc";
+
+export type AdminTicketsQuery = {
+  /** YYYY-MM-DD включно, київська доба. Обидві межі опціональні. */
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: ApiBookingStatus[];
+  sortBy?: AdminTicketsSortBy;
+  sortOrder?: AdminTicketsSortOrder;
+};
+
+export type AdminTicketsPage = {
+  tickets: Ticket[];
+  pagination: AdminBookingsPagination;
 };
