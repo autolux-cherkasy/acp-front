@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { StatusDropdown } from "@/src/features/change-trip-status";
 import type { TripStatus } from "@/src/entities/trip";
 import {
@@ -20,7 +20,7 @@ import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import Chip from "@/src/shared/ui/Chip/Chip";
 import { getStatusClass } from "../lib/routesTable.utils";
-import { useRoutesTable } from "../model/useRoutesTable";
+import { useRoutesTable, useStatusColumnWidth } from "../model/useRoutesTable";
 import type { RouteRow } from "../model/types";
 import styles from "./admin-routes-table.module.css";
 
@@ -47,6 +47,11 @@ export default function RoutesTable({
 }: RoutesTableProps) {
   const { t } = useI18n();
   const { openDropdownId, setOpenDropdownId } = useRoutesTable();
+  const {
+    statusColRef,
+    actionColRef,
+    width: sortActionWidth,
+  } = useStatusColumnWidth();
   const [selectedFilter, setSelectedFilter] =
     useState<RouteFilterOption>("__all__");
 
@@ -109,13 +114,22 @@ export default function RoutesTable({
       : t("dispatcherArea.routes.table.empty");
 
   return (
-    <div ref={cardRef} className={styles.cardRoot}>
+    <div
+      ref={cardRef}
+      className={styles.cardRoot}
+      style={
+        sortActionWidth != null
+          ? ({ "--routes-sort-width": `${sortActionWidth}px` } as CSSProperties)
+          : undefined
+      }
+    >
       <DashboardCard
         className={styles.card}
         title={t("dispatcherArea.routes.table.title")}
         headerRef={headerRef}
         headerAction={
           <TicketSortDropdown
+            className={styles.sortAction}
             ariaLabel={t("dispatcherArea.routes.table.sort")}
             defaultLabel={t("dispatcherArea.routes.table.filters.all")}
             options={filterOptions}
@@ -146,10 +160,10 @@ export default function RoutesTable({
                 <th className={dashboardTableStyles.th}>
                   {t("dispatcherArea.routes.table.columns.seats")}
                 </th>
-                <th className={dashboardTableStyles.thStatus}>
+                <th ref={statusColRef} className={dashboardTableStyles.thStatus}>
                   {t("dispatcherArea.routes.table.columns.status")}
                 </th>
-                <th className={dashboardTableStyles.thAction} />
+                <th ref={actionColRef} className={dashboardTableStyles.thAction} />
               </DashboardThead>
               <tbody>
                 {paginatedRows.length === 0 ? (
