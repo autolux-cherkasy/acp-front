@@ -6,6 +6,7 @@ import AdminModalFrame from "@/src/shared/ui/AdminModalFrame/AdminModalFrame";
 import InputWithLabel from "@/src/shared/ui/InputWithLabel/InputWithLabel";
 import SelectWithLabel from "@/src/shared/ui/SelectField/SelectWithLabel";
 import { type SelectOption } from "@/src/shared/ui/SelectField/SelectField";
+import { DatePickerWithLabel } from "@/src/widgets/MiniCalendar";
 import styles from "./HandleRoutesModal.module.css";
 
 export type RouteFormState = {
@@ -101,11 +102,12 @@ export default function HandleRoutesModal({
         {...register("arrivalCity")}
       />
 
-      <InputWithLabel
-        type="date"
+      <DatePickerWithLabel
+        control={control}
+        name="date"
         label={t("dispatcherArea.routes.modal.dateLabel")}
-        aria-invalid={Boolean(errors.date)}
-        {...register("date", { required: true })}
+        placeholder={t("dispatcherArea.tickets.modal.datePlaceholder")}
+        required
       />
 
       <div className={styles.row}>

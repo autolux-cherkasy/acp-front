@@ -1,0 +1,20 @@
+.anchor {
+  position: relative;
+  width: 100%;
+}
+
+.trigger {
+  cursor: pointer;
+}
+
+.trigger:disabled {
+  cursor: not-allowed;
+}
+
+/* Вище за меню селектів у тій самій модалці (menuZIndex 10001). */
+.popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 10002;
+}
