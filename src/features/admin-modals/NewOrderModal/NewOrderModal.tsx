@@ -7,7 +7,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import MiniCalendar from "@/src/widgets/MiniCalendar/MiniCalendar";
 import { useClickOutside } from "@/src/shared/lib/useClickOutside";
 import { createAdminBooking, updateAdminBooking } from "@/src/entities/ticket";
-import type { ApiBookingStatus, TicketStatus, UpdateAdminBookingPayload } from "@/src/entities/ticket";
+import type {
+  AdminTicketsPage,
+  ApiBookingStatus,
+  TicketStatus,
+  UpdateAdminBookingPayload,
+} from "@/src/entities/ticket";
 import {
   buildRouteValue,
   formatDDMMYYYY,
@@ -27,9 +32,7 @@ import styles from "./NewOrderModal.module.css";
 import AdminModalHeader from "@/src/shared/ui/AdminModalHeader/AdminModalHeader";
 
 const PHONE_PATTERN = /^\+380\d{9}$/;
-// Radix Popover portals to document.body, so its menu needs a z-index above
-// the modal surface's (10000, see ModalFrame.module.css) to render on top of it —
-// same value other admin modals use (e.g. HandleRoutesModal, BusModal).
+
 const MODAL_SELECT_MENU_Z_INDEX = 10001;
 
 type RouteInfo = {
@@ -194,12 +197,51 @@ function NewOrderModalBody({
   const updateMutation = useMutation({
     mutationFn: (payload: UpdateAdminBookingPayload) =>
       updateAdminBooking(routeInfo!.id, payload),
+    // Рядок уже на екрані, тож правки видно одразу. Кешів кілька — по одному на
+    // комбінацію фільтрів і сторінку, — тому проходимо всі через setQueriesData.
+    onMutate: async (payload) => {
+      const filter = { queryKey: ["admin-bookings"] };
+      await queryClient.cancelQueries(filter);
+      const previous = queryClient.getQueriesData<AdminTicketsPage>(filter);
+
+      queryClient.setQueriesData<AdminTicketsPage>(filter, (old) =>
+        old
+          ? {
+              ...old,
+              tickets: old.tickets.map((ticket) =>
+                ticket.id === routeInfo?.id
+                  ? {
+                      ...ticket,
+                      ...(payload.status && {
+                        status: payload.status === "BUYOUT" ? "completed" : "reserved",
+                      }),
+                      ...(payload.ticketsCount !== undefined && {
+                        ticketCount: payload.ticketsCount,
+                      }),
+                      ...(payload.customerData?.name && {
+                        passengerName: payload.customerData.name,
+                      }),
+                      ...(payload.customerData?.phone && {
+                        passengerPhone: payload.customerData.phone,
+                      }),
+                    }
+                  : ticket,
+              ),
+            }
+          : old,
+      );
+
+      return { previous };
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["admin-bookings"] });
       notifySuccess(undefined, t("dispatcherArea.tickets.modal.toast.updateSuccess"));
       onClose();
     },
-    onError: (error) => notifyError(error, t("dispatcherArea.tickets.modal.toast.submitError")),
+    onError: (error, _payload, context) => {
+      context?.previous.forEach(([key, data]) => queryClient.setQueryData(key, data));
+      notifyError(error, t("dispatcherArea.tickets.modal.toast.submitError"));
+    },
   });
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;

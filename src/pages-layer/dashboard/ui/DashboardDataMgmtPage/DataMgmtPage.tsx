@@ -108,6 +108,7 @@ const DataMgmtPage = () => {
     scheduleData?.map((route) => ({
       id: route.id,
       title: route.name,
+      ids: route.schedules.map((s) => s.id),
       rows: route.schedules.map((s) => [
         s.direction,
         s.departureTime,
@@ -174,7 +175,10 @@ const DataMgmtPage = () => {
     } else {
       set(MOCK_DATA_BY_TAB[tab]?.sections ?? []);
     }
-  }, [tab, scheduleData, fleetData, staffData, cafeData]);
+    // availableDrivers живить селект водія у fleetSections і приходить окремим
+    // запитом — без нього в залежностях секції лишалися з порожнім options,
+    // якщо список автобусів встигав завантажитись першим.
+  }, [tab, scheduleData, fleetData, staffData, cafeData, availableDrivers]);
 
   useEffect(() => {
     const setT = (v: string) => setTab(v);

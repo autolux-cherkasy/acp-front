@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { showServerToast } from "@/src/shared/lib/toast";
 import {
+  CompanySettingsResponse,
   getCompanySettings,
   getPermissions,
   getPhones,
@@ -42,11 +43,22 @@ export function useUpdateCompanyMutation() {
   const { t } = useI18n();
   return useMutation({
     mutationFn: (data: UpdateCompanyPayload) => updateCompanySettings(data),
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: [SETTINGS_COMPANY_KEY] });
+      const previous = queryClient.getQueryData<CompanySettingsResponse>([SETTINGS_COMPANY_KEY]);
+      queryClient.setQueryData<CompanySettingsResponse>([SETTINGS_COMPANY_KEY], (old) =>
+        old ? { ...old, ...data } : old,
+      );
+      return { previous };
+    },
     onSuccess: (updated) => {
       queryClient.setQueryData([SETTINGS_COMPANY_KEY], updated);
       showServerToast({ type: "success", successMessage: t("common.toast.settingsUpdateSuccess") });
     },
-    onError: (error) => {
+    onError: (error, _data, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData([SETTINGS_COMPANY_KEY], context.previous);
+      }
       showServerToast({ type: "error", error, errorMessage: t("common.toast.settingsUpdateError") });
     },
   });

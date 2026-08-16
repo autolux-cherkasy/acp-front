@@ -41,6 +41,9 @@ import {
   useAddRouteMutation,
   useUpdateRouteMutation,
   useDeleteRouteMutation,
+  useAddScheduleEntryMutation,
+  useUpdateScheduleEntryMutation,
+  useDeleteScheduleEntryMutation,
 } from "@/src/entities/dashboard/api/dashboardScheduleQueries";
 import {
   uploadCafeImage,
@@ -85,6 +88,16 @@ type SectionModalConfig = {
   deleteSubject?: string;
 };
 
+const TIME_PATTERN = /^\d{2}:\d{2}$/;
+
+// Бекенд приймає час лише як строгий HH:MM, а поле вводу вільне, тож «7:00»
+// доводимо до «07:00» — інакше валідація DTO відповідає 400.
+function normalizeTime(value: string): string {
+  const match = value.trim().match(/^(\d{1,2}):(\d{1,2})$/);
+  if (!match) return value.trim();
+  return `${match[1].padStart(2, "0")}:${match[2].padStart(2, "0")}`;
+}
+
 function resolveCafeRow(section: DataSection | undefined, rowIndex: number) {
   let cursor = 0;
   for (const sub of section?.subSections ?? []) {
@@ -113,6 +126,9 @@ export function useDataMgmtModals({
   const rowModal = useDisclosure<RowModalPayload>();
 
   const sectionOptions = sections.map((s) => ({ value: s.title, label: s.title }));
+  // DirectionModal шле routeId на бекенд, тому тут значенням має бути id
+  // маршруту, а не його назва, як у sectionOptions для кафе.
+  const routeSelectOptions = sections.map((s) => ({ value: s.id, label: s.title }));
   const driverOptions = availableDrivers?.map((d) => ({ value: d.id, label: d.fullName })) ?? [];
 
   const addBusMutation = useAddBusMutation();
@@ -127,6 +143,9 @@ export function useDataMgmtModals({
   const addRouteMutation = useAddRouteMutation();
   const updateRouteMutation = useUpdateRouteMutation();
   const deleteRouteMutation = useDeleteRouteMutation();
+  const addScheduleEntryMutation = useAddScheduleEntryMutation();
+  const updateScheduleEntryMutation = useUpdateScheduleEntryMutation();
+  const deleteScheduleEntryMutation = useDeleteScheduleEntryMutation();
   const addCafeSectionMutation = useAddCafeSectionMutation();
   const updateCafeSectionMutation = useUpdateCafeSectionMutation();
   const deleteCafeSectionMutation = useDeleteCafeSectionMutation();
@@ -237,20 +256,62 @@ export function useDataMgmtModals({
     const data = rowModal.data!;
 
     if (tab === "routes") {
+      const section = sections[data.sectionIndex];
+      const scheduleId = data.mode === "edit" ? section?.ids?.[data.rowIndex] : undefined;
       return (
         <DirectionModal
           mode={data.mode}
           onClose={rowModal.close}
-          onSubmit={rowModal.close}
-          routeOptions={sectionOptions}
+          onSubmit={(formData) => {
+            const entry = {
+              departurePlace: formData.departurePlace.trim(),
+              arrivalPlace: formData.arrivalPlace.trim(),
+              departureTime: normalizeTime(formData.departureTime),
+              arrivalTime: normalizeTime(formData.arrivalTime),
+              price: Number(formData.price),
+            };
+            // Модалка не має місця під помилку, тож на невалідних даних просто
+            // не закриваємось — краще, ніж мовчазний 400 від валідації DTO.
+            const isValid =
+              !!formData.route &&
+              !!entry.departurePlace &&
+              !!entry.arrivalPlace &&
+              TIME_PATTERN.test(entry.departureTime) &&
+              TIME_PATTERN.test(entry.arrivalTime) &&
+              Number.isFinite(entry.price) &&
+              entry.price > 0;
+            if (!isValid) return;
+
+            closeModals();
+            if (data.mode === "create") {
+              addScheduleEntryMutation.mutate({ routeId: formData.route, ...entry });
+            } else if (scheduleId) {
+              // routeId шлемо лише коли диспетчер справді змінив маршрут —
+              // інакше запис дарма помічався б як перенесений.
+              const routeChanged = formData.route !== section?.id;
+              updateScheduleEntryMutation.mutate({
+                id: scheduleId,
+                body: { ...entry, ...(routeChanged && { routeId: formData.route }) },
+              });
+            }
+          }}
+          onDelete={
+            scheduleId
+              ? () => {
+                  closeModals();
+                  deleteScheduleEntryMutation.mutate(scheduleId);
+                }
+              : undefined
+          }
+          routeOptions={routeSelectOptions}
           initialData={(() => {
             if (data.mode !== "edit") return undefined;
-            const row = sections[data.sectionIndex]?.rows?.[data.rowIndex];
+            const row = section?.rows?.[data.rowIndex];
             if (!row) return undefined;
             const dirStr = typeof row[0] === "string" ? row[0] : "";
             const [dep, arr] = dirStr.split(" - ");
             return {
-              route: sections[data.sectionIndex]?.title,
+              route: section?.id,
               departurePlace: dep ?? "",
               arrivalPlace: arr ?? "",
               departureTime: typeof row[1] === "string" ? row[1] : "",

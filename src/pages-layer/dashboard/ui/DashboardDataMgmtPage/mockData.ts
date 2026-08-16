@@ -23,6 +23,7 @@ export type DataSection = {
   imageUrl?: string;
   columns?: string[];
   rows?: TableRow[];
+  ids?: string[];
   subSections?: SubSection[];
 };
 
