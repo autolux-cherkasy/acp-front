@@ -4,6 +4,7 @@ import styles from "./TabSwitch.module.css";
 type Tab<T extends string> = {
   value: T;
   label: string;
+  disabled?: boolean;
 };
 
 type Props<T extends string> = {
@@ -32,6 +33,7 @@ const TabSwitch = <T extends string>({ tabs, value, onChange }: Props<T>) => {
           }}
           type="button"
           className={`${styles.tab} ${value === tab.value ? styles.tabActive : ""}`}
+          disabled={tab.disabled}
           onClick={() => onChange(tab.value)}
         >
           <span className={styles.label}>{tab.label}</span>

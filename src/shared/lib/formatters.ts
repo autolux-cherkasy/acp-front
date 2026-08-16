@@ -50,6 +50,30 @@ export function formatYAxis(value: number): string {
   return `${value / 1000}\u00A0000`;
 }
 
+export function getNiceAxisConfig(maxValue: number, tickCount = 6) {
+  const rawInterval = maxValue / tickCount;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawInterval)));
+  const niceInterval = Math.ceil(rawInterval / magnitude) * magnitude;
+  const maxTick = Math.ceil(maxValue / niceInterval) * niceInterval;
+  const ticks = Array.from({ length: maxTick / niceInterval + 1 }, (_, i) => i * niceInterval);
+  return { domain: [0, maxTick] as [number, number], ticks };
+}
+
+export function getCompactAxisFormatter(maxTick: number) {
+  const unit =
+    maxTick >= 1000000
+      ? { divisor: 1000000, suffix: "M" }
+      : maxTick >= 10000
+        ? { divisor: 1000, suffix: "k" }
+        : { divisor: 1, suffix: "" };
+
+  return (value: number): string => {
+    if (value === 0) return "0";
+
+    return `${Number((value / unit.divisor).toFixed(2))}${unit.suffix}`;
+  };
+}
+
 export function formatDateForApi(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");

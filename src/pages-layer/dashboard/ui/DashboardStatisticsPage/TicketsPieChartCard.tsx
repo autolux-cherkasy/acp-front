@@ -1,15 +1,14 @@
 "use client";
 
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
-import { DashboardCard } from "@/src/shared";
+import { DashboardCard, EmptyState, LoadingState } from "@/src/shared";
+import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import type { TicketStatusBreakdown } from "@/src/entities/dashboard/api/dashboardStatisticsApi";
 import styles from "./StatisticsPage.module.css";
 
-const TICKETS_DATA = [
-  { name: "Викуплено", value: 58 },
-  { name: "Заброньовано", value: 27 },
-  { name: "Скасовано", value: 10 },
-];
 const TICKET_COLORS = ["#169f2c", "#eebb3a", "#d51216", "#e0eaed"];
+
+type Props = { data?: TicketStatusBreakdown; isLoading?: boolean };
 
 function PieLabel({
   cx,
@@ -44,36 +43,64 @@ function PieLabel({
   );
 }
 
-export default function TicketsPieChartCard() {
+export default function TicketsPieChartCard({ data, isLoading }: Props) {
+  const { t } = useI18n();
+  const total = data?.total ?? 0;
+  const toPercent = (value: number) => Math.round((value / total) * 100);
+
+  const chartData =
+    total > 0
+      ? [
+          {
+            name: t("dispatcherArea.analytics.allRoutesPage.details.stats.purchased"),
+            value: toPercent(data!.boughtOut),
+          },
+          {
+            name: t("dispatcherArea.analytics.allRoutesPage.details.stats.reserved"),
+            value: toPercent(data!.reserved),
+          },
+          {
+            name: t("dispatcherArea.analytics.allRoutesPage.details.stats.cancelled"),
+            value: toPercent(data!.canceled),
+          },
+        ]
+      : [];
+
   return (
-    <DashboardCard title="Куплені та забронювані квитки" className={styles.chartCardPie}>
+    <DashboardCard title={t("dispatcherArea.statistics.ticketsTitle")} className={styles.chartCardPie}>
       <div className={styles.chartWrapper}>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Legend
-              iconType="circle"
-              iconSize={10}
-              verticalAlign="top"
-              align="left"
-              formatter={(val) => (
-                <span style={{ fontSize: 12, color: "var(--color-text-strong)" }}>{val}</span>
-              )}
-            />
-            <Pie
-              data={TICKETS_DATA}
-              cx="50%"
-              cy="58%"
-              outerRadius="60%"
-              dataKey="value"
-              label={PieLabel}
-              labelLine={false}
-            >
-              {TICKETS_DATA.map((_, i) => (
-                <Cell key={i} fill={TICKET_COLORS[i]} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
+        {isLoading ? (
+          <LoadingState />
+        ) : chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Legend
+                iconType="circle"
+                iconSize={10}
+                verticalAlign="top"
+                align="left"
+                formatter={(val) => (
+                  <span style={{ fontSize: 12, color: "var(--color-text-strong)" }}>{val}</span>
+                )}
+              />
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="58%"
+                outerRadius="60%"
+                dataKey="value"
+                label={PieLabel}
+                labelLine={false}
+              >
+                {chartData.map((_, i) => (
+                  <Cell key={i} fill={TICKET_COLORS[i]} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <EmptyState iconUrl="/icons/workspace/sidebar/statistics.svg" />
+        )}
       </div>
     </DashboardCard>
   );

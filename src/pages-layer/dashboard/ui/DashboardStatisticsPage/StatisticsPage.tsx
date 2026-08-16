@@ -1,16 +1,29 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
 import dynamic from "next/dynamic";
-import { Button, DashboardDateText, SharedLabel } from "@/src/shared";
-import MiniCalendarTrigger from "@/src/widgets/MiniCalendar/MiniCalendarTrigger";
+import { Button, SharedLabel } from "@/src/shared";
+import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { formatCurrency } from "@/src/shared/lib/formatters";
+import { kyivDateOnly } from "@/src/shared/lib/kyivTime";
+import type {
+  RevenuePoint,
+  StatisticsGranularity,
+} from "@/src/entities/dashboard/api/dashboardStatisticsApi";
+import {
+  useStatisticsLoadQuery,
+  useStatisticsOverviewQuery,
+  useStatisticsRevenueQuery,
+  useStatisticsTicketsQuery,
+} from "@/src/entities/dashboard/api/useStatisticsQueries";
 import styles from "./StatisticsPage.module.css";
 
 const RevenueSparkline = dynamic(() => import("./RevenueSparkline"), { ssr: false });
 const RevenueChartCard = dynamic(() => import("./RevenueChartCard"), { ssr: false });
 const TicketsPieChartCard = dynamic(() => import("./TicketsPieChartCard"), { ssr: false });
 const LoadChartCard = dynamic(() => import("./LoadChartCard"), { ssr: false });
+
+const SPARKLINE_POINTS = 7;
 
 type StatCardProps = {
   label: string;
@@ -39,63 +52,92 @@ function StatCard({ label, value, trend, trendLabel, variant, extra }: StatCardP
   );
 }
 
+/**
+ * Бекенд віддає бакети на весь період, включно з днями, які ще не настали, і
+ * дохід у них — нуль. Тому для спарклайну беремо останні SPARKLINE_POINTS
+ * бакетів, що вже минули, а не хвіст серії: інакше протягом більшої частини
+ * місяця лінія була б пласкою по нулю.
+ */
+function getSparklinePoints(
+  points: RevenuePoint[] | undefined,
+  granularity: StatisticsGranularity | undefined,
+): number[] {
+  if (!points?.length) return [];
+
+  const today = kyivDateOnly(new Date().toISOString());
+  const currentBucket = granularity === "month" ? today.slice(0, 7) : today;
+
+  return points
+    .filter((point) => point.bucket <= currentBucket)
+    .slice(-SPARKLINE_POINTS)
+    .map((point) => point.revenue);
+}
+
+function formatTrend(trendPercent: number | null | undefined): string | undefined {
+  if (trendPercent == null) return undefined;
+
+  const rounded = Math.round(trendPercent * 10) / 10;
+  return `${rounded >= 0 ? "+" : "−"} ${Math.abs(rounded)}%`;
+}
+
 export default function StatisticsPage() {
-  const [chosenDate, setChosenDate] = useState(new Date());
+  const { t } = useI18n();
+
+  const { data: overview, isLoading: isOverviewLoading } = useStatisticsOverviewQuery();
+  const { data: revenue, isLoading: isRevenueLoading } = useStatisticsRevenueQuery();
+  const { data: tickets, isLoading: isTicketsLoading } = useStatisticsTicketsQuery();
+  const { data: load, isLoading: isLoadLoading } = useStatisticsLoadQuery();
+
+  const sparklinePoints = getSparklinePoints(revenue?.points, revenue?.granularity);
 
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.titleContainer}>
-          <SharedLabel variant="dashboardHeaderTitle">Статистика</SharedLabel>
+          <SharedLabel variant="dashboardHeaderTitle">
+            {t("dispatcherArea.statistics.title")}
+          </SharedLabel>
           <SharedLabel variant="dashboardHeaderSubtitle">
-            Огляд ключових показників роботи автостанції.
+            {t("dispatcherArea.statistics.subtitle")}
           </SharedLabel>
         </div>
         <div className={styles.headerActions}>
           <Button
-            text="Загрузити статистику"
+            text={t("dispatcherArea.statistics.downloadAction")}
             variant="primary"
             size="fit"
             fullWidth={false}
             onClick={() => {}}
           />
           <Button
-            text="Скинути статистику"
+            text={t("dispatcherArea.statistics.resetAction")}
             variant="secondary"
             size="fit"
             fullWidth={false}
             onClick={() => {}}
           />
         </div>
-        <div className={styles.dateBlock}>
-          <DashboardDateText chosenDate={chosenDate} />
-          <MiniCalendarTrigger
-            chosenDate={chosenDate}
-            setChosenDate={setChosenDate}
-            onCalendarChange={() => {}}
-          />
-        </div>
       </header>
 
       <div className={styles.statCards}>
         <StatCard
-          label="Всього замовлень"
-          value="180"
-          trend="+ 10%"
-          trendLabel="за цей місяць"
+          label={t("dispatcherArea.statistics.totalOrders")}
+          value={isOverviewLoading ? "—" : String(overview?.orders.total ?? 0)}
+          trend={formatTrend(overview?.orders.trendPercent)}
+          trendLabel={t("dispatcherArea.statistics.trendMonth")}
           variant="yellow"
         />
         <StatCard
-          label="Загальний дохід"
-          value="86 000 ₴"
+          label={t("dispatcherArea.statistics.totalRevenue")}
+          value={isOverviewLoading ? "—" : formatCurrency(overview?.revenue.total ?? 0)}
           variant="light"
-          extra={<RevenueSparkline />}
+          extra={<RevenueSparkline points={sparklinePoints} />}
         />
         <StatCard
-          label="Завантаженість"
-          value="82%"
-          trend="+ 8%"
-          trendLabel="за рік"
+          label={t("dispatcherArea.statistics.occupancy")}
+          value={isOverviewLoading ? "—" : `${overview?.occupancy.percent ?? 0}%`}
+          trend={formatTrend(overview?.occupancy.trendPercent)}
+          trendLabel={t("dispatcherArea.statistics.trendYear")}
           variant="dark"
           extra={
             <span
@@ -111,11 +153,19 @@ export default function StatisticsPage() {
 
       <div className={styles.charts}>
         <div className={styles.chartsRow}>
-          <RevenueChartCard />
-          <TicketsPieChartCard />
+          <RevenueChartCard
+            data={revenue?.points}
+            granularity={revenue?.granularity}
+            isLoading={isRevenueLoading}
+          />
+          <TicketsPieChartCard data={tickets?.seats} isLoading={isTicketsLoading} />
         </div>
 
-        <LoadChartCard />
+        <LoadChartCard
+          data={load?.points}
+          granularity={load?.granularity}
+          isLoading={isLoadLoading}
+        />
       </div>
     </div>
   );

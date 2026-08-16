@@ -3,21 +3,17 @@
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import styles from "./StatisticsPage.module.css";
 
-const SPARKLINE_DATA = [
-  { v: 80 },
-  { v: 120 },
-  { v: 100 },
-  { v: 200 },
-  { v: 180 },
-  { v: 280 },
-  { v: 320 },
-];
+type Props = { points?: number[] };
 
-export default function RevenueSparkline() {
+export default function RevenueSparkline({ points }: Props) {
+  const chartData = (points ?? []).map((v) => ({ v }));
+
+  if (chartData.length < 2) return null;
+
   return (
     <div className={styles.sparkline}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={SPARKLINE_DATA}>
+        <LineChart data={chartData}>
           <Line type="monotone" dataKey="v" stroke="#226078" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>

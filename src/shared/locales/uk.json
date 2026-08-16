@@ -874,6 +874,21 @@
         }
       }
     },
+    "statistics": {
+      "title": "Статистика",
+      "subtitle": "Огляд ключових показників роботи автостанції.",
+      "downloadAction": "Загрузити статистику",
+      "resetAction": "Скинути статистику",
+      "totalOrders": "Всього замовлень",
+      "totalRevenue": "Загальний дохід",
+      "occupancy": "Завантаженість",
+      "trendMonth": "за цей місяць",
+      "trendYear": "за рік",
+      "revenueTitle": "Загальний дохід",
+      "revenueTooltip": "Дохід",
+      "ticketsTitle": "Куплені та забронювані квитки",
+      "loadTitle": "Завантаженість (%)"
+    },
     "actions": {
       "profile": "Кабінет користувача",
       "home": "На головну"

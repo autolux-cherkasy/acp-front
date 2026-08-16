@@ -3,7 +3,7 @@
 import type { FinanceAnalytics } from "@/src/entities/dashboard/api/dashboardAnalyticsApi";
 import { DashboardCard, LoadingState } from "@/src/shared";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
-import { formatCurrency, formatYAxis } from "@/src/shared/lib/formatters";
+import { formatCurrency, formatYAxis, getNiceAxisConfig } from "@/src/shared/lib/formatters";
 import {
   Bar,
   BarChart,
@@ -42,15 +42,6 @@ const FINANCE_TEMPLATE: Omit<FinanceEntry, "value">[] = [
 ];
 
 type Props = { data?: FinanceAnalytics; isLoading?: boolean };
-
-function getNiceAxisConfig(maxValue: number, tickCount = 6) {
-  const rawInterval = maxValue / tickCount;
-  const magnitude = Math.pow(10, Math.floor(Math.log10(rawInterval)));
-  const niceInterval = Math.ceil(rawInterval / magnitude) * magnitude;
-  const maxTick = Math.ceil(maxValue / niceInterval) * niceInterval;
-  const ticks = Array.from({ length: maxTick / niceInterval + 1 }, (_, i) => i * niceInterval);
-  return { domain: [0, maxTick] as [number, number], ticks };
-}
 
 export default function FinanceCard({ data, isLoading }: Props) {
   const { t } = useI18n();

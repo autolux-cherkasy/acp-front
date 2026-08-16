@@ -33,6 +33,11 @@
   transition: color 220ms ease;
 }
 
+.tab:disabled {
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
+}
+
 .tabActive {
   color: var(--DarkSlateGray, #226078);
   font-weight: 500;

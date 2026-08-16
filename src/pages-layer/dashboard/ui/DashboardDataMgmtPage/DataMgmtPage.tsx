@@ -143,10 +143,11 @@ const DataMgmtPage = () => {
     },
   ];
 
-  const tabs =
-    role === "DISPATCHER" && permissions
-      ? allTabs.filter((tabDef) => permissions[tabDef.permissionKey])
-      : allTabs;
+  const tabs = allTabs.map((tabDef) => ({
+    ...tabDef,
+    disabled: role === "DISPATCHER" && !!permissions && !permissions[tabDef.permissionKey],
+  }));
+  const availableTabs = tabs.filter((tabDef) => !tabDef.disabled);
 
   const { query, setQuery, filtered } = useSearch(sections, (section, q) =>
     sectionMatchesQuery(section, q.toLowerCase()),
@@ -177,8 +178,8 @@ const DataMgmtPage = () => {
 
   useEffect(() => {
     const setT = (v: string) => setTab(v);
-    if (tabs.length > 0 && !tabs.find((tabDef) => tabDef.value === tab)) {
-      setT(tabs[0].value);
+    if (availableTabs.length > 0 && !availableTabs.find((tabDef) => tabDef.value === tab)) {
+      setT(availableTabs[0].value);
       setQuery("");
     }
   }, [permissions]);
