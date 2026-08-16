@@ -32,6 +32,20 @@ export const API_URL = rawApiUrl ? normalizeApiUrl(rawApiUrl) : null;
 // bypassing the /api/v1 prefix used by apiFetch.
 export const API_ORIGIN = API_URL ? API_URL.replace(/\/api\/v1$/, "") : null;
 
+// API_URL is relative ("/api/v1") when the backend is proxied through this app.
+// The browser resolves that against its own origin; on the server there is no
+// origin, so fall back to the proxy target.
+function toRequestUrl(path: string) {
+  const url = `${API_URL}${path}`;
+
+  if (!url.startsWith("/") || typeof window !== "undefined") {
+    return url;
+  }
+
+  const proxyTarget = process.env.API_PROXY_TARGET?.trim().replace(/\/$/, "");
+  return proxyTarget ? `${proxyTarget}${url}` : url;
+}
+
 export function resolveAssetUrl(path?: string | null): string | undefined {
   if (!path) return undefined;
   if (/^https?:\/\//.test(path)) return path;
@@ -100,7 +114,7 @@ async function sendRequest(path: string, options: ApiFetchOptions) {
     headers.set("X-CSRF-Token", csrfToken);
   }
 
-  return fetch(`${API_URL}${path}`, {
+  return fetch(toRequestUrl(path), {
     ...requestInit,
     headers,
     cache: "no-store",
@@ -115,7 +129,7 @@ async function refreshAccessToken(): Promise<boolean> {
   if (!refreshPromise) {
     refreshPromise = (async () => {
       const existingCsrfToken = getCsrfToken();
-      const response = await fetch(`${API_URL}/auth/refresh-token`, {
+      const response = await fetch(toRequestUrl("/auth/refresh-token"), {
         method: "POST",
         cache: "no-store",
         credentials: "include",

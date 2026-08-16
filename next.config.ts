@@ -19,10 +19,28 @@ function getApiRemotePattern() {
 
 const apiRemotePattern = getApiRemotePattern();
 
+// Backend origin the /api/v1 and /uploads paths are proxied to, so the browser
+// always talks to its own origin and never triggers CORS.
+const apiProxyTarget = process.env.API_PROXY_TARGET?.trim().replace(/\/$/, "");
+
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     remotePatterns: apiRemotePattern ? [apiRemotePattern] : [],
+  },
+  async rewrites() {
+    if (!apiProxyTarget) return [];
+
+    return [
+      {
+        source: "/api/v1/:path*",
+        destination: `${apiProxyTarget}/api/v1/:path*`,
+      },
+      {
+        source: "/uploads/:path*",
+        destination: `${apiProxyTarget}/uploads/:path*`,
+      },
+    ];
   },
 };
 
