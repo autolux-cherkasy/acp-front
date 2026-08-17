@@ -74,6 +74,26 @@ export function getCompactAxisFormatter(maxTick: number) {
   };
 }
 
+// 2026-08-11 → 11.08.2026
+export function formatDateOnly(value: string | null | undefined): string {
+  if (!value) return "";
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  return match ? `${match[3]}.${match[2]}.${match[1]}` : value;
+}
+
+// 2026-08-11 → Date у локальній добі: new Date("2026-08-11") розбирає рядок
+// як UTC-північ і на київському часі з'їхав би на попередній день.
+export function parseDateOnly(value: string | null | undefined): Date | null {
+  if (!value) return null;
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return null;
+
+  const [, year, month, day] = match;
+
+  return new Date(Number(year), Number(month) - 1, Number(day));
+}
+
 export function formatDateForApi(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
