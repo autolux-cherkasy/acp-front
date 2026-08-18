@@ -620,16 +620,13 @@
         "newTitle": "New trip",
         "editTitle": "Edit trip",
         "routeLabel": "Trip",
-        "directionPlaceholder": "City - City",
-        "departureCityLabel": "Departure city",
-        "arrivalCityLabel": "Arrival city",
-        "cityPlaceholder": "City",
+        "routeSelectPlaceholder": "Select a route",
+        "routeNamePlaceholder": "Select a route above",
         "dateLabel": "Trip date",
         "arrivalTime": "Arrival time",
-        "seatsLabel": "Seats",
-        "seatsPlaceholder": "20",
-        "priceLabel": "Ticket price, ₴",
-        "pricePlaceholder": "0.00"
+        "timePlaceholder": "--:--",
+        "seatsOccupancyLabel": "Seats: taken/total",
+        "seatsOccupancyPlaceholder": "0/0"
       },
       "calendarAria": "Open calendar",
       "stats": {

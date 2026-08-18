@@ -756,15 +756,13 @@
         "newTitle": "Новий рейс",
         "editTitle": "Редагувати рейс",
         "routeLabel": "Рейс",
-        "departureCityLabel": "Місто відправлення",
-        "arrivalCityLabel": "Місто прибуття",
-        "cityPlaceholder": "Місто",
+        "routeSelectPlaceholder": "Оберіть маршрут",
+        "routeNamePlaceholder": "Оберіть маршрут вище",
         "dateLabel": "Дата рейсу",
         "arrivalTime": "Час прибуття",
-        "seatsLabel": "Кількість місць",
-        "seatsPlaceholder": "20",
-        "priceLabel": "Ціна квитка, ₴",
-        "pricePlaceholder": "0.00"
+        "timePlaceholder": "--:--",
+        "seatsOccupancyLabel": "Місця: зайнято/вільні",
+        "seatsOccupancyPlaceholder": "0/0"
       },
       "calendarAria": "Відкрити календар",
       "stats": {
