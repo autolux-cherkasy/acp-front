@@ -1,4 +1,4 @@
-import { apiFetch } from "@/src/shared/api/http";
+import { apiFetch, ApiError } from "@/src/shared/api/http";
 import {
   changeDevPassword,
   getDevProfile,
@@ -46,14 +46,22 @@ function toResponseUser(profile: UserProfile): Omit<UserProfile, "createdAt"> {
   return user;
 }
 
-export function getProfile() {
+export async function getProfile() {
   const devProfile = getDevProfile() as UserProfile | null;
 
   if (devProfile) {
-    return Promise.resolve(devProfile);
+    return devProfile;
   }
 
-  return apiFetch<UserProfile>("/users/profile");
+  try {
+    return await apiFetch<UserProfile | null>("/users/profile");
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export function updateProfile(payload: UpdateProfilePayload) {

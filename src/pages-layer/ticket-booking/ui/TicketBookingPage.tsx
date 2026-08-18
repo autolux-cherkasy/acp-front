@@ -1,13 +1,25 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import {
+  useReserveAndPayMutation,
+  useReserveBookingMutation,
+  type CreateBookingPayload,
+} from "@/src/entities/booking";
 import { Trip, TripStop } from "@/src/entities/trip";
 import { useProfileQuery } from "@/src/entities/user/api/useUserQueries";
-import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { fetchCsrfToken } from "@/src/features/auth/api/auth";
+import { openAuthModal } from "@/src/features/auth/model/auth-flow";
+import { useAuthSession } from "@/src/features/auth/model/session";
+import { API_ORIGIN, ApiError } from "@/src/shared/api/http";
+import { getCsrfToken, setCsrfToken } from "@/src/shared/api/session";
+import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import LocaleLink from "@/src/shared/i18n/Link";
+import { useServerToast } from "@/src/shared/lib/toast";
 import BreadcrumbChips from "@/src/shared/ui/BreadcrumbChips/BreadcrumbChips";
 import Button from "@/src/shared/ui/Button/Button";
 import styles from "./ticket-booking-page.module.css";
@@ -79,6 +91,25 @@ function parseCity(value: string): { city: string; stop: string | null } {
 }
 
 
+async function ensureCsrfToken() {
+  if (getCsrfToken()) {
+    return;
+  }
+
+  const data = await fetchCsrfToken();
+  if (data?.csrf_token) {
+    setCsrfToken(data.csrf_token);
+  }
+}
+
+function resolveCheckoutUrl(path: string) {
+  if (/^https?:\/\//.test(path)) {
+    return path;
+  }
+
+  return `${API_ORIGIN ?? ""}${path}`;
+}
+
 function getPassengerLabelKey(count: number, lang: "uk" | "en") {
   if (lang === "en") {
     return count === 1 ? "one" : "other";
@@ -110,6 +141,14 @@ export default function TicketBookingPage({
   departureTime: rawDepartureTime,
   arrivalTime: rawArrivalTime,
 }: TicketBookingPageProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const resolveHref = useLocalizedHref();
+  const { isAuthenticated } = useAuthSession();
+  const { notifyError, notifySuccess } = useServerToast();
+  const reserveMutation = useReserveBookingMutation();
+  const payMutation = useReserveAndPayMutation();
   const { lang, t } = useI18n();
   const profileQuery = useProfileQuery();
   const locale = lang === "en" ? "en-GB" : "uk-UA";
@@ -164,7 +203,71 @@ export default function TicketBookingPage({
     });
   }, [profileQuery.data, reset]);
 
-  const validatePassengerForm = handleSubmit(() => {});
+  const isSubmitting = reserveMutation.isPending || payMutation.isPending;
+
+  const buildPayload = (data: PassengerFormData): CreateBookingPayload | null => {
+    if (!boardingStop?.id || !alightingStop?.id) {
+      notifyError(null, t("ticketBooking.toast.missingStops"));
+      return null;
+    }
+
+    return {
+      passengerName: data.fullName.trim(),
+      passengerPhone: data.phone.trim(),
+      passengerEmail: data.email.trim().toLowerCase(),
+      seatsCount: seats,
+      tripId: trip.id,
+      boardingStopId: boardingStop.id,
+      alightingStopId: alightingStop.id,
+    };
+  };
+
+  const submitPassengerForm = (mode: "reserve" | "pay") =>
+    handleSubmit(async (data) => {
+      if (!isAuthenticated) {
+        notifyError(null, t("ticketBooking.form.loginToContinue"));
+        const next = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+        openAuthModal(router, resolveHref, "login", { next });
+        return;
+      }
+
+      const payload = buildPayload(data);
+      if (!payload) {
+        return;
+      }
+
+      try {
+        await ensureCsrfToken();
+
+        if (mode === "pay") {
+          const result = await payMutation.mutateAsync({ payload });
+          if (!result.checkoutPageUrl) {
+            notifyError(null, t("ticketBooking.toast.paymentUnavailable"));
+            return;
+          }
+
+          window.location.assign(resolveCheckoutUrl(result.checkoutPageUrl));
+          return;
+        }
+
+        const result = await reserveMutation.mutateAsync({ payload });
+        notifySuccess(
+          {
+            message: `${t("ticketBooking.toast.reserveSuccess")} ${result.booking.referenceCode}`,
+          },
+          t("ticketBooking.toast.reserveSuccess"),
+        );
+        router.push(resolveHref("/profile/tickets"));
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 401) {
+          const next = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+          openAuthModal(router, resolveHref, "login", { next });
+          return;
+        }
+
+        notifyError(error, t("ticketBooking.toast.reserveError"));
+      }
+    });
 
   return (
     <main className={styles.page}>
@@ -202,7 +305,7 @@ export default function TicketBookingPage({
                 {t("ticketBooking.form.title")}
               </h2>
 
-              <form className={styles.form} onSubmit={validatePassengerForm}>
+              <form className={styles.form} onSubmit={submitPassengerForm("reserve")} noValidate>
                 <div className={styles.formGrid}>
                   <label className={styles.field}>
                     <span className={styles.label}>{t("ticketBooking.form.nameLabel")}</span>
@@ -360,16 +463,18 @@ export default function TicketBookingPage({
                   <Button
                     text={t("ticketBooking.form.pay")}
                     size="md"
+                    disabled={isSubmitting}
                     onClick={() => {
-                      void validatePassengerForm();
+                      void submitPassengerForm("pay")();
                     }}
                   />
                   <Button
                     text={t("ticketBooking.form.reserve")}
                     variant="secondary"
                     size="md"
+                    disabled={isSubmitting}
                     onClick={() => {
-                      void validatePassengerForm();
+                      void submitPassengerForm("reserve")();
                     }}
                   />
                 </div>

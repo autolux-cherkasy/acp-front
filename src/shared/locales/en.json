@@ -143,7 +143,16 @@
         "phoneRequired": "Enter your phone number"
       },
       "pay": "Pay now",
-      "reserve": "Reserve"
+      "reserve": "Reserve",
+      "loginToContinue": "Sign in to reserve a ticket"
+    },
+    "toast": {
+      "reserveSuccess": "Booking confirmed. Reference code:",
+      "reserveError": "Could not create the booking. Please try again.",
+      "cancelSuccess": "Booking cancelled.",
+      "cancelError": "Could not cancel the booking.",
+      "missingStops": "Could not determine boarding/alighting stops. Go back and select the trip again.",
+      "paymentUnavailable": "Payment is not available right now. Please try again later."
     },
     "payment": {
       "secure": "All payments are protected according to security standards",
