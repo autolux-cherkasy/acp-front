@@ -74,10 +74,13 @@ export default function RoutesPageClient() {
   const stats = useMemo(() => countRoutesStats(rows), [rows]);
 
   const vehicleOptions: SelectOption[] = useMemo(
+    // У підписі лишається тільки держномер: модель робила рядок довшим за
+    // ширину селекта й обрізалась багатокрапкою, а номер — те, за чим
+    // диспетчер шукає автобус.
     () =>
       buses.map((bus) => ({
         value: bus.id,
-        label: `${bus.registrationNumber} — ${bus.model}`,
+        label: bus.registrationNumber,
       })),
     [buses],
   );
