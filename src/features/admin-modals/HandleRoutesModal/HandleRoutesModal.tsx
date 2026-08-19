@@ -217,8 +217,9 @@ export default function HandleRoutesModal({
     setValue("platform", selectedSchedule.platform);
   }, [selectedSchedule, setValue]);
 
+  // Місткість нового автобуса важливіша за ту, що вже стоїть у рейсі.
   const seatsCapacity = busSeats[vehicle] ?? totalSeats;
-  const occupancy = seatsCapacity ? `${occupiedSeats}/${seatsCapacity}` : "";
+  const occupancy = seatsCapacity != null ? `${occupiedSeats}/${seatsCapacity}` : "";
 
   const title =
     mode === "create"

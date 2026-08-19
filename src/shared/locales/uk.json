@@ -764,7 +764,7 @@
         "dateLabel": "Дата рейсу",
         "arrivalTime": "Час прибуття",
         "timePlaceholder": "--:--",
-        "seatsOccupancyLabel": "Місця: зайнято/вільні",
+        "seatsOccupancyLabel": "Місця: зайнято/всього",
         "seatsOccupancyPlaceholder": "0/0"
       },
       "calendarAria": "Відкрити календар",

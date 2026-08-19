@@ -210,8 +210,8 @@ export default function RoutesTable({
                         <td
                           className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft}`}
                         >
-                          {row.availableSeats != null && row.totalSeats != null
-                            ? `${row.availableSeats}/${row.totalSeats}`
+                          {row.occupiedSeats != null && row.totalSeats != null
+                            ? `${row.occupiedSeats}/${row.totalSeats}`
                             : EM_DASH}
                         </td>
                         <td

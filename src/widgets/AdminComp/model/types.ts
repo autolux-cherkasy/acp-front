@@ -9,7 +9,7 @@ export type RouteRow = {
   departureTime: string | null;
   arrivalTime: string | null;
   busNumber: string | null;
-  availableSeats: number | null;
+  occupiedSeats: number | null;
   totalSeats: number | null;
   status: TripStatus | null;
 };
