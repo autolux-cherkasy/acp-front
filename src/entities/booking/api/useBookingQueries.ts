@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { createOptimisticMutationHandlers } from "@/src/shared/lib/optimisticMutation";
-import { cancelBooking, getBookingHistory, reserveBooking } from "./bookings";
+import { cancelBooking, getBookingHistory, reserveAndPayBooking, reserveBooking } from "./bookings";
 import { MY_ACTIVE_BOOKINGS_KEY, MY_BOOKING_HISTORY_KEY } from "./bookingApiKeys";
 import type { Booking, CreateBookingPayload } from "../model/types";
 
@@ -55,6 +55,19 @@ export function useReserveBookingMutation() {
   return useMutation({
     mutationFn: ({ payload, guestToken }: { payload: CreateBookingPayload; guestToken?: string }) =>
       reserveBooking(payload, guestToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [MY_ACTIVE_BOOKINGS_KEY] });
+      queryClient.invalidateQueries({ queryKey: [MY_BOOKING_HISTORY_KEY] });
+    },
+  });
+}
+
+export function useReserveAndPayMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ payload, guestToken }: { payload: CreateBookingPayload; guestToken?: string }) =>
+      reserveAndPayBooking(payload, guestToken),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [MY_ACTIVE_BOOKINGS_KEY] });
       queryClient.invalidateQueries({ queryKey: [MY_BOOKING_HISTORY_KEY] });
