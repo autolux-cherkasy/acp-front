@@ -10,7 +10,6 @@ import {
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import LocaleLink from "@/src/shared/i18n/Link";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
-import { useServerToast } from "@/src/shared/lib/toast";
 import ConfirmDeleteModal from "@/src/shared/ui/ConfirmDeleteModal/ConfirmDeleteModal";
 import SurfacePanel from "@/src/shared/ui/SurfacePanel/SurfacePanel";
 import { toArchivedTicket } from "../../profile-archive/model/archive-tickets";
@@ -22,20 +21,15 @@ export default function ProfileTicketsPage() {
   const { t, locale } = useI18n();
   const ticketsQuery = useMyActiveBookingsQuery();
   const cancelMutation = useCancelBookingMutation();
-  const { notifyError, notifySuccess } = useServerToast();
   const confirmCancel = useDisclosure<{ id: string; code: string }>();
 
   const tickets = (ticketsQuery.data ?? []).map((booking) =>
     toArchivedTicket(booking, locale),
   );
 
-  const handleCancel = async (id: string) => {
-    try {
-      await cancelMutation.mutateAsync(id);
-      notifySuccess(undefined, t("profile.tickets.toast.cancelSuccess"));
-    } catch (error) {
-      notifyError(error, t("profile.tickets.toast.cancelError"));
-    }
+  const handleCancel = (id: string) => {
+    // Toasts come from useCancelBookingMutation optimistic handlers.
+    void cancelMutation.mutateAsync(id);
   };
 
   const showEmpty =
