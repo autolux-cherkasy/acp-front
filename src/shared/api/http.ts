@@ -62,6 +62,10 @@ type ErrorResponse = {
 };
 
 type RefreshResponse = {
+  /**
+   * Web cookie-session refresh returns only `{ csrf_token }` (access/refresh are
+   * httpOnly cookies). Mobile clients may also include `access_token` in the body.
+   */
   access_token?: string;
   csrf_token?: string;
 };
@@ -142,12 +146,7 @@ async function refreshAccessToken(): Promise<boolean> {
       }
 
       const body = await parseResponse<RefreshResponse>(response);
-      if (!body?.access_token) {
-        endClientSession();
-        return false;
-      }
-
-      if (body.csrf_token) {
+      if (body?.csrf_token) {
         setCsrfToken(body.csrf_token);
       }
       return true;
