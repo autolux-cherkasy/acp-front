@@ -88,56 +88,41 @@ function isCsrfError(error: unknown) {
   );
 }
 
-export async function forgotPassword(payload: ForgotPasswordPayload) {
+async function withCsrfRetry<T>(request: () => Promise<T>): Promise<T> {
   await ensureCsrfToken();
 
   try {
-    return await apiFetch<MessageResponse>("/auth/forgot-password", {
-      method: "POST",
-      body: JSON.stringify(payload),
-      includeAuth: false,
-      skipAuthRefresh: true,
-    });
+    return await request();
   } catch (error) {
     if (!isCsrfError(error)) {
       throw error;
     }
 
     await ensureCsrfToken();
-
-    return apiFetch<MessageResponse>("/auth/forgot-password", {
-      method: "POST",
-      body: JSON.stringify(payload),
-      includeAuth: false,
-      skipAuthRefresh: true,
-    });
+    return request();
   }
 }
 
+export async function forgotPassword(payload: ForgotPasswordPayload) {
+  return withCsrfRetry(() =>
+    apiFetch<MessageResponse>("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      includeAuth: false,
+      skipAuthRefresh: true,
+    }),
+  );
+}
+
 export async function resetPassword(payload: ResetPasswordPayload) {
-  await ensureCsrfToken();
-
-  try {
-    return await apiFetch<MessageResponse>("/auth/reset-password", {
+  return withCsrfRetry(() =>
+    apiFetch<MessageResponse>("/auth/reset-password", {
       method: "POST",
       body: JSON.stringify(payload),
       includeAuth: false,
       skipAuthRefresh: true,
-    });
-  } catch (error) {
-    if (!isCsrfError(error)) {
-      throw error;
-    }
-
-    await ensureCsrfToken();
-
-    return apiFetch<MessageResponse>("/auth/reset-password", {
-      method: "POST",
-      body: JSON.stringify(payload),
-      includeAuth: false,
-      skipAuthRefresh: true,
-    });
-  }
+    }),
+  );
 }
 
 export function verifyEmailOtp(payload: VerifyEmailOtpPayload) {
@@ -158,33 +143,38 @@ export type GuestTokenResponse = {
   guest_token: string;
 };
 
-export function requestGuestOtp(email: string) {
-  return apiFetch<MessageResponse>("/auth/guest/request-otp", {
-    method: "POST",
-    body: JSON.stringify({ email }),
-    includeAuth: false,
-    skipAuthRefresh: true,
-  });
+export async function requestGuestOtp(email: string) {
+  return withCsrfRetry(() =>
+    apiFetch<MessageResponse>("/auth/guest/request-otp", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+      includeAuth: false,
+      skipAuthRefresh: true,
+    }),
+  );
 }
 
-export function verifyGuestOtp(payload: GuestOtpPayload) {
-  return apiFetch<GuestTokenResponse>("/auth/guest/verify-otp", {
-    method: "POST",
-    body: JSON.stringify(payload),
-    includeAuth: false,
-    skipAuthRefresh: true,
-  });
+export async function verifyGuestOtp(payload: GuestOtpPayload) {
+  return withCsrfRetry(() =>
+    apiFetch<GuestTokenResponse>("/auth/guest/verify-otp", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      includeAuth: false,
+      skipAuthRefresh: true,
+    }),
+  );
 }
 
-export function resendConfirm(payload: ForgotPasswordPayload){
-  return apiFetch<MessageResponse>("/auth/resend-confirmation", {
-  method: "POST",
-  body: JSON.stringify(payload),
-  includeAuth: false,
-  skipAuthRefresh: true,
-});
+export async function resendConfirm(payload: ForgotPasswordPayload) {
+  return withCsrfRetry(() =>
+    apiFetch<MessageResponse>("/auth/resend-confirmation", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      includeAuth: false,
+      skipAuthRefresh: true,
+    }),
+  );
 }
-
 
 export async function logout() {
   if (getDevRole()) {
@@ -197,25 +187,12 @@ export async function logout() {
   }
 
   try {
-    await ensureCsrfToken();
-
-    try {
-      return await apiFetch<MessageResponse>("/auth/logout", {
+    return await withCsrfRetry(() =>
+      apiFetch<MessageResponse>("/auth/logout", {
         method: "PATCH",
         skipAuthRefresh: true,
-      });
-    } catch (error) {
-      if (!isCsrfError(error)) {
-        throw error;
-      }
-
-      await ensureCsrfToken();
-
-      return await apiFetch<MessageResponse>("/auth/logout", {
-        method: "PATCH",
-        skipAuthRefresh: true,
-      });
-    }
+      }),
+    );
   } finally {
     endClientSession();
     clearDevAuth();

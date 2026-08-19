@@ -56,21 +56,35 @@ function readCsrfCookie() {
   }
 }
 
-function expireCsrfCookie() {
+function csrfCookieFlags() {
   const secure = window.location.protocol === "https:" ? "; secure" : "";
-  document.cookie = `${CSRF_COOKIE_NAME}=; path=/; max-age=0; samesite=lax${secure}`;
+  return `path=/; samesite=lax${secure}`;
 }
 
+function writeCsrfCookie(token: string) {
+  document.cookie = `${CSRF_COOKIE_NAME}=${encodeURIComponent(token)}; ${csrfCookieFlags()}`;
+}
+
+function expireCsrfCookie() {
+  document.cookie = `${CSRF_COOKIE_NAME}=; ${csrfCookieFlags()}; max-age=0`;
+}
+
+/**
+ * Prefer the in-memory token from the latest login/refresh/csrf fetch.
+ * Falling back to the readable cookie covers a cold load before memory is set.
+ */
 export function getCsrfToken() {
   if (!isBrowser()) return null;
 
-  return readCsrfCookie() ?? inMemoryCsrfToken;
+  return inMemoryCsrfToken ?? readCsrfCookie();
 }
 
+/** Keep memory + readable cookie in sync for double-submit CSRF. */
 export function setCsrfToken(token: string) {
   if (!isBrowser()) return;
 
   inMemoryCsrfToken = token;
+  writeCsrfCookie(token);
   notifyAuthChange();
 }
 
