@@ -8,6 +8,7 @@ import type {
 } from "../model/types";
 import {
   BOOKINGS_URL,
+  MY_ACTIVE_URL,
   MY_HISTORY_URL,
   RESERVE_AND_PAY_URL,
   RESERVE_URL,
@@ -15,6 +16,10 @@ import {
 
 export function getBookingHistory(): Promise<Booking[]> {
   return apiFetch<Booking[]>(MY_HISTORY_URL);
+}
+
+export function getMyActiveBookings(): Promise<Booking[]> {
+  return apiFetch<Booking[]>(MY_ACTIVE_URL);
 }
 
 export function cancelBooking(id: string, guestToken?: string): Promise<CancelBookingResponse> {
