@@ -29,8 +29,9 @@ export default function ForgotPasswordPage({
   const { t, raw } = useI18n();
   const resolveHref = useLocalizedHref();
 
-  const { register, handleSubmit } = useForm({ defaultValues: { email: "" } });
+  const { register, handleSubmit, reset } = useForm({ defaultValues: { email: "" } });
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const forgotPasswordMutation = useForgotPasswordMutation();
   const { notifyError, notifySuccess } = useServerToast();
 
@@ -51,6 +52,8 @@ export default function ForgotPasswordPage({
 
     try {
       const result = await forgotPasswordMutation.mutateAsync({ email: email.trim() });
+      reset();
+      setIsSuccess(true);
       notifySuccess(result, t("common.toast.forgotPasswordSuccess"));
     } catch (error) {
       notifyError(error, t("common.toast.forgotPasswordError"));
@@ -61,78 +64,100 @@ export default function ForgotPasswordPage({
     <PasswordRecoveryShell
       titleId="forgot-password-title"
       title={t("auth.forgotPassword.title")}
-      subtitle={t("auth.forgotPassword.subtitle")}
+      subtitle={
+        isSuccess
+          ? t("auth.forgotPassword.successMessage")
+          : t("auth.forgotPassword.subtitle")
+      }
       onClose={onClose}
       shellClassName={styles.compactShell}
       contentClassName={styles.compactContent}
       asideClassName={styles.compactAside}
       cardClassName={styles.compactCard}
     >
-      <form
-        className={`${styles.form} ${styles.compactForm}`}
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className={styles.formSection}>
-          <FormField
-            className={styles.field}
-            label={t("auth.forgotPassword.emailLabel")}
-            labelClassName={styles.label}
-          >
-            <TextField
-              {...register("email", {
-                onChange: () => { if (forgotPasswordMutation.isError) forgotPasswordMutation.reset(); },
-              })}
-              type="email"
-              autoComplete="email"
-              placeholder="name@example.com"
-              required
-              disabled={forgotPasswordMutation.isPending}
-              leadingAdornment={"/icons/Footer/email.svg"}
-            />
-          </FormField>
-        </div>
-
+      {isSuccess ? (
         <div className={`${styles.actions} ${styles.compactActions}`}>
           <div className={styles.actionSection}>
             <Button
-              text={
-                forgotPasswordMutation.isPending
-                  ? t("auth.forgotPassword.submitLoading")
-                  : t("auth.forgotPassword.submitButton")
-              }
+              text={t("auth.forgotPassword.loginAction")}
               variant="primary"
-              type="submit"
+              type="button"
               size="full"
-              disabled={isBusy}
-              onClick={() => {}}
+              onClick={() =>
+                openAuthModal(router, resolveHref, "login", { replace: true })
+              }
             />
-
-            <div className={styles.bottomRow}>
-              <div className={styles.socialRow}>
-                <GoogleAuthButton
-                  intent="login"
-                  disabled={forgotPasswordMutation.isPending}
-                  onBusyChange={setIsGoogleLoading}
-                  onSuccess={() => {
-                    void handlePostAuthSuccess();
-                  }}
-                />
-              </div>
-
-              <Button
-                text={loginButtonText}
-                variant="secondary"
-                type="button"
-                size="full"
-                disabled={isBusy}
-                onClick={() =>
-                  openAuthModal(router, resolveHref, "login", { replace: true })
-                }
-              />
-            </div>
           </div>
         </div>
-      </form>
+      ) : (
+        <form
+          className={`${styles.form} ${styles.compactForm}`}
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className={styles.formSection}>
+            <FormField
+              className={styles.field}
+              label={t("auth.forgotPassword.emailLabel")}
+              labelClassName={styles.label}
+            >
+              <TextField
+                {...register("email", {
+                  onChange: () => {
+                    if (forgotPasswordMutation.isError) forgotPasswordMutation.reset();
+                  },
+                })}
+                type="email"
+                autoComplete="email"
+                placeholder="name@example.com"
+                required
+                disabled={forgotPasswordMutation.isPending}
+                leadingAdornment={"/icons/Footer/email.svg"}
+              />
+            </FormField>
+          </div>
+
+          <div className={`${styles.actions} ${styles.compactActions}`}>
+            <div className={styles.actionSection}>
+              <Button
+                text={
+                  forgotPasswordMutation.isPending
+                    ? t("auth.forgotPassword.submitLoading")
+                    : t("auth.forgotPassword.submitButton")
+                }
+                variant="primary"
+                type="submit"
+                size="full"
+                disabled={isBusy}
+                onClick={() => {}}
+              />
+
+              <div className={styles.bottomRow}>
+                <div className={styles.socialRow}>
+                  <GoogleAuthButton
+                    intent="login"
+                    disabled={forgotPasswordMutation.isPending}
+                    onBusyChange={setIsGoogleLoading}
+                    onSuccess={() => {
+                      void handlePostAuthSuccess();
+                    }}
+                  />
+                </div>
+
+                <Button
+                  text={loginButtonText}
+                  variant="secondary"
+                  type="button"
+                  size="full"
+                  disabled={isBusy}
+                  onClick={() =>
+                    openAuthModal(router, resolveHref, "login", { replace: true })
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        </form>
+      )}
     </PasswordRecoveryShell>
   );
 }
