@@ -8,7 +8,8 @@ import {
   getDevRole,
   installDevAuthHelpers,
 } from "@/src/shared/api/dev-auth";
-import { getCsrfToken, setCsrfToken, subscribeToAuthChange } from "@/src/shared/api/session";
+import { getCsrfToken, setCsrfToken, subscribeToAuthChange, subscribeToSessionEnd } from "@/src/shared/api/session";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   createContext,
   useCallback,
@@ -34,6 +35,7 @@ export function AuthSessionProvider({
   children: React.ReactNode;
 }) {
   const profileQuery = useProfileQuery();
+  const queryClient = useQueryClient();
   const [, setAuthVersion] = useState(0);
   const devRole = getDevRole() as UserRole | null;
   const { refetch } = profileQuery;
@@ -62,6 +64,13 @@ export function AuthSessionProvider({
       setAuthVersion((current) => current + 1);
     });
   }, []);
+
+  useEffect(() => {
+    return subscribeToSessionEnd(() => {
+      queryClient.setQueryData(["profile"], null);
+      queryClient.removeQueries({ queryKey: ["profile"] });
+    });
+  }, [queryClient]);
 
   useEffect(() => {
     if (!profileQuery.data || getCsrfToken()) {
