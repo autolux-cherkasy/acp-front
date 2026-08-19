@@ -88,22 +88,56 @@ function isCsrfError(error: unknown) {
   );
 }
 
-export function forgotPassword(payload: ForgotPasswordPayload) {
-  return apiFetch<MessageResponse>("/auth/forgot-password", {
-    method: "POST",
-    body: JSON.stringify(payload),
-    includeAuth: false,
-    skipAuthRefresh: true,
-  });
+export async function forgotPassword(payload: ForgotPasswordPayload) {
+  await ensureCsrfToken();
+
+  try {
+    return await apiFetch<MessageResponse>("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      includeAuth: false,
+      skipAuthRefresh: true,
+    });
+  } catch (error) {
+    if (!isCsrfError(error)) {
+      throw error;
+    }
+
+    await ensureCsrfToken();
+
+    return apiFetch<MessageResponse>("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      includeAuth: false,
+      skipAuthRefresh: true,
+    });
+  }
 }
 
-export function resetPassword(payload: ResetPasswordPayload) {
-  return apiFetch<MessageResponse>("/auth/reset-password", {
-    method: "POST",
-    body: JSON.stringify(payload),
-    includeAuth: false,
-    skipAuthRefresh: true,
-  });
+export async function resetPassword(payload: ResetPasswordPayload) {
+  await ensureCsrfToken();
+
+  try {
+    return await apiFetch<MessageResponse>("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      includeAuth: false,
+      skipAuthRefresh: true,
+    });
+  } catch (error) {
+    if (!isCsrfError(error)) {
+      throw error;
+    }
+
+    await ensureCsrfToken();
+
+    return apiFetch<MessageResponse>("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      includeAuth: false,
+      skipAuthRefresh: true,
+    });
+  }
 }
 
 export function verifyEmailOtp(payload: VerifyEmailOtpPayload) {
