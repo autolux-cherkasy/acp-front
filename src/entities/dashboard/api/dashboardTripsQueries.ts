@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { kyivDateOnly } from "@/src/shared/lib/kyivTime";
 import { createOptimisticMutationHandlers } from "@/src/shared/lib/optimisticMutation";
 import type { TripStatus } from "@/src/entities/trip";
 import {
   addTrip,
+  type AdminTripDto,
   type AdminTripsResponse,
   type CreateTripBody,
   deleteTrip,
@@ -59,26 +61,76 @@ export const useAddTripMutation = (params: GetAdminTripsParams = {}) => {
   });
 };
 
+/**
+ * Поля рядка, яких немає в PATCH-тілі: держномер приходить із парку за busId,
+ * а напрямок бекенд перепише напрямком обраного маршруту. Без них рядок до
+ * інвалідації показував би старий автобус і старий напрямок.
+ */
+export type UpdateTripOptimisticFields = Partial<
+  Pick<AdminTripDto, "busNumber" | "direction">
+>;
+
+export type UpdateTripVariables = {
+  id: string;
+  body: UpdateTripBody;
+  optimistic?: UpdateTripOptimisticFields;
+};
+
+const patchTrip = (
+  trip: AdminTripDto,
+  { body, optimistic }: Pick<UpdateTripVariables, "body" | "optimistic">,
+): AdminTripDto => {
+  const patched = { ...trip, ...body, ...optimistic };
+
+  return { ...patched, isFull: patched.occupiedSeats >= patched.totalSeats };
+};
+
+/** Список приходить відсортованим за departureTime; ISO-рядки порівнюються як час. */
+const byDepartureTime = (first: AdminTripDto, second: AdminTripDto) =>
+  first.departureTime.localeCompare(second.departureTime);
+
+const isWithinQueryRange = (
+  trip: AdminTripDto,
+  { date, dateFrom, dateTo }: GetAdminTripsParams,
+) => {
+  const from = dateFrom ?? date;
+  const to = dateTo ?? date;
+  const tripDate = kyivDateOnly(trip.departureTime);
+
+  return (!from || tripDate >= from) && (!to || tripDate <= to);
+};
+
 export const useUpdateTripMutation = (params: GetAdminTripsParams = {}) => {
   const queryClient = useQueryClient();
   const { t } = useI18n();
 
   return useMutation({
-    mutationFn: ({ id, body }: { id: string; body: UpdateTripBody }) =>
-      updateTrip(id, body),
+    mutationFn: ({ id, body }: UpdateTripVariables) => updateTrip(id, body),
     ...createOptimisticMutationHandlers<
-      { id: string; body: UpdateTripBody },
+      UpdateTripVariables,
       AdminTripsResponse
     >({
       queryClient,
       queryKey: adminTripsQueryKey(params),
-      updateCache: (old, { id, body }) =>
-        old && {
+      // Редагування зачіпає й місце рядка в таблиці: зміна часу відправлення
+      // пересуває його, а перенесення рейсу за межі обраного діапазону —
+      // прибирає зовсім. Інакше рядок стрибав би вже після інвалідації.
+      updateCache: (old, { id, body, optimistic }) => {
+        if (!old) return old;
+
+        const trips = old.trips
+          .map((trip) =>
+            trip.id === id ? patchTrip(trip, { body, optimistic }) : trip,
+          )
+          .filter((trip) => isWithinQueryRange(trip, params))
+          .sort(byDepartureTime);
+
+        return {
           ...old,
-          trips: old.trips.map((trip) =>
-            trip.id === id ? { ...trip, ...body } : trip,
-          ),
-        },
+          trips,
+          total: Math.max(old.total - (old.trips.length - trips.length), 0),
+        };
+      },
       successMessage: t("common.toast.tripUpdateSuccess"),
       errorMessage: t("common.toast.tripUpdateError"),
       errorMessageByStatus: { 409: t("common.toast.tripConflictError") },

@@ -104,6 +104,14 @@ export default function RoutesPageClient() {
     [buses],
   );
 
+  // У таблиці стоїть держномер, а PATCH знає лише busId — тримаємо мапу, щоб
+  // оптимістичне оновлення могло підставити номер одразу.
+  const busPlates: Record<string, string> = useMemo(
+    () =>
+      Object.fromEntries(buses.map((bus) => [bus.id, bus.registrationNumber])),
+    [buses],
+  );
+
   const routeItems: RouteOption[] = useMemo(
     // Селект показує маршрут («м.Черкаси - м.Київ»), а поле «Рейс» — напрямок
     // конкретного запису розкладу, зі станцією прибуття.
@@ -172,7 +180,21 @@ export default function RoutesPageClient() {
         ...(form.status ? { status: form.status as TripStatus } : {}),
       };
 
-      updateTrip.mutate({ id: disclosure.data.tripId, body: patch });
+      // Те, чого з patch не вивести: номер автобуса за busId і напрямок, яким
+      // бекенд перепише рейс після зміни маршруту.
+      const busNumber = form.vehicle ? busPlates[form.vehicle] : undefined;
+      const direction = isSameRoute
+        ? undefined
+        : routeItems.find((item) => item.id === routeId)?.name;
+
+      updateTrip.mutate({
+        id: disclosure.data.tripId,
+        body: patch,
+        optimistic: {
+          ...(busNumber ? { busNumber } : {}),
+          ...(direction ? { direction } : {}),
+        },
+      });
     } else {
       // POST price вимагає, тож вона приїжджає з розкладу обраного рейсу.
       const payload: CreateTripBody = { ...body, price: Number(form.price) || 0 };

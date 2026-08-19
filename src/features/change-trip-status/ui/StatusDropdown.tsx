@@ -40,6 +40,12 @@ export function StatusDropdown({
   ];
 
   return (
-    <Dropdown id={rowId} openId={openId} onToggle={onToggle} items={items} />
+    <Dropdown
+      id={rowId}
+      openId={openId}
+      onToggle={onToggle}
+      items={items}
+      align="end"
+    />
   );
 }
