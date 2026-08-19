@@ -21,6 +21,7 @@ import Button from "@/src/shared/ui/Button/Button";
 import Chip from "@/src/shared/ui/Chip/Chip";
 import { getStatusClass } from "../lib/routesTable.utils";
 import { useRoutesTable, useStatusColumnWidth } from "../model/useRoutesTable";
+import RoutesTableSkeleton from "./RoutesTableSkeleton";
 import type { RouteRow } from "../model/types";
 import styles from "./admin-routes-table.module.css";
 
@@ -107,11 +108,10 @@ export default function RoutesTable({
     },
   ];
 
-  const emptyMessage = isLoading
-    ? t("dispatcherArea.routes.table.loading")
-    : isError
-      ? t("dispatcherArea.routes.table.error")
-      : t("dispatcherArea.routes.table.empty");
+  // Завантаження показує скелетон, тож тут лишились тільки порожньо й помилка.
+  const emptyMessage = isError
+    ? t("dispatcherArea.routes.table.error")
+    : t("dispatcherArea.routes.table.empty");
 
   return (
     <div
@@ -166,7 +166,9 @@ export default function RoutesTable({
                 <th ref={actionColRef} className={dashboardTableStyles.thAction} />
               </DashboardThead>
               <tbody>
-                {paginatedRows.length === 0 ? (
+                {isLoading ? (
+                  <RoutesTableSkeleton rows={rowsPerPage} />
+                ) : paginatedRows.length === 0 ? (
                   <tr>
                     <td colSpan={7} className={styles.emptyCell}>
                       {emptyMessage}
