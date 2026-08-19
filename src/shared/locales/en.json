@@ -315,6 +315,21 @@
       "cancel": "Cancel",
       "delete": "Delete"
     },
+    "confirmDelete": {
+      "question": "Are you sure you want to delete",
+      "back": "Go back",
+      "targets": {
+        "route": "the route",
+        "direction": "the direction",
+        "cafeCategory": "the menu category",
+        "cafeDish": "the dish",
+        "bus": "the bus",
+        "driver": "the driver data",
+        "dispatcher": "the dispatcher data",
+        "user": "the user",
+        "data": "the data"
+      }
+    },
     "toast": {
       "loginSuccess": "Signed in successfully.",
       "loginError": "Failed to sign in. Please try again.",
@@ -474,6 +489,10 @@
         "action": "Choose a route"
       },
       "loadError": "Could not load tickets.",
+      "confirmCancel": {
+        "question": "Are you sure you want to cancel booking",
+        "confirm": "Yes, cancel"
+      },
       "toast": {
         "cancelSuccess": "Booking cancelled successfully.",
         "cancelError": "Could not cancel the booking."

@@ -10,12 +10,18 @@ import styles from "./ConfirmDeleteModal.module.css";
 
 type ConfirmDeleteModalProps = {
   subject: string;
+  /** Overrides default "Are you sure you want to delete …" prefix. */
+  question?: string;
+  /** Overrides default delete button label. */
+  confirmLabel?: string;
   onCancel: () => void;
   onConfirm: () => void;
 };
 
 export default function ConfirmDeleteModal({
   subject,
+  question,
+  confirmLabel,
   onCancel,
   onConfirm,
 }: ConfirmDeleteModalProps) {
@@ -31,6 +37,8 @@ export default function ConfirmDeleteModal({
     >
       <ConfirmDeleteModalBody
         subject={subject}
+        question={question}
+        confirmLabel={confirmLabel}
         onConfirm={() => {
           isConfirmedRef.current = true;
         }}
@@ -41,13 +49,18 @@ export default function ConfirmDeleteModal({
 
 function ConfirmDeleteModalBody({
   subject,
+  question,
+  confirmLabel,
   onConfirm,
 }: {
   subject: string;
+  question?: string;
+  confirmLabel?: string;
   onConfirm: () => void;
 }) {
   const { t } = useI18n();
   const requestClose = useModalClose();
+  const questionPrefix = question ?? t("common.confirmDelete.question");
 
   return (
     <>
@@ -57,7 +70,7 @@ function ConfirmDeleteModalBody({
         </span>
 
         <p id="confirm-delete-title" className={styles.question}>
-          {`${t("common.confirmDelete.question")} ${subject}?`}
+          {`${questionPrefix} ${subject}?`}
         </p>
 
         <ModalCloseButton
@@ -75,7 +88,7 @@ function ConfirmDeleteModalBody({
           onClick={requestClose}
         />
         <Button
-          text={t("common.actions.delete")}
+          text={confirmLabel ?? t("common.actions.delete")}
           variant="danger"
           size="full"
           onClick={() => {
