@@ -3,6 +3,7 @@ import { DEV_PROFILE_KEY, DEV_ROLE_KEY } from "./dev-auth";
 const CSRF_COOKIE_NAME = "csrf_token";
 const LEGACY_CSRF_STORAGE_KEY = "csrf_token";
 const AUTH_CHANGE_EVENT = "auth-change";
+const AUTH_SESSION_ENDED_EVENT = "auth-session-ended";
 
 let inMemoryCsrfToken: string | null = null;
 
@@ -79,6 +80,26 @@ export function clearCsrfToken() {
   inMemoryCsrfToken = null;
   expireCsrfCookie();
   notifyAuthChange();
+}
+
+/** Clears client auth state after the server session is gone (logout, password change, failed refresh). */
+export function endClientSession() {
+  if (!isBrowser()) return;
+
+  inMemoryCsrfToken = null;
+  expireCsrfCookie();
+  window.localStorage.removeItem(LEGACY_CSRF_STORAGE_KEY);
+  window.dispatchEvent(new Event(AUTH_SESSION_ENDED_EVENT));
+  notifyAuthChange();
+}
+
+export function subscribeToSessionEnd(onEnd: () => void) {
+  if (!isBrowser()) return () => {};
+
+  window.addEventListener(AUTH_SESSION_ENDED_EVENT, onEnd);
+  return () => {
+    window.removeEventListener(AUTH_SESSION_ENDED_EVENT, onEnd);
+  };
 }
 
 if (isBrowser()) {

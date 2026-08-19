@@ -1,4 +1,4 @@
-import { clearCsrfToken, getCsrfToken, setCsrfToken } from "./session";
+import { endClientSession, getCsrfToken, setCsrfToken } from "./session";
 
 export class ApiError extends Error {
   status: number;
@@ -137,13 +137,13 @@ async function refreshAccessToken(): Promise<boolean> {
       });
 
       if (!response.ok) {
-        clearCsrfToken();
+        endClientSession();
         return false;
       }
 
       const body = await parseResponse<RefreshResponse>(response);
       if (!body?.access_token) {
-        clearCsrfToken();
+        endClientSession();
         return false;
       }
 
@@ -172,7 +172,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 
   if (!response.ok) {
     if (response.status === 401) {
-      clearCsrfToken();
+      endClientSession();
     }
 
     throw new ApiError(await getErrorMessage(response), response.status);

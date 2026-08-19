@@ -7,6 +7,7 @@ import {
   UpdateProfilePayload,
   UpdateProfileResponse,
 } from "./users";
+import { endClientSession } from "@/src/shared/api/session";
 
 export const PROFILE_KEY = "profile";
 
@@ -34,6 +35,8 @@ export function useUpdateProfileMutation() {
 }
 
 export function useChangePasswordMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (
       payload: ChangePasswordPayload,
@@ -41,5 +44,9 @@ export function useChangePasswordMutation() {
       return changePassword(payload);
     },
     mutationKey: ["change-password"],
+    onSuccess: () => {
+      endClientSession();
+      queryClient.removeQueries({ queryKey: [PROFILE_KEY] });
+    },
   });
 }
