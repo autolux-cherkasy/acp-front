@@ -7,7 +7,10 @@ import ModalCloseButton from "@/src/shared/ui/ModalCloseButton/ModalCloseButton"
 import ModalFrame, { useModalClose } from "@/src/shared/ui/ModalFrame/ModalFrame";
 import { useRef, useState, type ClipboardEvent, type KeyboardEvent } from "react";
 import styles from "./EmailConfirmationModal.module.css";
-import { useVerifyEmailOtpMutation } from "../../auth/api/useAuthQueries";
+import {
+  useVerifyEmailOtpMutation,
+  useVerifyGuestOtpMutation,
+} from "../../auth/api/useAuthQueries";
 
 const CODE_LENGTH = 6;
 
@@ -18,7 +21,8 @@ type FormProps = {
   context: EmailConfirmationContext;
   error?: boolean;
   onClose?: () => void;
-  onConfirm?: (code: string) => void;
+  /** Registration: after email verify. Guest booking/payment: receives guest_token. */
+  onConfirm?: (code: string, guestToken?: string) => void;
   onResend?: () => void;
   onChangeEmail?: () => void;
 };
@@ -41,7 +45,11 @@ export function EmailConfirmationForm({
   const { notifySuccess } = useServerToast();
   const [code, setCode] = useState<string[]>(() => Array(CODE_LENGTH).fill(""));
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
-  const verifyOtpMutation = useVerifyEmailOtpMutation();
+  const verifyEmailOtpMutation = useVerifyEmailOtpMutation();
+  const verifyGuestOtpMutation = useVerifyGuestOtpMutation();
+  const isGuestContext = context === "booking" || context === "payment";
+  const isVerifying =
+    verifyEmailOtpMutation.isPending || verifyGuestOtpMutation.isPending;
 
   const descriptionKey =
     context === "payment"
@@ -132,28 +140,42 @@ export function EmailConfirmationForm({
         text={t("ticketBooking.emailConfirmationModal.confirm")}
         variant="primary"
         size="full"
-        disabled={!isComplete || verifyOtpMutation.isPending}
-        onClick={() =>
-          verifyOtpMutation.mutate(
-            { email, code: code.join("") },
+        disabled={!isComplete || isVerifying}
+        onClick={() => {
+          const joined = code.join("");
+          if (isGuestContext) {
+            verifyGuestOtpMutation.mutate(
+              { email, code: joined },
+              {
+                onSuccess: (result) => {
+                  onConfirm?.(joined, result.guest_token);
+                },
+                onError: () => {},
+              },
+            );
+            return;
+          }
+
+          verifyEmailOtpMutation.mutate(
+            { email, code: joined },
             {
               onSuccess: (result) => {
                 notifySuccess(result, t("common.toast.verifyEmailSuccess"));
-                onConfirm?.(code.join(""));
+                onConfirm?.(joined);
               },
               onError: () => {},
             },
-          )
-        }
+          );
+        }}
       />
 
       <div className={styles.footer}>
         <span>{t("ticketBooking.emailConfirmationModal.resendPrompt")}</span>
-        <button type="button" className={styles.link} onClick={onResend} disabled={verifyOtpMutation.isPending}>
+        <button type="button" className={styles.link} onClick={onResend} disabled={isVerifying}>
           {t("ticketBooking.emailConfirmationModal.resend")}
         </button>
         <span className={styles.dot} />
-        <button type="button" className={styles.link} onClick={onChangeEmail} disabled={verifyOtpMutation.isPending}>
+        <button type="button" className={styles.link} onClick={onChangeEmail} disabled={isVerifying}>
           {t("ticketBooking.emailConfirmationModal.changeEmail")}
         </button>
       </div>

@@ -115,6 +115,33 @@ export function verifyEmailOtp(payload: VerifyEmailOtpPayload) {
   });
 }
 
+export type GuestOtpPayload = {
+  email: string;
+  code: string;
+};
+
+export type GuestTokenResponse = {
+  guest_token: string;
+};
+
+export function requestGuestOtp(email: string) {
+  return apiFetch<MessageResponse>("/auth/guest/request-otp", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+    includeAuth: false,
+    skipAuthRefresh: true,
+  });
+}
+
+export function verifyGuestOtp(payload: GuestOtpPayload) {
+  return apiFetch<GuestTokenResponse>("/auth/guest/verify-otp", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    includeAuth: false,
+    skipAuthRefresh: true,
+  });
+}
+
 export function resendConfirm(payload: ForgotPasswordPayload){
   return apiFetch<MessageResponse>("/auth/resend-confirmation", {
   method: "POST",
