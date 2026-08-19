@@ -16,6 +16,9 @@ type AdminModalFrameProps = {
   onSubmit: () => void;
   onDelete?: () => void;
   deleteSubject?: string;
+  /** «visible» потрібне модалкам із поповерами: поверхня за замовчуванням ріже вміст. */
+  surfaceOverflow?: "hidden" | "visible";
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
   children: ReactNode;
 };
 
@@ -27,6 +30,8 @@ export default function AdminModalFrame({
   onSubmit,
   onDelete,
   deleteSubject,
+  surfaceOverflow,
+  onEscapeKeyDown,
   children,
 }: AdminModalFrameProps) {
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -38,6 +43,8 @@ export default function AdminModalFrame({
         ariaLabelledBy="admin-modal-title"
         usePortal
         surfaceClassName={styles.surface}
+        surfaceOverflow={surfaceOverflow}
+        onEscapeKeyDown={onEscapeKeyDown}
       >
         <AdminModalFrameBody
           mode={mode}

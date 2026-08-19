@@ -31,7 +31,7 @@ export function mapTripToRow(trip: AdminTripDto): RouteRow {
     departureTime: formatKyivTime(trip.departureTime),
     arrivalTime: formatKyivTime(trip.arrivalTime),
     busNumber: trip.busNumber,
-    availableSeats: Math.max(trip.totalSeats - trip.occupiedSeats, 0),
+    occupiedSeats: trip.occupiedSeats,
     totalSeats: trip.totalSeats,
     status: trip.status,
   };

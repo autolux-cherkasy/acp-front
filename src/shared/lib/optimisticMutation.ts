@@ -1,4 +1,5 @@
 import { QueryClient, QueryKey } from "@tanstack/react-query";
+import { ApiError } from "@/src/shared/api/http";
 import { showServerToast } from "@/src/shared/lib/toast";
 
 type OptimisticMutationConfig<TVariables, TCache> = {
@@ -7,6 +8,8 @@ type OptimisticMutationConfig<TVariables, TCache> = {
   updateCache: (old: TCache | undefined, variables: TVariables) => TCache | undefined;
   successMessage: string;
   errorMessage: string;
+  /** Текст на конкретний HTTP-статус; має пріоритет над повідомленням бекенда. */
+  errorMessageByStatus?: Record<number, string>;
 };
 
 export function createOptimisticMutationHandlers<TVariables, TCache>({
@@ -15,6 +18,7 @@ export function createOptimisticMutationHandlers<TVariables, TCache>({
   updateCache,
   successMessage,
   errorMessage,
+  errorMessageByStatus,
 }: OptimisticMutationConfig<TVariables, TCache>) {
   return {
     onMutate: async (variables: TVariables) => {
@@ -31,7 +35,10 @@ export function createOptimisticMutationHandlers<TVariables, TCache>({
       if (context?.previous !== undefined) {
         queryClient.setQueryData(queryKey, context.previous);
       }
-      showServerToast({ type: "error", error, errorMessage });
+      const localized =
+        error instanceof ApiError ? errorMessageByStatus?.[error.status] : undefined;
+
+      showServerToast({ type: "error", error, errorMessage, message: localized });
     },
   };
 }

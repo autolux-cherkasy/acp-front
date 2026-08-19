@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState } from "react";
 import { StatusDropdown } from "@/src/features/change-trip-status";
 import type { TripStatus } from "@/src/entities/trip";
 import {
@@ -20,7 +20,8 @@ import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import Button from "@/src/shared/ui/Button/Button";
 import Chip from "@/src/shared/ui/Chip/Chip";
 import { getStatusClass } from "../lib/routesTable.utils";
-import { useRoutesTable, useStatusColumnWidth } from "../model/useRoutesTable";
+import { useRoutesTable } from "../model/useRoutesTable";
+import RoutesTableSkeleton from "./RoutesTableSkeleton";
 import type { RouteRow } from "../model/types";
 import styles from "./admin-routes-table.module.css";
 
@@ -47,11 +48,6 @@ export default function RoutesTable({
 }: RoutesTableProps) {
   const { t } = useI18n();
   const { openDropdownId, setOpenDropdownId } = useRoutesTable();
-  const {
-    statusColRef,
-    actionColRef,
-    width: sortActionWidth,
-  } = useStatusColumnWidth();
   const [selectedFilter, setSelectedFilter] =
     useState<RouteFilterOption>("__all__");
 
@@ -107,22 +103,13 @@ export default function RoutesTable({
     },
   ];
 
-  const emptyMessage = isLoading
-    ? t("dispatcherArea.routes.table.loading")
-    : isError
-      ? t("dispatcherArea.routes.table.error")
-      : t("dispatcherArea.routes.table.empty");
+  // Завантаження показує скелетон, тож тут лишились тільки порожньо й помилка.
+  const emptyMessage = isError
+    ? t("dispatcherArea.routes.table.error")
+    : t("dispatcherArea.routes.table.empty");
 
   return (
-    <div
-      ref={cardRef}
-      className={styles.cardRoot}
-      style={
-        sortActionWidth != null
-          ? ({ "--routes-sort-width": `${sortActionWidth}px` } as CSSProperties)
-          : undefined
-      }
-    >
+    <div ref={cardRef} className={styles.cardRoot}>
       <DashboardCard
         className={styles.card}
         title={t("dispatcherArea.routes.table.title")}
@@ -160,13 +147,15 @@ export default function RoutesTable({
                 <th className={dashboardTableStyles.th}>
                   {t("dispatcherArea.routes.table.columns.seats")}
                 </th>
-                <th ref={statusColRef} className={dashboardTableStyles.thStatus}>
+                <th className={dashboardTableStyles.thStatus}>
                   {t("dispatcherArea.routes.table.columns.status")}
                 </th>
-                <th ref={actionColRef} className={dashboardTableStyles.thAction} />
+                <th className={dashboardTableStyles.thAction} />
               </DashboardThead>
               <tbody>
-                {paginatedRows.length === 0 ? (
+                {isLoading ? (
+                  <RoutesTableSkeleton rows={rowsPerPage} />
+                ) : paginatedRows.length === 0 ? (
                   <tr>
                     <td colSpan={7} className={styles.emptyCell}>
                       {emptyMessage}
@@ -221,8 +210,8 @@ export default function RoutesTable({
                         <td
                           className={`${dashboardTableStyles.td} ${dashboardTableStyles.tdLeft}`}
                         >
-                          {row.availableSeats != null && row.totalSeats != null
-                            ? `${row.availableSeats}/${row.totalSeats}`
+                          {row.occupiedSeats != null && row.totalSeats != null
+                            ? `${row.occupiedSeats}/${row.totalSeats}`
                             : EM_DASH}
                         </td>
                         <td

@@ -15,9 +15,18 @@ type DropdownProps = {
   onToggle: (id: string | null) => void;
   items: DropdownItem[];
   hideTrigger?: boolean;
+  /** «end» притискає меню правим краєм до тригера — потрібне біля краю екрана. */
+  align?: "start" | "end";
 };
 
-export function Dropdown({ id, openId, onToggle, items, hideTrigger }: DropdownProps) {
+export function Dropdown({
+  id,
+  openId,
+  onToggle,
+  items,
+  hideTrigger,
+  align = "start",
+}: DropdownProps) {
   return (
     <div className={styles.dropdownWrapper}>
       <DropdownMenu.Root open={openId === id} onOpenChange={(open) => onToggle(open ? id : null)}>
@@ -31,7 +40,7 @@ export function Dropdown({ id, openId, onToggle, items, hideTrigger }: DropdownP
           <DropdownMenu.Content
             className={styles.dropdown}
             side="bottom"
-            align="start"
+            align={align}
             sideOffset={4}
           >
             <DropdownMenu.Group>

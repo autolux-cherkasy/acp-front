@@ -18,17 +18,7 @@ import NewOrderModal from "@/src/features/admin-modals/NewOrderModal/NewOrderMod
 import OrderDetailsModal from "@/src/features/admin-modals/OrderDetailsModal/OrderDetailsModal";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import { formatDateForApi } from "@/src/shared/lib/formatters";
-
-function addMonth(date: Date): Date {
-    const shifted = new Date(date.getFullYear(), date.getMonth() + 1, date.getDate());
-
-    // 31 січня + місяць у JS дає 3 березня, тож підтягуємо до кінця місяця.
-    if (shifted.getDate() !== date.getDate()) {
-        shifted.setDate(0);
-    }
-
-    return shifted;
-}
+import { defaultMonthRange } from "@/src/shared/lib/dateRange";
 
 export default function TicketsPage() {
     const { t } = useI18n();
@@ -38,11 +28,7 @@ export default function TicketsPage() {
     const newOrder = useDisclosure();
     const orderDetails = useDisclosure<string>();
     const [ticketToEdit, setTicketToEdit] = useState<Ticket | null>(null);
-    const [range, setRange] = useState<DateRange>(() => {
-        const today = new Date();
-
-        return { from: today, to: addMonth(today) };
-    });
+    const [range, setRange] = useState<DateRange>(defaultMonthRange);
     const [page, setPage] = useState(1);
 
     const from = formatDateForApi(range.from);

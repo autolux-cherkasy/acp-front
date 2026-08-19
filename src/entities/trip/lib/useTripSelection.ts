@@ -13,9 +13,37 @@ type UseTripSelectionParams = {
   selectedDate: Date | null;
 };
 
+type UseRouteDatesParams = {
+  fromStopId: string;
+  toStopId: string;
+};
+
 const TRIPS_KEY = "trips";
 const ROUTES_KEY = "routes";
 const DATES_KEY = "dates";
+
+/** Пари «зупинка — зупинка», за якими взагалі можна їхати. Спільний кеш на застосунок. */
+export function useRouteSegments() {
+  const { data, isLoading } = useQuery<RouteSegment[]>({
+    queryKey: [ROUTES_KEY],
+    queryFn: getRoutes,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return { segments: data ?? [], isLoading };
+}
+
+/** Доби, на які для відрізка є рейси. Без пари id запит не має сенсу. */
+export function useRouteDates({ fromStopId, toStopId }: UseRouteDatesParams) {
+  const { data, isLoading, isError } = useQuery<TripDate[]>({
+    queryKey: [DATES_KEY, { fromStopId, toStopId }],
+    queryFn: () => getDates({ fromStopId, toStopId }),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!fromStopId && !!toStopId,
+  });
+
+  return { dates: data ?? [], isLoading, isError };
+}
 
 export function useTripSelection({ selectedRoute, selectedDate }: UseTripSelectionParams) {
   const { from: fromStopId, to: toStopId } = parseRouteValue(selectedRoute);
@@ -38,32 +66,23 @@ export function useTripSelection({ selectedRoute, selectedDate }: UseTripSelecti
     enabled: !!selectedRoute && !!selectedDate,
   });
 
-  const { data: routesData, isLoading: isRoutesLoading } = useQuery<RouteSegment[]>({
-    queryKey: [ROUTES_KEY],
-    queryFn: getRoutes,
-    staleTime: 1000 * 60 * 5,
-  });
+  const { segments, isLoading: isRoutesLoading } = useRouteSegments();
 
   const {
-    data: datesData,
+    dates,
     isLoading: isDatesLoading,
     isError: isDatesError,
-  } = useQuery<TripDate[]>({
-    queryKey: [DATES_KEY, { fromStopId, toStopId }],
-    queryFn: () => getDates({ fromStopId, toStopId }),
-    staleTime: 1000 * 60 * 5,
-    enabled: !!selectedRoute,
-  });
+  } = useRouteDates({ fromStopId, toStopId });
 
   return {
-    routeOptions: (routesData ?? []).map((route) => ({
+    routeOptions: segments.map((route) => ({
       value: buildRouteValue(route.fromStopId, route.toStopId),
       from: route.from,
       to: route.to,
       label: `${route.from} — ${route.to}`,
     })),
     trips: tripsData ?? [],
-    dates: datesData ?? [],
+    dates,
     fromStopId,
     toStopId,
     isDatesLoading,
