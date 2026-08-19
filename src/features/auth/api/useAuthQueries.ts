@@ -5,15 +5,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   forgotPassword,
   type ForgotPasswordPayload,
+  type GuestOtpPayload,
   login,
   logout,
   register,
+  requestGuestOtp,
   resetPassword,
   type LoginPayload,
   type RegisterPayload,
   type ResetPasswordPayload,
   VerifyEmailOtpPayload,
   verifyEmailOtp,
+  verifyGuestOtp,
   resendConfirm,
 } from "./auth";
 import { setCsrfToken } from "@/src/shared/api/session";
@@ -87,5 +90,19 @@ export function useResendConfirmMutation() {
   return useMutation({
     mutationFn: (payload: ForgotPasswordPayload) => resendConfirm(payload),
     mutationKey: ["resend-confirm"],
+  });
+}
+
+export function useRequestGuestOtpMutation() {
+  return useMutation({
+    mutationFn: (email: string) => requestGuestOtp(email),
+    mutationKey: ["guest-request-otp"],
+  });
+}
+
+export function useVerifyGuestOtpMutation() {
+  return useMutation({
+    mutationFn: (payload: GuestOtpPayload) => verifyGuestOtp(payload),
+    mutationKey: ["guest-verify-otp"],
   });
 }

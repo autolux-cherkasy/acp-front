@@ -154,6 +154,31 @@
       "cancelError": "Could not cancel the booking.",
       "missingStops": "Could not determine boarding/alighting stops. Go back and select the trip again."
     },
+    "otpModal": {
+      "title": "Confirm your email",
+      "subtitle": "Enter the code sent to",
+      "codeLabel": "Confirmation code",
+      "codeRequired": "Enter the confirmation code",
+      "confirm": "Confirm",
+      "confirmLoading": "Confirming...",
+      "resend": "Resend code",
+      "resendSuccess": "A new code has been sent.",
+      "resendError": "Could not resend the code.",
+      "requestError": "Could not send the confirmation code. Please try again.",
+      "genericError": "Invalid or expired code."
+    },
+    "emailConfirmationModal": {
+      "title": "Email confirmation",
+      "descriptionPayment": "To confirm payment, please enter the code we sent to your email:",
+      "descriptionBooking": "To confirm the booking, please enter the code we sent to your email:",
+      "descriptionForgotPassword": "To reset your password, please enter the code we sent to your email:",
+      "descriptionRegistration": "To confirm registration, please enter the code we sent to your email:",
+      "wrongCode": "Invalid code",
+      "confirm": "Confirm",
+      "resendPrompt": "Didn't get a code?",
+      "resend": "Resend",
+      "changeEmail": "Change email"
+    },
     "payment": {
       "secure": "All payments are protected according to security standards",
       "termsPrefix": "By clicking, you agree to the",

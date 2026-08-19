@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -13,9 +13,10 @@ import {
 import { Trip, TripStop } from "@/src/entities/trip";
 import { useProfileQuery } from "@/src/entities/user/api/useUserQueries";
 import { fetchCsrfToken } from "@/src/features/auth/api/auth";
-import { openAuthModal } from "@/src/features/auth/model/auth-flow";
+import { useRequestGuestOtpMutation } from "@/src/features/auth/api/useAuthQueries";
 import { useAuthSession } from "@/src/features/auth/model/session";
-import { API_ORIGIN, ApiError } from "@/src/shared/api/http";
+import EmailConfirmationModal from "@/src/features/email-confirmation/ui/EmailConfirmationModal";
+import { API_ORIGIN } from "@/src/shared/api/http";
 import { getCsrfToken, setCsrfToken } from "@/src/shared/api/session";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import LocaleLink from "@/src/shared/i18n/Link";
@@ -128,16 +129,20 @@ export default function TicketBookingPage({
   arrivalTime: rawArrivalTime,
 }: TicketBookingPageProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const resolveHref = useLocalizedHref();
   const { isAuthenticated } = useAuthSession();
   const { notifyError, notifySuccess } = useServerToast();
   const reserveMutation = useReserveBookingMutation();
   const payMutation = useReserveAndPayMutation();
+  const requestGuestOtpMutation = useRequestGuestOtpMutation();
   const { lang, t } = useI18n();
   const profileQuery = useProfileQuery();
   const locale = lang === "en" ? "en-GB" : "uk-UA";
+  const [guestOtpOpen, setGuestOtpOpen] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState<{
+    mode: "reserve" | "pay";
+    payload: CreateBookingPayload;
+  } | null>(null);
   const maxBookableSeats = Math.max(1, Math.min(trip.totalSeats ?? 0, MAX_BOOKING_SEATS));
   const safeInitialSeats = Math.min(Math.max(initialSeats, 1), maxBookableSeats);
 
@@ -189,17 +194,49 @@ export default function TicketBookingPage({
     });
   }, [profileQuery.data, reset]);
 
-  const isSubmitting = reserveMutation.isPending || payMutation.isPending;
+  const isSubmitting =
+    reserveMutation.isPending ||
+    payMutation.isPending ||
+    requestGuestOtpMutation.isPending;
+
+  const completeBooking = async (
+    mode: "reserve" | "pay",
+    payload: CreateBookingPayload,
+    guestToken?: string,
+  ) => {
+    await ensureCsrfToken();
+
+    if (mode === "pay") {
+      const result = await payMutation.mutateAsync({ payload, guestToken });
+      if (!result.checkoutPageUrl) {
+        notifyError(null, t("ticketBooking.toast.paymentUnavailable"));
+        return;
+      }
+      const url = /^https?:\/\//.test(result.checkoutPageUrl)
+        ? result.checkoutPageUrl
+        : `${API_ORIGIN ?? ""}${result.checkoutPageUrl}`;
+      window.location.assign(url);
+      return;
+    }
+
+    const result = await reserveMutation.mutateAsync({ payload, guestToken });
+    notifySuccess(
+      {
+        message: `${t("ticketBooking.toast.reserveSuccess")} ${result.booking.referenceCode}`,
+      },
+      t("ticketBooking.toast.reserveSuccess"),
+    );
+
+    if (isAuthenticated) {
+      router.push(resolveHref("/profile/tickets"));
+      return;
+    }
+
+    router.push(resolveHref("/home"));
+  };
 
   const submitPassengerForm = (mode: "reserve" | "pay") =>
     handleSubmit(async (data) => {
-      if (!isAuthenticated) {
-        notifyError(null, t("ticketBooking.form.loginToContinue"));
-        const next = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-        openAuthModal(router, resolveHref, "login", { next });
-        return;
-      }
-
       if (!boardingStop?.id || !alightingStop?.id) {
         notifyError(null, t("ticketBooking.toast.missingStops"));
         return;
@@ -216,38 +253,47 @@ export default function TicketBookingPage({
       };
 
       try {
-        await ensureCsrfToken();
-
-        if (mode === "pay") {
-          const result = await payMutation.mutateAsync({ payload });
-          if (!result.checkoutPageUrl) {
-            notifyError(null, t("ticketBooking.toast.paymentUnavailable"));
-            return;
-          }
-          const url = /^https?:\/\//.test(result.checkoutPageUrl)
-            ? result.checkoutPageUrl
-            : `${API_ORIGIN ?? ""}${result.checkoutPageUrl}`;
-          window.location.assign(url);
+        if (isAuthenticated) {
+          await completeBooking(mode, payload);
           return;
         }
 
-        const result = await reserveMutation.mutateAsync({ payload });
-        notifySuccess(
-          {
-            message: `${t("ticketBooking.toast.reserveSuccess")} ${result.booking.referenceCode}`,
-          },
-          t("ticketBooking.toast.reserveSuccess"),
-        );
-        router.push(resolveHref("/profile/tickets"));
+        setPendingBooking({ mode, payload });
+        await requestGuestOtpMutation.mutateAsync(payload.passengerEmail);
+        notifySuccess(null, t("ticketBooking.otpModal.resendSuccess"));
+        setGuestOtpOpen(true);
       } catch (error) {
-        if (error instanceof ApiError && error.status === 401) {
-          const next = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-          openAuthModal(router, resolveHref, "login", { next });
-          return;
-        }
-        notifyError(error, t("ticketBooking.toast.reserveError"));
+        setPendingBooking(null);
+        setGuestOtpOpen(false);
+        notifyError(
+          error,
+          isAuthenticated
+            ? t("ticketBooking.toast.reserveError")
+            : t("ticketBooking.otpModal.requestError"),
+        );
       }
     });
+
+  const closeGuestOtp = () => {
+    setGuestOtpOpen(false);
+    setPendingBooking(null);
+  };
+
+  const confirmGuestOtp = async (_code: string, guestToken?: string) => {
+    if (!pendingBooking || !guestToken) {
+      notifyError(null, t("ticketBooking.emailConfirmationModal.wrongCode"));
+      return;
+    }
+
+    try {
+      const { mode, payload } = pendingBooking;
+      setGuestOtpOpen(false);
+      await completeBooking(mode, payload, guestToken);
+      setPendingBooking(null);
+    } catch (error) {
+      notifyError(error, t("ticketBooking.toast.reserveError"));
+    }
+  };
 
   return (
     <main className={styles.page}>
@@ -517,6 +563,28 @@ export default function TicketBookingPage({
           </aside>
         </section>
       </div>
+
+      {guestOtpOpen && pendingBooking ? (
+        <EmailConfirmationModal
+          context={pendingBooking.mode === "pay" ? "payment" : "booking"}
+          email={pendingBooking.payload.passengerEmail}
+          onClose={closeGuestOtp}
+          onChangeEmail={closeGuestOtp}
+          onConfirm={(code, guestToken) => {
+            void confirmGuestOtp(code, guestToken);
+          }}
+          onResend={() => {
+            void requestGuestOtpMutation
+              .mutateAsync(pendingBooking.payload.passengerEmail)
+              .then(() => {
+                notifySuccess(null, t("ticketBooking.otpModal.resendSuccess"));
+              })
+              .catch((error) => {
+                notifyError(error, t("ticketBooking.otpModal.resendError"));
+              });
+          }}
+        />
+      ) : null}
     </main>
   );
 }
