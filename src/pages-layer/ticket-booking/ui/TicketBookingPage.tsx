@@ -17,7 +17,7 @@ import { useRequestGuestOtpMutation } from "@/src/features/auth/api/useAuthQueri
 import { useAuthSession } from "@/src/features/auth/model/session";
 import EmailConfirmationModal from "@/src/features/email-confirmation/ui/EmailConfirmationModal";
 import { API_ORIGIN } from "@/src/shared/api/http";
-import { getCsrfToken, setCsrfToken } from "@/src/shared/api/session";
+import { setCsrfToken } from "@/src/shared/api/session";
 import { useI18n, useLocalizedHref } from "@/src/shared/i18n/I18nProvider";
 import LocaleLink from "@/src/shared/i18n/Link";
 import { useServerToast } from "@/src/shared/lib/toast";
@@ -92,7 +92,6 @@ function parseCity(value: string): { city: string; stop: string | null } {
 }
 
 async function ensureCsrfToken() {
-  if (getCsrfToken()) return;
   const data = await fetchCsrfToken();
   if (data?.csrf_token) setCsrfToken(data.csrf_token);
 }
