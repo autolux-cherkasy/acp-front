@@ -69,9 +69,17 @@ export function useLogoutMutation() {
 }
 
 export function useVerifyEmailOtpMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (payload: VerifyEmailOtpPayload) => verifyEmailOtp(payload),
     mutationKey: ["verify-email-otp"],
+    onSuccess: async (data) => {
+      if (data?.csrf_token) {
+        setCsrfToken(data.csrf_token);
+      }
+      await queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY });
+    },
   });
 }
 

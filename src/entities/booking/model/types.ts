@@ -68,3 +68,7 @@ export type ReserveBookingResponse = {
   status: "Success";
   booking: ReserveBookingRecord;
 };
+
+export type ReserveAndPayResponse = ReserveBookingResponse & {
+  checkoutPageUrl: string;
+};
