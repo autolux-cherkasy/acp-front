@@ -1,6 +1,12 @@
 "use client";
 
-import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldPath,
+  FieldValues,
+  RegisterOptions,
+} from "react-hook-form";
 import SelectField, { type SelectOption } from "./SelectField";
 import styles from "../InputWithLabel/InputWithLabel.module.css";
 
@@ -13,6 +19,7 @@ type Props<T extends FieldValues> = {
   disabled?: boolean;
   wrapperClassName?: string;
   menuZIndex?: number;
+  rules?: RegisterOptions<T, FieldPath<T>>;
 };
 
 export default function SelectWithLabel<T extends FieldValues>({
@@ -24,6 +31,7 @@ export default function SelectWithLabel<T extends FieldValues>({
   disabled,
   wrapperClassName,
   menuZIndex,
+  rules,
 }: Props<T>) {
   return (
     <div className={[styles.field, wrapperClassName].filter(Boolean).join(" ")}>
@@ -31,6 +39,7 @@ export default function SelectWithLabel<T extends FieldValues>({
       <Controller
         control={control}
         name={name}
+        rules={rules}
         render={({ field }) => (
           <SelectField
             value={field.value ?? ""}

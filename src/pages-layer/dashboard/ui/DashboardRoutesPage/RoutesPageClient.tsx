@@ -18,6 +18,7 @@ import { useAdminScheduleQuery } from "@/src/entities/dashboard/api/dashboardSch
 import type { TripStatus } from "@/src/entities/trip";
 import HandleRoutesModal, {
   type RouteFormState,
+  type RouteOption,
 } from "@/src/features/admin-modals/HandleRoutesModal/HandleRoutesModal";
 import type { SelectOption } from "@/src/shared/ui/SelectField/SelectField";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
@@ -42,7 +43,13 @@ import { useQuery } from "@tanstack/react-query";
 
 type ModalPayload =
   | { mode: "create" }
-  | { mode: "edit"; tripId: string; initialData: Partial<RouteFormState> };
+  | {
+      mode: "edit";
+      tripId: string;
+      initialData: Partial<RouteFormState>;
+      occupiedSeats: number;
+      totalSeats: number;
+    };
 
 export default function RoutesPageClient() {
   const { t } = useI18n();
@@ -85,13 +92,27 @@ export default function RoutesPageClient() {
     [buses],
   );
 
-  const routeOptions: SelectOption[] = useMemo(
-    // Значенням лишається id, тож префікс станції в підписі нікуди не поїде
-    // в запит — селект маршрутів просто не розходиться з таблицею.
+  const busSeats: Record<string, number> = useMemo(
+    () =>
+      Object.fromEntries(buses.map((bus) => [bus.id, bus.seatsCount])),
+    [buses],
+  );
+
+  const routeItems: RouteOption[] = useMemo(
+    // Селект показує маршрут («м.Черкаси - м.Київ»), а поле «Рейс» — напрямок
+    // конкретного запису розкладу, зі станцією прибуття.
     () =>
       routes.map((route) => ({
-        value: route.id,
-        label: formatMetroStops(route.name),
+        id: route.id,
+        name: formatMetroStops(route.name),
+        schedules: route.schedules.map((entry) => ({
+          id: entry.id,
+          departureTime: entry.departureTime,
+          arrivalTime: entry.arrivalTime,
+          price: entry.price,
+          direction: formatMetroStops(entry.direction),
+          platform: entry.platform,
+        })),
       })),
     [routes],
   );
@@ -103,7 +124,9 @@ export default function RoutesPageClient() {
     label: t(`dispatcherArea.routes.table.statuses.${status}`),
   }));
 
-  function buildTripBody(form: RouteFormState): CreateTripBody {
+  // Дати в модалці більше немає: доба рейсу приходить із календаря в шапці
+  // (створення) або лишається тією, що вже стоїть у рейсі (редагування).
+  function buildTripBody(form: RouteFormState) {
     const departureDate = form.date || formatDateForApi(chosenDate);
     // Прибуття раніше за відправлення — рейс через північ.
     const arrivalDate =
@@ -111,20 +134,18 @@ export default function RoutesPageClient() {
         ? nextDateOnly(departureDate)
         : departureDate;
 
-    const direction = [form.departureCity, form.arrivalCity]
-      .map((city) => city.trim())
-      .filter(Boolean)
-      .join(" - ");
+    // Поля кількості місць немає — місткість беремо з обраного автобуса.
+    const seatsCount = form.vehicle ? busSeats[form.vehicle] : undefined;
 
     return {
-      // Наявний маршрут краще передати за id: інакше бекенд upsert-ить новий
-      // Route за рядком напрямку і плодить дублікати.
-      ...(form.route ? { routeId: form.route } : { direction }),
+      routeId: form.route,
       departureTime: kyivWallClockToIso(departureDate, form.departureTime),
       arrivalTime: kyivWallClockToIso(arrivalDate, form.arrivalTime),
-      price: Number(form.price),
+      // Платформа приїжджає разом із часом із того ж запису розкладу: саме вона
+      // відрізняє два рейси, що виходять о тій самій годині.
+      ...(form.platform ? { platform: form.platform } : {}),
       ...(form.vehicle ? { busId: form.vehicle } : {}),
-      ...(form.seats ? { totalSeats: Number(form.seats) } : {}),
+      ...(seatsCount ? { totalSeats: seatsCount } : {}),
     };
   }
 
@@ -132,14 +153,26 @@ export default function RoutesPageClient() {
     const body = buildTripBody(form);
 
     if (disclosure.data?.mode === "edit") {
+      // Отримавши routeId, бекенд переписує напрямок рейсу напрямком маршруту,
+      // а він коротший: «м.Черкаси - м.Київ» замість «… (ст.м.Чернігівська)».
+      // Поки маршрут не змінювали, id не шлемо — інакше станція зникає з таблиці.
+      const { routeId, ...rest } = body;
+      const isSameRoute = routeId === disclosure.data.initialData.route;
+
+      // Ціну не передаємо взагалі: поля для неї в модалці немає, а PATCH без
+      // price лишає рейсу поточну.
       const patch: UpdateTripBody = {
-        ...body,
+        ...rest,
+        ...(isSameRoute ? {} : { routeId }),
         ...(form.status ? { status: form.status as TripStatus } : {}),
       };
 
       updateTrip.mutate({ id: disclosure.data.tripId, body: patch });
     } else {
-      addTrip.mutate(body);
+      // POST price вимагає, тож вона приїжджає з розкладу обраного рейсу.
+      const payload: CreateTripBody = { ...body, price: Number(form.price) || 0 };
+
+      addTrip.mutate(payload);
     }
 
     disclosure.close();
@@ -167,22 +200,35 @@ export default function RoutesPageClient() {
           const trip = data?.trips.find((item) => item.id === id);
           if (!trip) return;
 
-          const [departureCity = "", arrivalCity = ""] =
-            trip.direction.split(" - ");
           const row = rows.find((item) => item.id === id);
+
+          // Запис розкладу шукаємо за часом і платформою разом: о тій самій
+          // годині маршрут може мати два рейси на різні станції прибуття.
+          const routeSchedules =
+            routeItems.find((item) => item.id === trip.routeId)?.schedules ?? [];
+          const scheduleEntry =
+            routeSchedules.find(
+              (entry) =>
+                entry.departureTime === row?.departureTime &&
+                entry.platform === trip.platform,
+            ) ??
+            routeSchedules.find(
+              (entry) => entry.departureTime === row?.departureTime,
+            );
 
           disclosure.open({
             mode: "edit",
             tripId: trip.id,
+            occupiedSeats: trip.occupiedSeats,
+            totalSeats: trip.totalSeats,
             initialData: {
               route: trip.routeId,
-              departureCity,
-              arrivalCity,
+              schedule: scheduleEntry?.id ?? "",
               date: kyivDateOnly(trip.departureTime),
               departureTime: row?.departureTime ?? "",
               arrivalTime: row?.arrivalTime ?? "",
+              platform: trip.platform,
               vehicle: trip.busId ?? "",
-              seats: String(trip.totalSeats),
               price: String(trip.price),
               status: trip.status,
             },
@@ -211,9 +257,18 @@ export default function RoutesPageClient() {
                 }
               : undefined
           }
-          routeOptions={routeOptions}
+          routes={routeItems}
           vehicleOptions={vehicleOptions}
           statusOptions={statusOptions}
+          busSeats={busSeats}
+          occupiedSeats={
+            disclosure.data.mode === "edit" ? disclosure.data.occupiedSeats : 0
+          }
+          totalSeats={
+            disclosure.data.mode === "edit"
+              ? disclosure.data.totalSeats
+              : undefined
+          }
         />
       )}
     </>

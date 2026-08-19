@@ -69,6 +69,7 @@ type TripBodyBase = {
   price: number;
   busId?: string;
   totalSeats?: number;
+  platform?: string;
 };
 
 /**
