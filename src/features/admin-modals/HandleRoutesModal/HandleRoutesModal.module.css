@@ -17,3 +17,14 @@
   font-weight: 400;
   color: var(--DarkSlateGray, #226078);
 }
+
+.calendarAnchor {
+  position: relative;
+}
+
+.calendarDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 200;
+}

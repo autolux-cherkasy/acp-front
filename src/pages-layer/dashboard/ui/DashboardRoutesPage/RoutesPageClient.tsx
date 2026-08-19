@@ -21,7 +21,9 @@ import HandleRoutesModal, {
   type RouteOption,
 } from "@/src/features/admin-modals/HandleRoutesModal/HandleRoutesModal";
 import type { SelectOption } from "@/src/shared/ui/SelectField/SelectField";
+import type { DateRange } from "@/src/widgets/MiniCalendar/MiniCalendar";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
+import { defaultMonthRange } from "@/src/shared/lib/dateRange";
 import {
   formatDateForApi,
   formatMetroStops,
@@ -54,11 +56,14 @@ type ModalPayload =
 export default function RoutesPageClient() {
   const { t } = useI18n();
   const disclosure = useDisclosure<ModalPayload>();
-  const [chosenDate, setChosenDate] = useState(() => new Date());
+  const [range, setRange] = useState<DateRange>(defaultMonthRange);
 
   const queryParams = useMemo(
-    () => ({ date: formatDateForApi(chosenDate) }),
-    [chosenDate],
+    () => ({
+      dateFrom: formatDateForApi(range.from),
+      dateTo: formatDateForApi(range.to),
+    }),
+    [range],
   );
 
   const { data, isLoading, isError, refetch } = useAdminTripsQuery(queryParams);
@@ -74,6 +79,7 @@ export default function RoutesPageClient() {
   const updateStatus = useUpdateTripStatusMutation(queryParams);
   const deleteTrip = useDeleteTripMutation(queryParams);
 
+  // Діапазон відсікає бекенд (dateFrom/dateTo — київські доби включно).
   const rows = useMemo(
     () => (data?.trips ?? []).map(mapTripToRow),
     [data?.trips],
@@ -124,10 +130,9 @@ export default function RoutesPageClient() {
     label: t(`dispatcherArea.routes.table.statuses.${status}`),
   }));
 
-  // Дати в модалці більше немає: доба рейсу приходить із календаря в шапці
-  // (створення) або лишається тією, що вже стоїть у рейсі (редагування).
+  // Доба рейсу приходить із модалки; фолбек — початок діапазону в шапці.
   function buildTripBody(form: RouteFormState) {
-    const departureDate = form.date || formatDateForApi(chosenDate);
+    const departureDate = form.date || formatDateForApi(range.from);
     // Прибуття раніше за відправлення — рейс через північ.
     const arrivalDate =
       form.arrivalTime < form.departureTime
@@ -187,7 +192,8 @@ export default function RoutesPageClient() {
           text: t("dispatcherArea.routes.addRoute"),
           onClick: () => disclosure.open({ mode: "create" }),
         }}
-        onCalendarChange={setChosenDate}
+        range={range}
+        onRangeChange={setRange}
       />
       <RoutesStats {...stats} />
       <RoutesTable
@@ -223,6 +229,11 @@ export default function RoutesPageClient() {
             totalSeats: trip.totalSeats,
             initialData: {
               route: trip.routeId,
+              // Відрізок беремо із запису розкладу: модалка фільтрує ним рейси,
+              // а сама відновити його з рейсу не може. Запис міг зникнути з
+              // розкладу — тоді лишається напрямок самого рейсу, щоб поле не
+              // відкрилося порожнім.
+              direction: scheduleEntry?.direction ?? row?.direction ?? "",
               schedule: scheduleEntry?.id ?? "",
               date: kyivDateOnly(trip.departureTime),
               departureTime: row?.departureTime ?? "",
@@ -241,7 +252,7 @@ export default function RoutesPageClient() {
           initialData={
             disclosure.data.mode === "edit"
               ? disclosure.data.initialData
-              : { date: formatDateForApi(chosenDate) }
+              : { date: formatDateForApi(range.from) }
           }
           onClose={disclosure.close}
           onSubmit={handleSubmit}

@@ -41,10 +41,6 @@
   z-index: var(--modal-frame-surface-z, 10000);
 }
 
-.surfaceOverflowVisible {
-  overflow: visible;
-}
-
 .dialogSurface {
   background: var(--modal-frame-surface-bg, var(--color-white));
   border-radius: var(--modal-frame-radius, 16px);
@@ -55,6 +51,11 @@
   flex-direction: column;
   overflow: hidden;
   z-index: var(--modal-frame-surface-z, 10000);
+}
+
+/* Нижче обох поверхонь: специфічність однакова, тож вирішує порядок правил. */
+.surfaceOverflowVisible {
+  overflow: visible;
 }
 
 .routeSurface[data-state="open"],

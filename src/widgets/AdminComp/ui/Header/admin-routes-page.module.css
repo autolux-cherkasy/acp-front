@@ -38,6 +38,12 @@
   flex-shrink: 0;
 }
 
+.rangeSeparator {
+  font-family: var(--font-roboto), sans-serif;
+  font-size: 14px;
+  color: var(--color-text-strong);
+}
+
 .iconContainer {
   width: 46px;
   height: 46px;

@@ -31,6 +31,9 @@ export type AdminTripsResponse = {
 export type GetAdminTripsParams = {
   /** Календарна доба відправлення, YYYY-MM-DD. Бекенд трактує її як київську. */
   date?: string;
+  /** Межі діапазону відправлення, YYYY-MM-DD включно. */
+  dateFrom?: string;
+  dateTo?: string;
   status?: TripStatus;
   page?: number;
   limit?: number;
@@ -39,17 +42,27 @@ export type GetAdminTripsParams = {
 /**
  * Таблиця пагінується на клієнті: useResizeTableHook рахує rowsPerPage від
  * висоти контейнера, тож серверна пагінація з фіксованим limit з нею
- * не поєднується. Тягнемо всю добу одним запитом — за день рейсів на
- * порядки менше за цю межу.
+ * не поєднується — віддаємо їй увесь діапазон одним масивом.
  */
-export const ADMIN_TRIPS_PAGE_SIZE = 200;
+export const ADMIN_TRIPS_PAGE_SIZE = 500;
 
-export const getAdminTrips = ({
-  date,
-  status,
-  page = 1,
-  limit = ADMIN_TRIPS_PAGE_SIZE,
-}: GetAdminTripsParams = {}) => {
+/**
+ * Стеля обходу сторінок. Діапазон за замовчуванням — місяць, а це вже
+ * кілька тисяч рейсів; без стелі надто широкий вибір дат перетворився б
+ * на десятки запитів поспіль.
+ */
+const ADMIN_TRIPS_MAX_PAGES = 10;
+
+const getAdminTripsPage = (
+  {
+    date,
+    dateFrom,
+    dateTo,
+    status,
+    limit = ADMIN_TRIPS_PAGE_SIZE,
+  }: GetAdminTripsParams,
+  page: number,
+) => {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),
@@ -58,9 +71,37 @@ export const getAdminTrips = ({
   });
 
   if (date) params.set("date", date);
+  if (dateFrom) params.set("dateFrom", dateFrom);
+  if (dateTo) params.set("dateTo", dateTo);
   if (status) params.set("status", status);
 
   return apiFetch<AdminTripsResponse>(`${ADMIN_TRIPS_URL}?${params.toString()}`);
+};
+
+export const getAdminTrips = async (
+  params: GetAdminTripsParams = {},
+): Promise<AdminTripsResponse> => {
+  const firstPage = await getAdminTripsPage(params, params.page ?? 1);
+
+  // Сторінку попросили явно — віддаємо саме її, без добору решти.
+  if (params.page || firstPage.totalPages <= 1) {
+    return firstPage;
+  }
+
+  const restPages = await Promise.all(
+    Array.from(
+      { length: Math.min(firstPage.totalPages, ADMIN_TRIPS_MAX_PAGES) - 1 },
+      (_, index) => getAdminTripsPage(params, index + 2),
+    ),
+  );
+
+  return {
+    ...firstPage,
+    trips: restPages.reduce(
+      (trips, response) => trips.concat(response.trips),
+      firstPage.trips,
+    ),
+  };
 };
 
 type TripBodyBase = {

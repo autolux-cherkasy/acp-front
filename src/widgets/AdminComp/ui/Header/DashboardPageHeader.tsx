@@ -3,7 +3,7 @@
 import { DashboardDateText, SharedLabel } from "@/src/shared";
 import Button from "@/src/shared/ui/Button/Button";
 import MiniCalendarTrigger from "@/src/widgets/MiniCalendar/MiniCalendarTrigger";
-import { useState } from "react";
+import type { DateRange } from "@/src/widgets/MiniCalendar/MiniCalendar";
 import styles from "./admin-routes-page.module.css";
 
 type DashboardPageHeaderProps = {
@@ -14,17 +14,29 @@ type DashboardPageHeaderProps = {
     text: string;
     onClick: () => void;
   };
-  onCalendarChange?: (date: Date) => void;
+  /** Разом із onRangeChange вмикає календар діапазону в шапці. */
+  range?: DateRange;
+  onRangeChange?: (range: DateRange) => void;
 };
+
+function isSameDay(a: Date, b: Date) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
 
 export default function DashboardPageHeader({
   title,
   subtitle,
   onBack,
   action,
-  onCalendarChange,
+  range,
+  onRangeChange,
 }: DashboardPageHeaderProps) {
-  const [chosenDate, setChosenDate] = useState(new Date());
+  const hasCalendar = Boolean(range && onRangeChange);
+  const isSingleDay = range ? isSameDay(range.from, range.to) : true;
 
   return (
     <div className={styles.headerContainer}>
@@ -47,13 +59,17 @@ export default function DashboardPageHeader({
           </div>
         )}
         <div className={styles.dateContainer}>
-          <DashboardDateText chosenDate={chosenDate} />
-          {onCalendarChange && (
-            <MiniCalendarTrigger
-              chosenDate={chosenDate}
-              setChosenDate={setChosenDate}
-              onCalendarChange={onCalendarChange}
-            />
+          <DashboardDateText chosenDate={range?.from} />
+          {range && !isSingleDay && (
+            <>
+              <span className={styles.rangeSeparator} aria-hidden="true">
+                –
+              </span>
+              <DashboardDateText chosenDate={range.to} />
+            </>
+          )}
+          {hasCalendar && range && onRangeChange && (
+            <MiniCalendarTrigger mode="range" range={range} onRangeChange={onRangeChange} />
           )}
         </div>
       </div>

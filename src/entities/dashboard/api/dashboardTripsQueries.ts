@@ -18,7 +18,13 @@ import { ADMIN_TRIPS_KEY } from "./dashboardApiKeys";
 export { ADMIN_TRIPS_KEY };
 
 export const adminTripsQueryKey = (params: GetAdminTripsParams = {}) =>
-  [ADMIN_TRIPS_KEY, params.date ?? null, params.status ?? null] as const;
+  [
+    ADMIN_TRIPS_KEY,
+    params.date ?? null,
+    params.dateFrom ?? null,
+    params.dateTo ?? null,
+    params.status ?? null,
+  ] as const;
 
 export const useAdminTripsQuery = (params: GetAdminTripsParams = {}) =>
   useQuery<AdminTripsResponse>({
@@ -47,6 +53,8 @@ export const useAddTripMutation = (params: GetAdminTripsParams = {}) => {
       updateCache: (old) => old,
       successMessage: t("common.toast.tripAddSuccess"),
       errorMessage: t("common.toast.tripAddError"),
+      // 409 — рейс із такою парою «час + платформа» на маршруті вже заведено.
+      errorMessageByStatus: { 409: t("common.toast.tripConflictError") },
     }),
   });
 };
@@ -73,6 +81,7 @@ export const useUpdateTripMutation = (params: GetAdminTripsParams = {}) => {
         },
       successMessage: t("common.toast.tripUpdateSuccess"),
       errorMessage: t("common.toast.tripUpdateError"),
+      errorMessageByStatus: { 409: t("common.toast.tripConflictError") },
     }),
   });
 };
