@@ -472,6 +472,11 @@
       "empty": {
         "title": "You do not have any tickets yet. Would you like to find a route?",
         "action": "Choose a route"
+      },
+      "loadError": "Could not load tickets.",
+      "toast": {
+        "cancelSuccess": "Booking cancelled successfully.",
+        "cancelError": "Could not cancel the booking."
       }
     },
     "archive": {
@@ -485,8 +490,10 @@
       "status": {
         "booked": "Unpaid",
         "paid": "Paid",
-        "cancelled": "Cancelled"
-      }
+        "cancelled": "Cancelled",
+        "expired": "Expired"
+      },
+      "loadError": "Could not load ticket archive."
     },
     "logoutAria": "Sign out from personal account",
     "description": "This is a minimal profile page. Settings, tickets, and your trip history will appear here later.",
