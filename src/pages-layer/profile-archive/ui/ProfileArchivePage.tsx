@@ -6,7 +6,9 @@ import {
   useCancelHistoryBookingMutation,
 } from "@/src/entities/booking";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
+import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import { useServerToast } from "@/src/shared/lib/toast";
+import ConfirmDeleteModal from "@/src/shared/ui/ConfirmDeleteModal/ConfirmDeleteModal";
 import ProfileWrapper from "../../profile/ui/ProfileWrapper";
 import { toArchivedTicket } from "../model/archive-tickets";
 import styles from "./profile-archive-page.module.css";
@@ -15,13 +17,15 @@ export default function ProfileArchivePage() {
   const { t, locale } = useI18n();
   const historyQuery = useBookingHistoryQuery();
   const cancelMutation = useCancelHistoryBookingMutation();
-  const { notifyError } = useServerToast();
+  const { notifyError, notifySuccess } = useServerToast();
+  const confirmCancel = useDisclosure<{ id: string; code: string }>();
 
   const tickets = (historyQuery.data ?? []).map((booking) => toArchivedTicket(booking, locale));
 
   const handleCancel = async (id: string) => {
     try {
       await cancelMutation.mutateAsync(id);
+      notifySuccess(undefined, t("profile.tickets.toast.cancelSuccess"));
     } catch (error) {
       notifyError(error, t("profile.tickets.toast.cancelError"));
     }
@@ -86,7 +90,7 @@ export default function ProfileArchivePage() {
                 bookingTitlePrefix={t("profile.archive.bookingTitlePrefix")}
                 payLabel={t("profile.archive.pay")}
                 cancelLabel={t("profile.archive.cancel")}
-                onCancel={() => void handleCancel(ticket.id)}
+                onCancel={() => confirmCancel.open({ id: ticket.id, code: ticket.code })}
                 isCancelling={cancelMutation.isPending && cancelMutation.variables === ticket.id}
                 cancelDisabled={isActionDisabled}
               />
@@ -94,6 +98,20 @@ export default function ProfileArchivePage() {
           })}
         </div>
       </section>
+
+      {confirmCancel.isOpen && confirmCancel.data ? (
+        <ConfirmDeleteModal
+          subject={`№ ${confirmCancel.data.code}`}
+          question={t("profile.tickets.confirmCancel.question")}
+          confirmLabel={t("profile.tickets.confirmCancel.confirm")}
+          onCancel={confirmCancel.close}
+          onConfirm={() => {
+            const { id } = confirmCancel.data!;
+            confirmCancel.close();
+            void handleCancel(id);
+          }}
+        />
+      ) : null}
     </ProfileWrapper>
   );
 }

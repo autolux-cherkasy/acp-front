@@ -9,7 +9,9 @@ import {
 } from "@/src/entities/booking";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import LocaleLink from "@/src/shared/i18n/Link";
+import { useDisclosure } from "@/src/shared/lib/useDisclosure";
 import { useServerToast } from "@/src/shared/lib/toast";
+import ConfirmDeleteModal from "@/src/shared/ui/ConfirmDeleteModal/ConfirmDeleteModal";
 import SurfacePanel from "@/src/shared/ui/SurfacePanel/SurfacePanel";
 import { toArchivedTicket } from "../../profile-archive/model/archive-tickets";
 import ProfileWrapper from "../../profile/ui/ProfileWrapper";
@@ -20,7 +22,8 @@ export default function ProfileTicketsPage() {
   const { t, locale } = useI18n();
   const ticketsQuery = useMyActiveBookingsQuery();
   const cancelMutation = useCancelBookingMutation();
-  const { notifyError } = useServerToast();
+  const { notifyError, notifySuccess } = useServerToast();
+  const confirmCancel = useDisclosure<{ id: string; code: string }>();
 
   const tickets = (ticketsQuery.data ?? []).map((booking) =>
     toArchivedTicket(booking, locale),
@@ -29,6 +32,7 @@ export default function ProfileTicketsPage() {
   const handleCancel = async (id: string) => {
     try {
       await cancelMutation.mutateAsync(id);
+      notifySuccess(undefined, t("profile.tickets.toast.cancelSuccess"));
     } catch (error) {
       notifyError(error, t("profile.tickets.toast.cancelError"));
     }
@@ -122,7 +126,7 @@ export default function ProfileTicketsPage() {
                   bookingTitlePrefix={t("profile.archive.bookingTitlePrefix")}
                   payLabel={t("profile.archive.pay")}
                   cancelLabel={t("profile.archive.cancel")}
-                  onCancel={() => void handleCancel(ticket.id)}
+                  onCancel={() => confirmCancel.open({ id: ticket.id, code: ticket.code })}
                   isCancelling={
                     cancelMutation.isPending && cancelMutation.variables === ticket.id
                   }
@@ -133,6 +137,20 @@ export default function ProfileTicketsPage() {
           </div>
         ) : null}
       </section>
+
+      {confirmCancel.isOpen && confirmCancel.data ? (
+        <ConfirmDeleteModal
+          subject={`№ ${confirmCancel.data.code}`}
+          question={t("profile.tickets.confirmCancel.question")}
+          confirmLabel={t("profile.tickets.confirmCancel.confirm")}
+          onCancel={confirmCancel.close}
+          onConfirm={() => {
+            const { id } = confirmCancel.data!;
+            confirmCancel.close();
+            void handleCancel(id);
+          }}
+        />
+      ) : null}
     </ProfileWrapper>
   );
 }
