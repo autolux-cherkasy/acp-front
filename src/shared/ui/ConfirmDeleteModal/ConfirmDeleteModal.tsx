@@ -25,12 +25,20 @@ export default function ConfirmDeleteModal({
   onCancel,
   onConfirm,
 }: ConfirmDeleteModalProps) {
-  // Both buttons play the same exit animation; this decides which callback runs once it ends.
-  const isConfirmedRef = useRef(false);
+  // Settle the outcome as soon as the user chooses — do not wait for CSS
+  // animationend (it can be skipped under prefers-reduced-motion).
+  const outcomeRef = useRef<"confirm" | "cancel" | null>(null);
+
+  const settle = (outcome: "confirm" | "cancel") => {
+    if (outcomeRef.current) return;
+    outcomeRef.current = outcome;
+    if (outcome === "confirm") onConfirm();
+    else onCancel();
+  };
 
   return (
     <ModalFrame
-      onClose={() => (isConfirmedRef.current ? onConfirm() : onCancel())}
+      onClose={() => settle(outcomeRef.current ?? "cancel")}
       ariaLabelledBy="confirm-delete-title"
       backdropClassName={styles.backdrop}
       surfaceClassName={styles.surface}
@@ -39,9 +47,8 @@ export default function ConfirmDeleteModal({
         subject={subject}
         question={question}
         confirmLabel={confirmLabel}
-        onConfirm={() => {
-          isConfirmedRef.current = true;
-        }}
+        onBack={() => settle("cancel")}
+        onConfirm={() => settle("confirm")}
       />
     </ModalFrame>
   );
@@ -51,11 +58,13 @@ function ConfirmDeleteModalBody({
   subject,
   question,
   confirmLabel,
+  onBack,
   onConfirm,
 }: {
   subject: string;
   question?: string;
   confirmLabel?: string;
+  onBack: () => void;
   onConfirm: () => void;
 }) {
   const { t } = useI18n();
@@ -75,7 +84,10 @@ function ConfirmDeleteModalBody({
 
         <ModalCloseButton
           className={styles.closeButton}
-          onClose={requestClose}
+          onClose={() => {
+            onBack();
+            requestClose();
+          }}
           ariaLabel={t("common.close")}
         />
       </div>
@@ -85,7 +97,10 @@ function ConfirmDeleteModalBody({
           text={t("common.confirmDelete.back")}
           variant="outlined"
           size="full"
-          onClick={requestClose}
+          onClick={() => {
+            onBack();
+            requestClose();
+          }}
         />
         <Button
           text={confirmLabel ?? t("common.actions.delete")}

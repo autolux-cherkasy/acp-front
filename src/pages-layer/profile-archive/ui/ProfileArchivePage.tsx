@@ -16,7 +16,7 @@ export default function ProfileArchivePage() {
   const { t, locale } = useI18n();
   const historyQuery = useBookingHistoryQuery();
   const cancelMutation = useCancelHistoryBookingMutation();
-  const confirmCancel = useDisclosure<{ id: string; code: string }>();
+  const confirmCancel = useDisclosure<{ id: string; code: string; instanceKey: number }>();
 
   const tickets = (historyQuery.data ?? []).map((booking) => toArchivedTicket(booking, locale));
 
@@ -84,7 +84,13 @@ export default function ProfileArchivePage() {
                 bookingTitlePrefix={t("profile.archive.bookingTitlePrefix")}
                 payLabel={t("profile.archive.pay")}
                 cancelLabel={t("profile.archive.cancel")}
-                onCancel={() => confirmCancel.open({ id: ticket.id, code: ticket.code })}
+                onCancel={() =>
+                  confirmCancel.open({
+                    id: ticket.id,
+                    code: ticket.code,
+                    instanceKey: Date.now(),
+                  })
+                }
                 isCancelling={cancelMutation.isPending && cancelMutation.variables === ticket.id}
                 cancelDisabled={isActionDisabled}
               />
@@ -95,14 +101,15 @@ export default function ProfileArchivePage() {
 
       {confirmCancel.isOpen && confirmCancel.data ? (
         <ConfirmDeleteModal
+          key={confirmCancel.data.instanceKey}
           subject={`№ ${confirmCancel.data.code}`}
           question={t("profile.tickets.confirmCancel.question")}
           confirmLabel={t("profile.tickets.confirmCancel.confirm")}
           onCancel={confirmCancel.close}
           onConfirm={() => {
-            const { id } = confirmCancel.data!;
+            const bookingId = confirmCancel.data!.id;
             confirmCancel.close();
-            void handleCancel(id);
+            void handleCancel(bookingId);
           }}
         />
       ) : null}
