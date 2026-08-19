@@ -7,6 +7,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
   type AnimationEvent,
@@ -59,16 +60,40 @@ export default function ModalFrame({
   const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(true);
   const hasClosedRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  const finishClose = useCallback(() => {
+    if (hasClosedRef.current) return;
+    hasClosedRef.current = true;
+    onCloseRef.current?.();
+  }, []);
 
   const requestClose = useCallback(() => {
     setIsOpen(false);
   }, []);
 
+  // animationend may never fire (prefers-reduced-motion: animation: none).
+  useEffect(() => {
+    if (isOpen) return;
+
+    const reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reducedMotion) {
+      finishClose();
+      return;
+    }
+
+    const timeoutId = window.setTimeout(finishClose, 300);
+    return () => window.clearTimeout(timeoutId);
+  }, [isOpen, finishClose]);
+
   const handleBackdropAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
-    if (isOpen || hasClosedRef.current) return;
-    hasClosedRef.current = true;
-    onClose?.();
+    if (isOpen) return;
+    finishClose();
   };
 
   const content = (
