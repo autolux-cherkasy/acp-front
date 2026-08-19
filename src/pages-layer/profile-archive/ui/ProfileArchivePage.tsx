@@ -7,7 +7,6 @@ import {
 } from "@/src/entities/booking";
 import { useI18n } from "@/src/shared/i18n/I18nProvider";
 import { useDisclosure } from "@/src/shared/lib/useDisclosure";
-import { useServerToast } from "@/src/shared/lib/toast";
 import ConfirmDeleteModal from "@/src/shared/ui/ConfirmDeleteModal/ConfirmDeleteModal";
 import ProfileWrapper from "../../profile/ui/ProfileWrapper";
 import { toArchivedTicket } from "../model/archive-tickets";
@@ -17,18 +16,13 @@ export default function ProfileArchivePage() {
   const { t, locale } = useI18n();
   const historyQuery = useBookingHistoryQuery();
   const cancelMutation = useCancelHistoryBookingMutation();
-  const { notifyError, notifySuccess } = useServerToast();
   const confirmCancel = useDisclosure<{ id: string; code: string }>();
 
   const tickets = (historyQuery.data ?? []).map((booking) => toArchivedTicket(booking, locale));
 
-  const handleCancel = async (id: string) => {
-    try {
-      await cancelMutation.mutateAsync(id);
-      notifySuccess(undefined, t("profile.tickets.toast.cancelSuccess"));
-    } catch (error) {
-      notifyError(error, t("profile.tickets.toast.cancelError"));
-    }
+  const handleCancel = (id: string) => {
+    // Toasts come from useCancelHistoryBookingMutation optimistic handlers.
+    void cancelMutation.mutateAsync(id);
   };
 
   return (
