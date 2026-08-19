@@ -61,7 +61,13 @@ export default function ModalFrame({
   const [isOpen, setIsOpen] = useState(true);
   const hasClosedRef = useRef(false);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+
+  // Синхронізуємо в ефекті, а не під час рендеру: finishClose читає ref лише
+  // з таймера чи animationend, тобто вже після коміту, тож свіжий onClose
+  // там гарантовано є.
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   const finishClose = useCallback(() => {
     if (hasClosedRef.current) return;
