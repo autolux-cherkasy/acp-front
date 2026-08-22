@@ -17,6 +17,11 @@ import {
   useStatisticsTicketsQuery,
 } from "@/src/entities/dashboard/api/useStatisticsQueries";
 import { useExportStatsMutation } from "@/src/entities/dashboard/api/useExportStatsMutation";
+import type { StatsExportResponse } from "@/src/entities/dashboard/api/statsExportApi";
+import {
+  downloadStatsExportCsv,
+  openStatsExportSheet,
+} from "@/src/entities/dashboard/api/statsExportDownload";
 import { useServerToast } from "@/src/shared/lib/toast";
 import styles from "./StatisticsPage.module.css";
 
@@ -102,10 +107,27 @@ export default function StatisticsPage() {
       return;
     }
 
-    exportStatsMutation.mutate({
-      startDate: period.startDate,
-      endDate: period.endDate,
-    });
+    const sheetTab = window.open("about:blank", "_blank", "noopener,noreferrer");
+
+    exportStatsMutation.mutate(
+      {
+        startDate: period.startDate,
+        endDate: period.endDate,
+      },
+      {
+        onSuccess: (data: StatsExportResponse) => {
+          if (data.sheetUrl && openStatsExportSheet(data.sheetUrl, sheetTab)) {
+            return;
+          }
+
+          sheetTab?.close();
+          downloadStatsExportCsv(data);
+        },
+        onError: () => {
+          sheetTab?.close();
+        },
+      },
+    );
   };
 
   const isExporting = exportStatsMutation.isPending;

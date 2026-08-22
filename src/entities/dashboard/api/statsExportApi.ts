@@ -17,6 +17,7 @@ export type StatsExportResponse = {
   status: string;
   period: StatisticsPeriod;
   sheetTitle: string;
+  sheetUrl?: string;
   exportedRows: number;
   stats: StatsExportRouteRow[];
 };
