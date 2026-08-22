@@ -354,7 +354,11 @@
       "tripStatusUpdateSuccess": "Trip status updated.",
       "tripStatusUpdateError": "Failed to update the trip status.",
       "tripDeleteSuccess": "Trip deleted successfully.",
-      "tripDeleteError": "Failed to delete the trip."
+      "tripDeleteError": "Failed to delete the trip.",
+      "statsExportSuccess": "Statistics uploaded to Google Sheets: {sheetTitle} ({exportedRows} rows).",
+      "statsExportError": "Failed to upload statistics. Please try again.",
+      "statsExportDisabled": "Google Sheets export is disabled on the server.",
+      "statsExportWaiting": "Please wait until the period metrics finish loading."
     },
     "password": {
       "show": "Show password",

@@ -17,6 +17,7 @@ export const STATISTICS_OVERVIEW_KEY = "statistics_overview";
 export const STATISTICS_REVENUE_KEY = "statistics_revenue";
 export const STATISTICS_TICKETS_KEY = "statistics_tickets";
 export const STATISTICS_LOAD_KEY = "statistics_load";
+export const STATS_EXPORT_KEY = "stats_export";
 
 // API paths
 export const ADMIN_URL = "/admin";
@@ -30,3 +31,4 @@ export const ADMIN_SETTINGS_URL = `${ADMIN_URL}/settings`;
 export const ADMIN_ANALYTICS_URL = `${ADMIN_URL}/analytics`;
 export const ADMIN_STATISTICS_URL = `${ADMIN_URL}/statistics`;
 export const ADMIN_DRIVERS_URL = `${ADMIN_STAFF_URL}/drivers/valid-license`;
+export const STATS_EXPORT_URL = "/stats/export";

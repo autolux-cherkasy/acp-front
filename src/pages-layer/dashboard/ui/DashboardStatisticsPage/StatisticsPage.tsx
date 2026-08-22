@@ -16,6 +16,8 @@ import {
   useStatisticsRevenueQuery,
   useStatisticsTicketsQuery,
 } from "@/src/entities/dashboard/api/useStatisticsQueries";
+import { useExportStatsMutation } from "@/src/entities/dashboard/api/useExportStatsMutation";
+import { useServerToast } from "@/src/shared/lib/toast";
 import styles from "./StatisticsPage.module.css";
 
 const RevenueSparkline = dynamic(() => import("./RevenueSparkline"), { ssr: false });
@@ -82,6 +84,8 @@ function formatTrend(trendPercent: number | null | undefined): string | undefine
 
 export default function StatisticsPage() {
   const { t } = useI18n();
+  const { notifyInfo } = useServerToast();
+  const exportStatsMutation = useExportStatsMutation();
 
   const { data: overview, isLoading: isOverviewLoading } = useStatisticsOverviewQuery();
   const { data: revenue, isLoading: isRevenueLoading } = useStatisticsRevenueQuery();
@@ -89,6 +93,22 @@ export default function StatisticsPage() {
   const { data: load, isLoading: isLoadLoading } = useStatisticsLoadQuery();
 
   const sparklinePoints = getSparklinePoints(revenue?.points, revenue?.granularity);
+
+  const handleExportStats = () => {
+    const period = overview?.period;
+
+    if (!period?.startDate || !period?.endDate) {
+      notifyInfo(t("common.toast.statsExportWaiting"));
+      return;
+    }
+
+    exportStatsMutation.mutate({
+      startDate: period.startDate,
+      endDate: period.endDate,
+    });
+  };
+
+  const isExporting = exportStatsMutation.isPending;
 
   return (
     <div className={styles.page}>
@@ -107,7 +127,8 @@ export default function StatisticsPage() {
             variant="primary"
             size="fit"
             fullWidth={false}
-            onClick={() => {}}
+            disabled={isOverviewLoading || isExporting}
+            onClick={handleExportStats}
           />
           <Button
             text={t("dispatcherArea.statistics.resetAction")}
