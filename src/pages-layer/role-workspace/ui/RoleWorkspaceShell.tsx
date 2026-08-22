@@ -1,5 +1,6 @@
 "use client";
 
+import { useDataSectionAccess } from "@/src/features/access-control";
 import { useAuthSession } from "@/src/features/auth";
 import { useLogoutMutation } from "@/src/features/auth/api/useAuthQueries";
 import { AUTH_FALLBACK_PATH, markLogoutRedirectBypass } from "@/src/features/auth/model/auth-flow";
@@ -127,8 +128,21 @@ export default function RoleWorkspaceShell({
   const { profile, role } = useAuthSession();
   const logoutMutation = useLogoutMutation();
   const { notifyError, notifySuccess } = useServerToast();
+  const canAccessData = useDataSectionAccess();
 
   const currentPath = useMemo(() => normalizePathname(pathname), [pathname]);
+
+  const navItems = useMemo(
+    () =>
+      NAV_ITEMS.filter((item) => {
+        if (!item.roles.includes((role ?? "DISPATCHER") as "ADMIN" | "DISPATCHER")) {
+          return false;
+        }
+
+        return item.key !== "data" || canAccessData !== false;
+      }),
+    [canAccessData, role],
+  );
 
   const fallbackRoleLabel =
     basePath === "/admin"
@@ -182,9 +196,7 @@ export default function RoleWorkspaceShell({
             </div>
 
             <nav className={styles.nav} aria-label={t("dispatcherArea.sidebar.navAria")}>
-              {NAV_ITEMS.filter((item) =>
-                item.roles.includes((role ?? "DISPATCHER") as "ADMIN" | "DISPATCHER"),
-              ).map((item) => {
+              {navItems.map((item) => {
                 const href = buildHref(basePath, item.segment);
                 const isActive = isActivePath(currentPath, href, item.segment === "");
 

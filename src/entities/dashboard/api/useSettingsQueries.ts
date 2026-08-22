@@ -19,8 +19,8 @@ export { SETTINGS_COMPANY_KEY, SETTINGS_PERMISSIONS_KEY, PHONES_KEY };
 export const useCompanySettingsQuery = () =>
   useQuery({ queryFn: getCompanySettings, queryKey: [SETTINGS_COMPANY_KEY] });
 
-export const usePermissionsQuery = () =>
-  useQuery({ queryFn: getPermissions, queryKey: [SETTINGS_PERMISSIONS_KEY] });
+export const usePermissionsQuery = (options?: { enabled?: boolean }) =>
+  useQuery({ queryFn: getPermissions, queryKey: [SETTINGS_PERMISSIONS_KEY], ...options });
 
 export const usePhonesQuery = () =>
   useQuery({ queryFn: getPhones, queryKey: [PHONES_KEY] });

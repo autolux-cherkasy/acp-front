@@ -52,7 +52,7 @@ export default function AllRoutesPage() {
     boardingStop: r.boardingStopName,
     alightingStop: r.alightingStopName,
     direction: r.direction,
-    tripsPerDay: r.tripsCount,
+    tripsPerDay: r.tripsPerDay,
     ticketsSold: r.ticketsSoldTotal,
     load: `${r.occupancyPercent}%`,
     income: formatCurrency(r.revenueTotal),

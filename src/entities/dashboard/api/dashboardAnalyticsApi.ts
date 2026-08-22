@@ -37,7 +37,7 @@ export type AllRoutesResponse = {
   boardingStopName: string;
   alightingStopName: string;
   direction: string;
-  tripsCount: number;
+  tripsPerDay: number;
   ticketsSoldTotal: number;
   occupancyPercent: number;
   revenueTotal: number;
