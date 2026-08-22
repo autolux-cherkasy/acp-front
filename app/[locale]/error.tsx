@@ -38,16 +38,28 @@ const buttonStyle = {
 
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
   const { locale } = useI18n();
+  const isStaleChunkError = /Failed to load chunk|Loading chunk .* failed/i.test(
+    error.message ?? "",
+  );
   const message =
     error.message?.trim()
     || (locale === "en" ? "An unexpected error occurred." : "Сталася неочікувана помилка.");
+
+  const handleRetry = () => {
+    if (isStaleChunkError && typeof window !== "undefined") {
+      window.location.reload();
+      return;
+    }
+
+    reset();
+  };
 
   return (
     <div style={containerStyle}>
       <div style={cardStyle} role="alert">
         <h2>{locale === "en" ? "Something went wrong" : "Щось пішло не так"}</h2>
         <p>{message}</p>
-        <button type="button" style={buttonStyle} onClick={reset}>
+        <button type="button" style={buttonStyle} onClick={handleRetry}>
           {locale === "en" ? "Try again" : "Спробувати ще раз"}
         </button>
       </div>
