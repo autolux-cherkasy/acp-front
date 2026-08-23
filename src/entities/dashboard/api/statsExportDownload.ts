@@ -56,7 +56,7 @@ export function downloadStatsReport(data: StatsExportResponse) {
     return;
   }
 
-  const { summary, segments, revenueSeries, loadSeries } = data;
+  const { summary, segments, revenueSeries, loadSeries, period } = data;
 
   const summaryRow = [
     summary.startDate,
@@ -107,9 +107,13 @@ export function downloadStatsReport(data: StatsExportResponse) {
   const objectUrl = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = objectUrl;
-  anchor.download = `${data.sheetTitle}.csv`;
+  anchor.download = `statystyka_${period.startDate}_${period.endDate}.csv`;
+  anchor.rel = "noopener";
+  anchor.style.display = "none";
+  document.body.appendChild(anchor);
   anchor.click();
-  URL.revokeObjectURL(objectUrl);
+  document.body.removeChild(anchor);
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
 
 /** @deprecated Use downloadStatsReport */

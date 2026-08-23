@@ -109,7 +109,14 @@ export default function StatisticsPage() {
         endDate: period.endDate,
       },
       {
-        onSuccess: (data) => downloadStatsReport(data),
+        onSuccess: (data) => {
+          try {
+            downloadStatsReport(data);
+          } catch (error) {
+            notifyInfo(t("common.toast.statsExportError"));
+            console.error("Failed to download stats report", error);
+          }
+        },
       },
     );
   };
