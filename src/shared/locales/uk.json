@@ -409,7 +409,7 @@
       "tripDeleteSuccess": "Рейс успішно видалено.",
       "tripDeleteError": "Не вдалося видалити рейс.",
       "tripConflictError": "Рейс на цьому маршруті з таким часом відправлення і платформою вже існує.",
-      "statsExportSuccess": "Статистику завантажено у Google Sheets: {sheetTitle} ({exportedRows} рядків).",
+      "statsExportSuccess": "Звіт за {period} збережено ({exportedRows} ділянок).",
       "statsExportError": "Не вдалося завантажити статистику. Спробуйте ще раз.",
       "statsExportDisabled": "Експорт у Google Sheets вимкнено на сервері.",
       "statsExportWaiting": "Зачекайте, поки завантажаться показники періоду.",

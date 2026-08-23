@@ -29,7 +29,7 @@ export function useExportStatsMutation() {
       showServerToast({
         type: "success",
         message: formatToastMessage(t("common.toast.statsExportSuccess"), {
-          sheetTitle: data.sheetTitle,
+          period: `${data.period.startDate} – ${data.period.endDate}`,
           exportedRows: data.exportedRows,
         }),
       });
