@@ -17,7 +17,6 @@ import {
   useStatisticsTicketsQuery,
 } from "@/src/entities/dashboard/api/useStatisticsQueries";
 import { useExportStatsMutation } from "@/src/entities/dashboard/api/useExportStatsMutation";
-import { downloadStatsReport } from "@/src/entities/dashboard/api/statsExportDownload";
 import { useServerToast } from "@/src/shared/lib/toast";
 import styles from "./StatisticsPage.module.css";
 
@@ -103,22 +102,10 @@ export default function StatisticsPage() {
       return;
     }
 
-    exportStatsMutation.mutate(
-      {
-        startDate: period.startDate,
-        endDate: period.endDate,
-      },
-      {
-        onSuccess: (data) => {
-          try {
-            downloadStatsReport(data);
-          } catch (error) {
-            notifyInfo(t("common.toast.statsExportError"));
-            console.error("Failed to download stats report", error);
-          }
-        },
-      },
-    );
+    exportStatsMutation.mutate({
+      startDate: period.startDate,
+      endDate: period.endDate,
+    });
   };
 
   const isExporting = exportStatsMutation.isPending;
