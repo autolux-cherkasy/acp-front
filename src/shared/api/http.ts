@@ -179,3 +179,38 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 
   return parseResponse<T>(response);
 }
+
+export async function apiFetchBlob(
+  path: string,
+  options: ApiFetchOptions = {},
+): Promise<{ blob: Blob; filename: string | null }> {
+  let response = await sendRequest(path, options);
+
+  if (response.status === 401 && !options.skipAuthRefresh) {
+    const refreshed = await refreshAccessToken();
+
+    if (refreshed) {
+      response = await sendRequest(path, options);
+    }
+  }
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      endClientSession();
+    }
+
+    throw new ApiError(await getErrorMessage(response), response.status);
+  }
+
+  const disposition = response.headers.get("Content-Disposition") ?? "";
+  const filenameMatch = disposition.match(/filename\*=UTF-8''([^;]+)|filename="([^"]+)"/i);
+  const encodedFilename = filenameMatch?.[1] ?? filenameMatch?.[2] ?? null;
+  const filename = encodedFilename
+    ? decodeURIComponent(encodedFilename)
+    : null;
+
+  return {
+    blob: await response.blob(),
+    filename,
+  };
+}

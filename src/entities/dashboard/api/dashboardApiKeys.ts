@@ -32,3 +32,4 @@ export const ADMIN_ANALYTICS_URL = `${ADMIN_URL}/analytics`;
 export const ADMIN_STATISTICS_URL = `${ADMIN_URL}/statistics`;
 export const ADMIN_DRIVERS_URL = `${ADMIN_STAFF_URL}/drivers/valid-license`;
 export const STATS_EXPORT_URL = "/stats/export";
+export const STATS_EXPORT_XLSX_URL = "/stats/export/xlsx";

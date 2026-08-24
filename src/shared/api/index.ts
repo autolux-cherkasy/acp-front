@@ -1,5 +1,5 @@
 // HTTP utilities
-export { API_URL, API_ORIGIN, apiFetch, resolveAssetUrl } from './http';
+export { API_URL, API_ORIGIN, apiFetch, apiFetchBlob, resolveAssetUrl } from './http';
 
 // Session utilities
 export {
