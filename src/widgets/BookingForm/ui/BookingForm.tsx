@@ -102,9 +102,6 @@ export default function BookingForm() {
     if (match) {
       clearPopularRoute("");
       set(match);
-    } else {
-      console.log(selectedPopularRoute);
-      console.log("shit");
     }
   }, [selectedPopularRoute, routeOptions]);
 
